@@ -5,6 +5,8 @@ namespace App\Filament\Admin\Resources\Users\Schemas;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
 class UserForm
@@ -13,27 +15,26 @@ class UserForm
     {
         return $schema
             ->components([
-                TextInput::make('username')
-                    ->required(),
-                TextInput::make('name')
-                    ->required(),
-                TextInput::make('second_name')
-                    ->required(),
+                TextEntry::make('username')
+                    ->label('Username'),
+                TextInput::make('name'),
+                TextInput::make('second_name'),
                 TextInput::make('email')
                     ->label('Email address')
-                    ->email()
-                    ->required(),
+                    ->email(),
                 DateTimePicker::make('email_verified_at'),
-                TextInput::make('is_verified_as')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
+                Select::make('is_verified_as')
+                    ->options([
+                        0 => 'User',
+                        1 => 'Creator',
+                        2 => 'Artist',
+                    ])
+                    ->default(0)
+                    ->required(),
                 TextInput::make('password')
-                    ->password()
-                    ->required(),
+                    ->password(),
                 FileUpload::make('profile_image')
-                    ->image()
-                    ->required(),
+                    ->image(),
             ]);
     }
 }

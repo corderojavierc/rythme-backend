@@ -6,7 +6,9 @@ use App\Filament\Admin\Resources\Posts\Pages\CreatePost;
 use App\Filament\Admin\Resources\Posts\Pages\EditPost;
 use App\Filament\Admin\Resources\Posts\Pages\ListPosts;
 use App\Filament\Admin\Resources\Posts\Schemas\PostForm;
+use App\Filament\Admin\Resources\Posts\Schemas\PostInfolist;
 use App\Filament\Admin\Resources\Posts\Tables\PostsTable;
+use App\Filament\Admin\Resources\Posts\Pages\ViewPost;
 use App\Models\Post;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -27,6 +29,11 @@ class PostResource extends Resource
         return PostForm::configure($schema);
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return PostInfolist::configure($schema);
+    }
+
     public static function table(Table $table): Table
     {
         return PostsTable::configure($table);
@@ -44,7 +51,7 @@ class PostResource extends Resource
         return [
             'index' => ListPosts::route('/'),
             'create' => CreatePost::route('/create'),
-            'edit' => EditPost::route('/{record}/edit'),
+            'view' => ViewPost::route('/{record}/view'),
         ];
     }
 }

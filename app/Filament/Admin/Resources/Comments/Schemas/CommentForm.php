@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Comments\Schemas;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use App\Models\Post;
 
 class CommentForm
 {
@@ -12,17 +13,31 @@ class CommentForm
     {
         return $schema
             ->components([
+            Select::make('user_id')
+                ->relationship('user', 'username')
+                ->searchable()
+                ->getSearchResultsUsing(fn (string $search) =>
+                    User::where('name', 'like', "%{$search}%")
+                        ->orWhere('second_name', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%")
+                        ->limit(50)
+                        ->get()
+                        ->mapWithKeys(fn ($user) => [
+                            $user->id => "{$user->name} {$user->second_name} (@{$user->username})"
+                        ])
+                )
+                ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->name} {$record->second_name} (@{$record->username})")
+                ->preload()
+                ->required(),
                 Select::make('post_id')
-                    ->relationship('post', 'id')
-                    ->required(),
-                TextInput::make('user_id')
+                    ->relationship('post', 'text')
                     ->required(),
                 TextInput::make('text')
                     ->required(),
-                TextInput::make('likes')
+                TextInput::make('count_likes')
                     ->required()
                     ->numeric(),
-                TextInput::make('repost')
+                TextInput::make('count_repost')
                     ->required()
                     ->numeric(),
             ]);

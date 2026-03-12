@@ -13,9 +13,22 @@ class EventForm
     {
         return $schema
             ->components([
-                Select::make('user_id')
-                    ->relationship('user', 'username')
-                    ->required(),
+            Select::make('user_id')
+                ->relationship('user', 'username')
+                ->searchable()
+                ->getSearchResultsUsing(fn (string $search) =>
+                    User::where('name', 'like', "%{$search}%")
+                        ->orWhere('second_name', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%")
+                        ->limit(50)
+                        ->get()
+                        ->mapWithKeys(fn ($user) => [
+                            $user->id => "{$user->name} {$user->second_name} (@{$user->username})"
+                        ])
+                )
+                ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->name} {$record->second_name} (@{$record->username})")
+                ->preload()
+                ->required(),
                 TextInput::make('title')
                     ->required(),
                 TextInput::make('description')

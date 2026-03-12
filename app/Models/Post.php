@@ -38,8 +38,8 @@ class Post extends Model
         'music_id',
         'text',
         'rating',
-        'likes',
-        'repost',
+        'count_likes',
+        'count_repost',
     ];
 
     /**
@@ -52,9 +52,9 @@ class Post extends Model
             'user_id' => 'string',
             'music_id' => 'string',
             'text' => 'string',
-            'rating' => 'decimal',
-            'likes' => 'integer',
-            'repost' => 'integer',
+            'rating' => 'decimal:2',
+            'count_likes' => 'integer',
+            'count_repost' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

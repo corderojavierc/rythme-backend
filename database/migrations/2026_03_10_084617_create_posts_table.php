@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->foreignUuid('music_id')->constrained('musics')->onDelete('cascade');
             $table->string('text');
-            $table->decimal('rating', 1);
-            $table->integer('likes');
-            $table->integer('repost', 1);
+            $table->decimal('rating', 3,2);
+            $table->integer('count_likes')->default(0);
+            $table->integer('count_repost')->default(0);
             $table->timestamps();
         });
     }

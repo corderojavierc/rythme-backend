@@ -25,7 +25,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->id('admin')
-            ->default()           // <<<<< Aquí marcamos el panel como predeterminado
+            ->default()
             ->path('admin')
             ->login()
             ->colors([

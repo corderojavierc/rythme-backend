@@ -131,4 +131,12 @@ final class User extends Authenticatable implements MustVerifyEmail
         'email' => 'javier@example.com',
         'password' => 'javier123',
     ]);
+
+    $user = User::create([
+        'username' => 'miguel',
+        'name' => 'Miguel',
+        'second_name' => 'Perez',
+        'email' => 'miguel@example.com',
+        'password' => 'miguel123',
+    ]);
  */

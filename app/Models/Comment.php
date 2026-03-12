@@ -50,14 +50,14 @@ class Comment extends Model
             'post_id' => 'string',
             'user_id' => 'string',
             'text' => 'string',
-            'likes' => 'integer',
-            'repost' => 'integer',
+            'count_likes' => 'integer',
+            'count_repost' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
     }
 
-    public function isCreatedBy(): BelongsTo{
+    public function user(): BelongsTo{
         return $this->belongsTo(User::class);
     }
 

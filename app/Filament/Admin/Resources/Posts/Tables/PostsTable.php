@@ -4,8 +4,9 @@ namespace App\Filament\Admin\Resources\Posts\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
 
 class PostsTable
@@ -17,19 +18,19 @@ class PostsTable
                 TextColumn::make('id')
                     ->label('ID')
                     ->searchable(),
-                TextColumn::make('user.name')
+                TextColumn::make('user.username')
                     ->searchable(),
-                TextColumn::make('music_id')
+                TextColumn::make('music.title')
                     ->searchable(),
                 TextColumn::make('text')
                     ->searchable(),
                 TextColumn::make('rating')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('likes')
+                TextColumn::make('count_likes')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('repost')
+                TextColumn::make('count_repost')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
@@ -45,7 +46,10 @@ class PostsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+               DeleteAction::make(),
+            ])
+            ->actions([
+                ViewAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

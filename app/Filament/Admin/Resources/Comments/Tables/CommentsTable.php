@@ -23,10 +23,10 @@ class CommentsTable
                     ->searchable(),
                 TextColumn::make('text')
                     ->searchable(),
-                TextColumn::make('likes')
+                TextColumn::make('count_likes')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('repost')
+                TextColumn::make('count_repost')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')

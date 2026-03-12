@@ -24,7 +24,7 @@ class Like extends Model
     use HasFactory;
     use HasUuids;
 
-    protected $table = "likeable";
+    protected $table = "likes";
 
     protected $fillable = [
         'user_id',
@@ -48,7 +48,7 @@ class Like extends Model
     }
 
     public function target(): MorphTo{
-        return this->morphTo();
+        return $this->morphTo();
     }
 
     public function user(): BelongsTo{
