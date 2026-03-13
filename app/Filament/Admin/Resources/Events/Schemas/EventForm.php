@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Events\Schemas;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Schema;
 
 class EventForm
@@ -35,10 +36,11 @@ class EventForm
                     ->required(),
                 TextInput::make('location')
                     ->required(),
-                TextInput::make('date')
+                DateTimePicker::make('date')
                     ->required(),
                 FileUpload::make('image')
-                    ->image(),
+                ->image()
+                ->dehydrated(fn ($state) => filled($state)),
                 TextInput::make('capacity')
                     ->required(),
             ]);

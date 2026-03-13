@@ -17,7 +17,8 @@ class UsersTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('username')
                     ->searchable(),
                 TextColumn::make('name')

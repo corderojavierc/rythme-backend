@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Posts\Schemas;
+namespace App\Filament\Admin\Resources\Comments\Schemas;
 
-use App\Filament\Admin\Resources\Posts\PostResource;
+use App\Filament\Admin\Resources\Comments\CommentResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 
-class PostInfolist
+
+class CommentInfolist
 {
     public static function configure(Schema $schema): Schema
     {
@@ -17,10 +18,9 @@ class PostInfolist
             ->components([
                 Section::make('Info')->columns(3)->schema([
                     TextEntry::make('user.username')->label('User')->icon('heroicon-o-user'),
-                    TextEntry::make('music.title')->label('Music')->icon('heroicon-o-musical-note'),
-                    TextEntry::make('rating')->label('Rating')->icon('heroicon-o-star')->suffix('/5'),
+                    TextEntry::make('post.text')->label('Post')->icon('heroicon-o-chat-bubble-left'),
                 ]),
-                Section::make('Comment')->schema([
+                Section::make('Content')->schema([
                     TextEntry::make('text')->label('Text')->columnSpanFull()->prose(),
                 ]),
                 Section::make('Stats')->columns(2)->schema([

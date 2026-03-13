@@ -4,7 +4,9 @@ namespace App\Filament\Admin\Resources\Comments;
 
 use App\Filament\Admin\Resources\Comments\Pages\CreateComment;
 use App\Filament\Admin\Resources\Comments\Pages\EditComment;
+use App\Filament\Admin\Resources\Comments\Pages\ViewComment;
 use App\Filament\Admin\Resources\Comments\Pages\ListComments;
+use App\Filament\Admin\Resources\Comments\Schemas\CommentInfolist;
 use App\Filament\Admin\Resources\Comments\Schemas\CommentForm;
 use App\Filament\Admin\Resources\Comments\Tables\CommentsTable;
 use App\Models\Comment;
@@ -20,11 +22,14 @@ class CommentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'text';
-
     public static function form(Schema $schema): Schema
     {
         return CommentForm::configure($schema);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return CommentInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
@@ -44,7 +49,7 @@ class CommentResource extends Resource
         return [
             'index' => ListComments::route('/'),
             'create' => CreateComment::route('/create'),
-            'edit' => EditComment::route('/{record}/edit'),
+            'view' => ViewComment::route('/{record}/view'),
         ];
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Filament\Admin\Resources\Music\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 
 class MusicForm
@@ -12,13 +14,15 @@ class MusicForm
         return $schema
             ->components([
                 TextInput::make('title')
+                    ->disabledOn('edit')
                     ->required(),
-                TextInput::make('cover_url')
-                    ->url()
+                FileUpload::make('cover_url')
+                ->image()
+                ->dehydrated(fn ($state) => filled($state))
                     ->required(),
                 TextInput::make('description')
                     ->required(),
-                TextInput::make('release_date')
+                DateTimePicker::make('release_date')
                     ->required(),
             ]);
     }

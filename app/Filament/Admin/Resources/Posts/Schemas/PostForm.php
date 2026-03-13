@@ -47,13 +47,17 @@ class PostForm
                 TextInput::make('count_likes')
                     ->required()
                     ->numeric()
-                    ->disabledOn('edit')
-                    ->default(0),
+                    ->minValue(0)
+                    ->default(0)
+                    ->step(1)
+                    ->disabledOn('edit'),
                 TextInput::make('count_repost')
                     ->required()
                     ->numeric()
-                    ->disabledOn('edit')
-                    ->default(0),
+                    ->minValue(0)
+                    ->default(0)
+                    ->step(1)
+                    ->disabledOn('edit'),
             ]);
     }
 }

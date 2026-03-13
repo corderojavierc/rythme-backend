@@ -26,11 +26,12 @@ class Event extends Model
 {
     /** @use HasFactory<\Database\Factories\EventFactory> */
     use HasFactory;
+    use HasUuids;
 
     protected $table = "events";
 
     protected $fillable = [
-        'creator_id',
+        'user_id',
         'title',
         'description',
         'location',

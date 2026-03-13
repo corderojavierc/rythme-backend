@@ -15,8 +15,8 @@ class UserForm
     {
         return $schema
             ->components([
-                TextEntry::make('username')
-                    ->label('Username'),
+                TextInput::make('username')
+                    ->disabledOn('edit'),
                 TextInput::make('name'),
                 TextInput::make('second_name'),
                 TextInput::make('email')
@@ -32,9 +32,11 @@ class UserForm
                     ->default(0)
                     ->required(),
                 TextInput::make('password')
-                    ->password(),
-                FileUpload::make('profile_image')
-                    ->image(),
+                    ->password()
+                    ->dehydrated(fn ($state) => filled($state)),
+                    FileUpload::make('profile_image')
+                        ->image()
+                        ->dehydrated(fn ($state) => filled($state)),
             ]);
     }
 }

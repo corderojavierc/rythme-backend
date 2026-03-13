@@ -17,7 +17,8 @@ class PostsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('user.username')
                     ->searchable(),
                 TextColumn::make('music.title')

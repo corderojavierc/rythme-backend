@@ -31,9 +31,17 @@ class ArtistApplicationForm
                     ->required(),
                 TextInput::make('followers')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->minValue(0)
+                    ->default(0)
+                    ->step(1)
+                    ->disabledOn('edit'),
                 TextInput::make('listeners')
-                    ->numeric(),
+                    ->numeric()
+                    ->minValue(0)
+                    ->default(0)
+                    ->step(1)
+                    ->disabledOn('edit'),
                 TextInput::make('youtube'),
                 TextInput::make('tiktok'),
                 TextInput::make('instagram'),

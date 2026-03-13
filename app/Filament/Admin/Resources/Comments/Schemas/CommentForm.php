@@ -36,10 +36,18 @@ class CommentForm
                     ->required(),
                 TextInput::make('count_likes')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->minValue(0)
+                    ->default(0)
+                    ->step(1)
+                    ->disabledOn('edit'),
                 TextInput::make('count_repost')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->minValue(0)
+                    ->default(0)
+                    ->step(1)
+                    ->disabledOn('edit'),
             ]);
     }
 }

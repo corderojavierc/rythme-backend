@@ -12,8 +12,8 @@ use App\Models\User;
 /**
  * @property-read string $id
  * @property-read string $user_id
- * @property-read string $target_type
- * @property-read string $target_id
+ * @property-read string $likeable_type
+ * @property-read string $likeable_id
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
@@ -28,8 +28,8 @@ class Like extends Model
 
     protected $fillable = [
         'user_id',
-        'target_type',
-        'target_id',
+        'likeable_type',
+        'likeable_id',
     ];
 
     /**
@@ -40,8 +40,8 @@ class Like extends Model
         return [
             'id' => 'string',
             'user_id' => 'string',
-            'target_type' => 'string',
-            'target_id' => 'string',
+            'likeable_type' => 'string',
+            'likeable_id' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
