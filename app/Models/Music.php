@@ -31,8 +31,8 @@ class Music extends Model
 
     protected $fillable = [
         'title',
+        'artist',
         'cover_url',
-        'description',
         'release_date',
     ];
 
@@ -44,8 +44,8 @@ class Music extends Model
         return [
             'id' => 'string',
             'title' => 'string',
+            'artist' => 'string',
             'cover_url' => 'string',
-            'description' => 'string',
             'release_date' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',

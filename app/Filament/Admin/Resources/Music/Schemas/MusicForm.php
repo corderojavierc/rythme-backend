@@ -16,11 +16,11 @@ class MusicForm
                 TextInput::make('title')
                     ->disabledOn('edit')
                     ->required(),
-                FileUpload::make('cover_url')
-                ->image()
-                ->dehydrated(fn ($state) => filled($state))
+                TextInput::make('artist')
                     ->required(),
-                TextInput::make('description')
+                FileUpload::make('cover_url')
+                    ->image()
+                    ->dehydrated(fn ($state) => filled($state))
                     ->required(),
                 DateTimePicker::make('release_date')
                     ->required(),

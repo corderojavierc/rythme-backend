@@ -21,10 +21,10 @@ class MusicTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('title')
                     ->searchable(),
+                TextColumn::make('artist')
+                    ->searchable(),
                 ImageColumn::make('cover_url')
                     ->label('Cover')
-                    ->searchable(),
-                TextColumn::make('description')
                     ->searchable(),
                 TextColumn::make('release_date')
                     ->searchable(),
