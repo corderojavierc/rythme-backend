@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\RecommendationFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Override;
 
 /**
  * @property-read string $id
@@ -14,20 +18,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-
-class Recommendation extends Model
+final class Recommendation extends Model
 {
-    /** @use HasFactory<\Database\Factories\RecommendationFactory> */
+    /** @use HasFactory<RecommendationFactory> */
     use HasFactory;
+
     use HasUuids;
 
-    protected $table = "recommendations";
-
-    protected $fillable = [
-        'post_id',
-        'music_id',
-        'message',
-    ];
+    #[Override]
+    protected $table = 'recommendations';
 
     /**
      * @return array<string, string>

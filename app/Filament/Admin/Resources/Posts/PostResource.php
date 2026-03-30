@@ -1,25 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Posts;
 
 use App\Filament\Admin\Resources\Posts\Pages\CreatePost;
-use App\Filament\Admin\Resources\Posts\Pages\EditPost;
 use App\Filament\Admin\Resources\Posts\Pages\ListPosts;
+use App\Filament\Admin\Resources\Posts\Pages\ViewPost;
 use App\Filament\Admin\Resources\Posts\Schemas\PostForm;
 use App\Filament\Admin\Resources\Posts\Schemas\PostInfolist;
 use App\Filament\Admin\Resources\Posts\Tables\PostsTable;
-use App\Filament\Admin\Resources\Posts\Pages\ViewPost;
 use App\Models\Post;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
 
-class PostResource extends Resource
+final class PostResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Post::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     public static function form(Schema $schema): Schema

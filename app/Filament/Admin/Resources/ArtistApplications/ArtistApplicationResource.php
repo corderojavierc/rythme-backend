@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\ArtistApplications;
 
 use App\Filament\Admin\Resources\ArtistApplications\Pages\CreateArtistApplication;
@@ -13,11 +15,14 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
 
-class ArtistApplicationResource extends Resource
+final class ArtistApplicationResource extends Resource
 {
+    #[Override]
     protected static ?string $model = ArtistApplication::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     public static function form(Schema $schema): Schema

@@ -1,44 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\CommentFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use App\Models\User;
-use App\Models\Post;
-use App\Models\Like;
+use Override;
 
 /**
  * @property-read string $id
  * @property-read string $post_id
  * @property-read string $user_id
  * @property-read string $text
- * @property-read integer $likes
- * @property-read integer $repost
+ * @property-read int $likes
+ * @property-read int $repost
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
- *
  */
-
-class Comment extends Model
+final class Comment extends Model
 {
-    /** @use HasFactory<\Database\Factories\CommentFactory> */
+    /** @use HasFactory<CommentFactory> */
     use HasFactory;
 
     use HasUuids;
 
-    protected $table = "comments";
-
-    protected $fillable = [
-        'post_id',
-        'user_id',
-        'text',
-        'likes',
-        'repost',
-    ];
+    #[Override]
+    protected $table = 'comments';
 
     /**
      * @return array<string, string>
@@ -57,15 +49,18 @@ class Comment extends Model
         ];
     }
 
-    public function user(): BelongsTo{
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function post(): BelongsTo{
+    public function post(): BelongsTo
+    {
         return $this->belongsTo(Post::class);
     }
 
-    public function likes(): MorphMany{
+    public function likes(): MorphMany
+    {
         return $this->morphMany(Like::class, 'likeable');
     }
 }

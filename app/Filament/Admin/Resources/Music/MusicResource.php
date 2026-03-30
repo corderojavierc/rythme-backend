@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Music;
 
 use App\Filament\Admin\Resources\Music\Pages\CreateMusic;
@@ -13,13 +15,17 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
 
-class MusicResource extends Resource
+final class MusicResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Music::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    #[Override]
     protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Schema $schema): Schema

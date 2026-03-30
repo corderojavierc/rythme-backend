@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Users\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
-class UserForm
+final class UserForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -33,10 +34,10 @@ class UserForm
                     ->required(),
                 TextInput::make('password')
                     ->password()
-                    ->dehydrated(fn ($state) => filled($state)),
-                    FileUpload::make('profile_image')
-                        ->image()
-                        ->dehydrated(fn ($state) => filled($state)),
+                    ->dehydrated(fn ($state): bool => filled($state)),
+                FileUpload::make('profile_image')
+                    ->image()
+                    ->dehydrated(fn ($state): bool => filled($state)),
             ]);
     }
 }

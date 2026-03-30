@@ -1,19 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\ArtistApplicationFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Override;
 
 /**
  * @property-read string $id
  * @property-read string $user_id
- * @property-read boolean $artist
- * @property-read integer $followers
- * @property-read integer | null $listeners
+ * @property-read bool $artist
+ * @property-read int $followers
+ * @property-read int | null $listeners
  * @property-read string | null $youtube
  * @property-read string | null $tiktok
  * @property-read string | null $instagram
@@ -23,25 +26,15 @@ use App\Models\User;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-
-class ArtistApplication extends Model
+final class ArtistApplication extends Model
 {
-    /** @use HasFactory<\Database\Factories\ArtistApplicationFactory> */
+    /** @use HasFactory<ArtistApplicationFactory> */
     use HasFactory;
+
     use HasUuids;
 
-    protected $fillable = [
-        'user_id',
-        'artist',
-        'followers',
-        'listeners',
-        'youtube',
-        'tiktok',
-        'instagram',
-        'spotify',
-        'twitch',
-        'description',
-    ];
+    #[Override]
+    protected $table = 'artist_applications';
 
     /**
      * @return array<string, string>
@@ -65,7 +58,8 @@ class ArtistApplication extends Model
         ];
     }
 
-    public function user(): BelongsTo {
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class);
-   }
+    }
 }

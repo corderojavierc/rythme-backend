@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use App\Models\User;
-use App\Models\Comment;
-use App\Models\Music;
-use App\Models\Like;
+use Override;
 
 /**
  * @property-read string $id
@@ -19,28 +19,20 @@ use App\Models\Like;
  * @property-read string $music_id
  * @property-read string $text
  * @property-read decimal $rating
- * @property-read integer $likes
- * @property-read integer $repost
+ * @property-read int $likes
+ * @property-read int $repost
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-
-class Post extends Model
+final class Post extends Model
 {
-    /** @use HasFactory<\Database\Factories\PostFactory> */
+    /** @use HasFactory<PostFactory> */
     use HasFactory;
+
     use HasUuids;
 
-    protected $table = "posts";
-
-    protected $fillable = [
-        'user_id',
-        'music_id',
-        'text',
-        'rating',
-        'count_likes',
-        'count_repost',
-    ];
+    #[Override]
+    protected $table = 'posts';
 
     /**
      * @return array<string, string>
@@ -60,19 +52,23 @@ class Post extends Model
         ];
     }
 
-    public function user(): BelongsTo {
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function music(): BelongsTo {
+    public function music(): BelongsTo
+    {
         return $this->belongsTo(Music::class, 'music_id', 'id');
     }
 
-    public function comments(): HasMany{
+    public function comments(): HasMany
+    {
         return $this->hasMany(Comment::class);
     }
 
-    public function likes(): MorphMany{
+    public function likes(): MorphMany
+    {
         return $this->morphMany(Like::class, 'likeable');
     }
 }

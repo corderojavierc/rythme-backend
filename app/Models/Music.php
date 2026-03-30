@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\MusicFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\Post;
-use App\Models\Recommendation;
+use Override;
 
 /**
  * @property-read string $id
@@ -20,21 +21,15 @@ use App\Models\Recommendation;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-
-class Music extends Model
+final class Music extends Model
 {
-    /** @use HasFactory<\Database\Factories\MusicFactory> */
+    /** @use HasFactory<MusicFactory> */
     use HasFactory;
+
     use HasUuids;
 
-    protected $table = "musics";
-
-    protected $fillable = [
-        'title',
-        'artist',
-        'cover_url',
-        'release_date',
-    ];
+    #[Override]
+    protected $table = 'musics';
 
     /**
      * @return array<string, string>
@@ -52,15 +47,18 @@ class Music extends Model
         ];
     }
 
-    public function createdBy(): BelongsToMany{
+    public function createdBy(): BelongsToMany
+    {
         return $this->belongsToMany(User::class, 'music_user');
     }
 
-    public function post(): HasMany{
+    public function post(): HasMany
+    {
         return $this->hasMany(Post::class);
     }
 
-    public function recommendated(): BelongsToMany{
+    public function recommendated(): BelongsToMany
+    {
         return $this->belongsToMany(Recommendation::class, 'recommendations');
     }
 }

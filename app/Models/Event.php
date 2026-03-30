@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use Override;
 
 /**
  * @property-read string $id
@@ -21,24 +24,15 @@ use App\Models\User;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-
-class Event extends Model
+final class Event extends Model
 {
-    /** @use HasFactory<\Database\Factories\EventFactory> */
+    /** @use HasFactory<EventFactory> */
     use HasFactory;
+
     use HasUuids;
 
-    protected $table = "events";
-
-    protected $fillable = [
-        'user_id',
-        'title',
-        'description',
-        'location',
-        'date',
-        'image',
-        'capacity',
-    ];
+    #[Override]
+    protected $table = 'events';
 
     /**
      * @return array<string, string>
@@ -58,11 +52,13 @@ class Event extends Model
         ];
     }
 
-    public function user(): BelongsTo{
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function hasParticipants(): BelongsToMany{
+    public function hasParticipants(): BelongsToMany
+    {
         return $this->belongsToMany(User::class, 'event_participants');
     }
 }

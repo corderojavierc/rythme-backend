@@ -9,17 +9,12 @@ use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use App\Models\Post;
-use App\Models\Comment;
-use App\Models\Music;
-use App\Models\Event;
-use App\Models\Like;
-use App\Models\ArtistApplication;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Override;
 
 /**
  * @property-read string $id
@@ -28,7 +23,7 @@ use App\Models\ArtistApplication;
  * @property-read string $second_name
  * @property-read string $email
  * @property-read CarbonInterface|null $email_verified_at
- * @property-read integer $is_verified_as
+ * @property-read int $is_verified_as
  * @property-read string $password
  * @property-read string|null $remember_token
  * @property-read string $profile_name
@@ -43,8 +38,10 @@ final class User extends Authenticatable implements MustVerifyEmail
     use HasUuids;
     use Notifiable;
 
+    #[Override]
     protected $table = 'users';
 
+    #[Override]
     protected $fillable = [
         'username',
         'name',
@@ -56,6 +53,7 @@ final class User extends Authenticatable implements MustVerifyEmail
     /**
      * @var list<string>
      */
+    #[Override]
     protected $hidden = [
         'password',
         'remember_token',
@@ -82,19 +80,23 @@ final class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function followers(): BelongsToMany{
-        return $this->belongsToMany(User::class,'follows', 'followed_id' , 'follower_id');
+    public function followers(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'follows', 'followed_id', 'follower_id');
     }
 
-    public function following(): BelongsToMany{
-        return $this->belongsToMany(User::class,'follows', 'follower_id' , 'followed_id');
+    public function following(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'follows', 'follower_id', 'followed_id');
     }
 
-    public function posts(): HasMany{
+    public function posts(): HasMany
+    {
         return $this->hasMany(Post::class);
     }
 
-    public function comment(): HasMany{
+    public function comment(): HasMany
+    {
         return $this->hasMany(Comment::class);
     }
 
@@ -103,26 +105,32 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->morphToMany(Like::class, 'likeable');
     }
 
-    public function createdMusic(): BelongsToMany{
+    public function createdMusic(): BelongsToMany
+    {
         return $this->belongsToMany(Music::class, 'music_user');
     }
 
-    public function recommendate(): BelongsToMany{
+    public function recommendate(): BelongsToMany
+    {
         return $this->belongsToMany(Music::class, 'recommendations');
     }
 
-    public function createEvent(): HasMany{
+    public function createEvent(): HasMany
+    {
         return $this->hasMany(Event::class);
     }
 
-    public function participating(): HasMany{
+    public function participating(): HasMany
+    {
         return $this->hasMany(Event::class, 'event_participants');
     }
 
-    public function applicate(): HasMany{
+    public function applicate(): HasMany
+    {
         return $this->hasMany(ArtistApplication::class);
     }
 }
+
 /*
 
  */

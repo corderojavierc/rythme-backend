@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,12 +13,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('posts', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->foreignUuid('music_id')->constrained('musics')->onDelete('cascade');
             $table->string('text');
-            $table->decimal('rating', 3,2);
+            $table->decimal('rating', 3, 2);
             $table->integer('count_likes')->default(0);
             $table->integer('count_repost')->default(0);
             $table->timestamps();

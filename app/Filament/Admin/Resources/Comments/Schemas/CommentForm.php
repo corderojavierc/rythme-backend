@@ -1,34 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Comments\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use App\Models\Post;
 
-class CommentForm
+final class CommentForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
-            Select::make('user_id')
-                ->relationship('user', 'username')
-                ->searchable()
-                ->getSearchResultsUsing(fn (string $search) =>
-                    User::where('name', 'like', "%{$search}%")
-                        ->orWhere('second_name', 'like', "%{$search}%")
-                        ->orWhere('username', 'like', "%{$search}%")
+                Select::make('user_id')
+                    ->relationship('user', 'username')
+                    ->searchable()
+                    ->getSearchResultsUsing(fn (string $search) => User::where('name', 'like', sprintf('%%%s%%', $search))
+                        ->orWhere('second_name', 'like', sprintf('%%%s%%', $search))
+                        ->orWhere('username', 'like', sprintf('%%%s%%', $search))
                         ->limit(50)
                         ->get()
-                        ->mapWithKeys(fn ($user) => [
-                            $user->id => "{$user->name} {$user->second_name} (@{$user->username})"
+                        ->mapWithKeys(fn ($user): array => [
+                            $user->id => sprintf('%s %s (@%s)', $user->name, $user->second_name, $user->username),
                         ])
-                )
-                ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->name} {$record->second_name} (@{$record->username})")
-                ->preload()
-                ->required(),
+                    )
+                    ->getOptionLabelFromRecordUsing(fn ($record): string => sprintf('%s %s (@%s)', $record->name, $record->second_name, $record->username))
+                    ->preload()
+                    ->required(),
                 Select::make('post_id')
                     ->relationship('post', 'text')
                     ->required(),
