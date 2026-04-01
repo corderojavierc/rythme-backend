@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
+use Database\Factories\FollowFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +20,7 @@ use Override;
  */
 final class Follow extends Model
 {
-    /** @use HasFactory<\Database\Factories\FollowFactory> */
+    /** @use HasFactory<FollowFactory> */
     use HasFactory;
 
     use HasUuids;

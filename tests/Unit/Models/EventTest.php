@@ -16,6 +16,7 @@ test('to array', function (): void {
             'location',
             'date',
             'image',
+            'capacity',
             'created_at',
             'updated_at',
         ]);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +19,7 @@ use Override;
  * @property-read string $user_id
  * @property-read string $music_id
  * @property-read string $text
- * @property-read decimal $rating
+ * @property-read float $rating
  * @property-read int $count_likes
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at

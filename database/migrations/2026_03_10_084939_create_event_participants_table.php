@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('event_partipants', function (Blueprint $table): void {
+        Schema::create('event_participants', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignUuid('event_id')->constrained()->onDelete('cascade');
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('event_partipants');
+        Schema::dropIfExists('event_participants');
     }
 };

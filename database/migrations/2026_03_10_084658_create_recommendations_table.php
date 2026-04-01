@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('recommendations', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
-            $table->foreignUuid('music_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignUuid('music_id')->constrained('musics')->onDelete('cascade');
             $table->string('message');
             $table->timestamps();
         });
