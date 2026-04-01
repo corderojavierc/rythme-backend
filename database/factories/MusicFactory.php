@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
+use App\Models\Music;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Music>
+ * @extends Factory<Music>
  */
-class MusicFactory extends Factory
+final class MusicFactory extends Factory
 {
     /**
      * Define the model's default state.

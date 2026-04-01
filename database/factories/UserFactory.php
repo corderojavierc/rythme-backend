@@ -40,7 +40,8 @@ final class UserFactory extends Factory
         ]);
     }
 
-    public function profilePic(): string {
-        return 'https://api.dicebear.com/9.x/thumbs/svg?seed=' . fake()->name();
+    public function profilePic(): string
+    {
+        return 'https://api.dicebear.com/9.x/thumbs/svg?seed='.fake()->name();
     }
 }

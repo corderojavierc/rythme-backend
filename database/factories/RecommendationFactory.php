@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
+use App\Models\Recommendation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Recommendation>
+ * @extends Factory<Recommendation>
  */
-class RecommendationFactory extends Factory
+final class RecommendationFactory extends Factory
 {
     /**
      * Define the model's default state.

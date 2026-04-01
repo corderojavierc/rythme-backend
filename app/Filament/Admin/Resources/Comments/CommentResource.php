@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Comments;
 
 use App\Filament\Admin\Resources\Comments\Pages\CreateComment;
-use App\Filament\Admin\Resources\Comments\Pages\EditComment;
-use App\Filament\Admin\Resources\Comments\Pages\ViewComment;
 use App\Filament\Admin\Resources\Comments\Pages\ListComments;
-use App\Filament\Admin\Resources\Comments\Schemas\CommentInfolist;
+use App\Filament\Admin\Resources\Comments\Pages\ViewComment;
 use App\Filament\Admin\Resources\Comments\Schemas\CommentForm;
+use App\Filament\Admin\Resources\Comments\Schemas\CommentInfolist;
 use App\Filament\Admin\Resources\Comments\Tables\CommentsTable;
 use App\Models\Comment;
 use BackedEnum;
@@ -15,11 +16,14 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
 
-class CommentResource extends Resource
+final class CommentResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Comment::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     public static function form(Schema $schema): Schema

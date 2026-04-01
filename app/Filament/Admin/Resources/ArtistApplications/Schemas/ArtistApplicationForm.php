@@ -1,11 +1,16 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\ArtistApplications\Schemas;
+
+use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
-use App\Models\User;
-class ArtistApplicationForm
+
+final class ArtistApplicationForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -14,17 +19,16 @@ class ArtistApplicationForm
                 Select::make('user_id')
                     ->relationship('user', 'username')
                     ->searchable()
-                    ->getSearchResultsUsing(fn (string $search) =>
-                        User::where('name', 'like', "%{$search}%")
-                            ->orWhere('second_name', 'like', "%{$search}%")
-                            ->orWhere('username', 'like', "%{$search}%")
-                            ->limit(50)
-                            ->get()
-                            ->mapWithKeys(fn ($user) => [
-                                $user->id => "{$user->name} {$user->second_name} (@{$user->username})"
-                            ])
+                    ->getSearchResultsUsing(fn (string $search) => User::query()->where('name', 'like', sprintf('%%%s%%', $search))
+                        ->orWhere('second_name', 'like', sprintf('%%%s%%', $search))
+                        ->orWhere('username', 'like', sprintf('%%%s%%', $search))
+                        ->limit(50)
+                        ->get()
+                        ->mapWithKeys(fn ($user): array => [
+                            $user->id => sprintf('%s %s (@%s)', $user->name, $user->second_name, $user->username),
+                        ])
                     )
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->name} {$record->second_name} (@{$record->username})")
+                    ->getOptionLabelFromRecordUsing(fn ($record): string => sprintf('%s %s (@%s)', $record->name, $record->second_name, $record->username))
                     ->preload()
                     ->required(),
                 Toggle::make('artist')

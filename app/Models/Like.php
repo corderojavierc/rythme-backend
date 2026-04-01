@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Database\Factories\LikeFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Override;
 
 /**
  * @property-read string $id
@@ -17,20 +20,15 @@ use App\Models\User;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-
-class Like extends Model
+final class Like extends Model
 {
-    /** @use HasFactory<\Database\Factories\LikeFactory> */
+    /** @use HasFactory<LikeFactory> */
     use HasFactory;
+
     use HasUuids;
 
-    protected $table = "likes";
-
-    protected $fillable = [
-        'user_id',
-        'likeable_type',
-        'likeable_id',
-    ];
+    #[Override]
+    protected $table = 'likes';
 
     /**
      * @return array<string, string>
@@ -47,11 +45,13 @@ class Like extends Model
         ];
     }
 
-    public function target(): MorphTo{
+    public function target(): MorphTo
+    {
         return $this->morphTo();
     }
 
-    public function user(): BelongsTo{
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class);
     }
 }

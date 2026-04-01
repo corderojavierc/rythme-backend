@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Override;
 
 /**
  * @property-read string $id
@@ -13,16 +15,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-
-class EventParticipant extends Model
+final class EventParticipant extends Model
 {
     /** @use HasFactory<\Database\Factories\EventParticipantFactory> */
     use HasFactory;
 
-    protected $fillable = [
-        'event_id',
-        'user_id',
-    ];
+    #[Override]
+    protected $table = 'event_participants';
 
     /**
      * @return array<string, string>

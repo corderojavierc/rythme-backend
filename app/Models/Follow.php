@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Override;
 
 /**
  * @property-read string $id
@@ -13,20 +16,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-
-class Follow extends Model
+final class Follow extends Model
 {
     /** @use HasFactory<\Database\Factories\FollowFactory> */
     use HasFactory;
 
     use HasUuids;
 
+    #[Override]
     protected $table = 'follows';
-
-    protected $fillable = [
-        'follower_id',
-        'followed_id',
-    ];
 
     /**
      * @return array<string, string>
