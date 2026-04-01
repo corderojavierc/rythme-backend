@@ -19,8 +19,7 @@ use Override;
  * @property-read string $music_id
  * @property-read string $text
  * @property-read decimal $rating
- * @property-read int $likes
- * @property-read int $repost
+ * @property-read int $count_likes
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
@@ -46,7 +45,6 @@ final class Post extends Model
             'text' => 'string',
             'rating' => 'decimal:2',
             'count_likes' => 'integer',
-            'count_repost' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

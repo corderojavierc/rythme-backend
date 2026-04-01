@@ -23,7 +23,6 @@ final class CommentInfolist
                 ]),
                 Section::make('Stats')->columns(2)->schema([
                     TextEntry::make('count_likes')->label('Likes')->icon('heroicon-o-heart'),
-                    TextEntry::make('count_repost')->label('Reposts')->icon('heroicon-o-arrow-path'),
                 ]),
             ]);
     }

@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->string('text');
             $table->integer('count_likes');
-            $table->integer('count_repost');
             $table->timestamps();
         });
     }

@@ -35,11 +35,9 @@ final class Recommendation extends Model
     {
         return [
             'id' => 'string',
-            'post_id' => 'string',
             'user_id' => 'string',
-            'text' => 'string',
-            'likes' => 'integer',
-            'repost' => 'integer',
+            'music_id' => 'string',
+            'message' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

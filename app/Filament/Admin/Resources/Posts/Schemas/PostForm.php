@@ -52,13 +52,6 @@ final class PostForm
                     ->default(0)
                     ->step(1)
                     ->disabledOn('edit'),
-                TextInput::make('count_repost')
-                    ->required()
-                    ->numeric()
-                    ->minValue(0)
-                    ->default(0)
-                    ->step(1)
-                    ->disabledOn('edit'),
             ]);
     }
 }

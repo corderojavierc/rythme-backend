@@ -30,9 +30,6 @@ final class CommentsTable
                 TextColumn::make('count_likes')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('count_repost')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

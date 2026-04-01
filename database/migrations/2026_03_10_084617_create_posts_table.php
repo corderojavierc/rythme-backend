@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('text');
             $table->decimal('rating', 3, 2);
             $table->integer('count_likes')->default(0);
-            $table->integer('count_repost')->default(0);
             $table->timestamps();
         });
     }

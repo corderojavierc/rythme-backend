@@ -17,8 +17,7 @@ use Override;
  * @property-read string $post_id
  * @property-read string $user_id
  * @property-read string $text
- * @property-read int $likes
- * @property-read int $repost
+ * @property-read int $count_likes
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
@@ -43,7 +42,6 @@ final class Comment extends Model
             'user_id' => 'string',
             'text' => 'string',
             'count_likes' => 'integer',
-            'count_repost' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
