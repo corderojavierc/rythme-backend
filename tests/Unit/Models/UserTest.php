@@ -10,9 +10,13 @@ test('to array', function (): void {
     expect(array_keys($user->toArray()))
         ->toBe([
             'id',
+            'username',
             'name',
+            'second_name',
             'email',
             'email_verified_at',
+            'is_verified_as',
+            'profile_image',
             'created_at',
             'updated_at',
         ]);
