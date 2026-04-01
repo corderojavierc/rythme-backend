@@ -9,17 +9,18 @@ use App\Models\Music;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-final class MusicController extends Controller
+final class MusicController
 {
     public function index(): Factory|View
     {
         return view('music.search');
     }
 
-    public function searchSpotify(Request $request)
+    public function create(Request $request): JsonResponse
     {
         $query = $request->input('query');
         if (! $query) {
@@ -32,7 +33,7 @@ final class MusicController extends Controller
             $results = Spotify::searchTracks($query)->limit(5)->get();
             $items = $results['tracks']['items'] ?? [];
 
-            $tracks = collect($items)->map(fn ($track): array => [
+            $tracks = collect($items)->map(fn (array $track): array => [
                 'spotify_id' => $track['id'],
                 'title' => $track['name'],
                 'artist' => $track['artists'][0]['name'],
@@ -46,7 +47,7 @@ final class MusicController extends Controller
         }
     }
 
-    public function saveTrack(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $trackId = $request->input('track_id');
         if (! $trackId) {

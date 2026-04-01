@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Collection;
 
 final class LikeForm
 {
@@ -19,16 +20,16 @@ final class LikeForm
                 Select::make('user_id')
                     ->relationship('user', 'username')
                     ->searchable()
-                    ->getSearchResultsUsing(fn (string $search) => User::query()->where('name', 'like', sprintf('%%%s%%', $search))
+                    ->getSearchResultsUsing(fn (string $search): Collection => User::query()->where('name', 'like', sprintf('%%%s%%', $search))
                         ->orWhere('second_name', 'like', sprintf('%%%s%%', $search))
                         ->orWhere('username', 'like', sprintf('%%%s%%', $search))
                         ->limit(50)
                         ->get()
-                        ->mapWithKeys(fn ($user): array => [
+                        ->mapWithKeys(fn (User $user): array => [
                             $user->id => sprintf('%s %s (@%s)', $user->name, $user->second_name, $user->username),
                         ])
                     )
-                    ->getOptionLabelFromRecordUsing(fn ($record): string => sprintf('%s %s (@%s)', $record->name, $record->second_name, $record->username))
+                    ->getOptionLabelFromRecordUsing(fn (User $record): string => sprintf('%s %s (@%s)', $record->name, $record->second_name, $record->username))
                     ->preload()
                     ->disabledOn('edit')
                     ->required(),
@@ -52,16 +53,16 @@ final class LikeForm
                                 ->with('user')
                                 ->limit(50)
                                 ->get()
-                                ->mapWithKeys(fn ($post): array => [
-                                    $post->id => sprintf('(@%s) — ', $post->user->username).str($post->text)->limit(40),
+                                ->mapWithKeys(fn (Post $post): array => [
+                                    $post->id => sprintf('(@%s) — ', $post->user).str($post->text)->limit(40),
                                 ]),
 
                             Comment::class => Comment::query()
                                 ->with('user')
                                 ->limit(50)
                                 ->get()
-                                ->mapWithKeys(fn ($comment): array => [
-                                    $comment->id => sprintf('(@%s) — ', $comment->user->username).str($comment->text)->limit(40),
+                                ->mapWithKeys(fn (Comment $comment): array => [
+                                    $comment->id => sprintf('(@%s) — ', $comment->user).str($comment->text)->limit(40),
                                 ]),
 
                             default => [],
