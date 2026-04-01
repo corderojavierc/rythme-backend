@@ -20,11 +20,11 @@ class ArtistApplicationForm
                             ->orWhere('username', 'like', "%{$search}%")
                             ->limit(50)
                             ->get()
-                            ->mapWithKeys(fn ($user) => [
+                            ->mapWithKeys(fn (User $user): array => [
                                 $user->id => "{$user->name} {$user->second_name} (@{$user->username})"
                             ])
                     )
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->name} {$record->second_name} (@{$record->username})")
+                    ->getOptionLabelFromRecordUsing(fn (User $record): string => "{$record->name} {$record->second_name} (@{$record->username})")
                     ->preload()
                     ->required(),
                 Toggle::make('artist')

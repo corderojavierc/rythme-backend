@@ -7,6 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Schema;
+use App\Models\User;
 
 class EventForm
 {
@@ -23,11 +24,11 @@ class EventForm
                         ->orWhere('username', 'like', "%{$search}%")
                         ->limit(50)
                         ->get()
-                        ->mapWithKeys(fn ($user) => [
+                        ->mapWithKeys(fn (User $user): array => [
                             $user->id => "{$user->name} {$user->second_name} (@{$user->username})"
                         ])
                 )
-                ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->name} {$record->second_name} (@{$record->username})")
+                ->getOptionLabelFromRecordUsing(fn (User $record) => "{$record->name} {$record->second_name} (@{$record->username})")
                 ->preload()
                 ->required(),
                 TextInput::make('title')
@@ -40,7 +41,7 @@ class EventForm
                     ->required(),
                 FileUpload::make('image')
                 ->image()
-                ->dehydrated(fn ($state) => filled($state)),
+                ->dehydrated(fn (string | null $state) => filled($state)),
                 TextInput::make('capacity')
                     ->required(),
             ]);

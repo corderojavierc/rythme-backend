@@ -33,10 +33,10 @@ class UserForm
                     ->required(),
                 TextInput::make('password')
                     ->password()
-                    ->dehydrated(fn ($state) => filled($state)),
-                    FileUpload::make('profile_image')
-                        ->image()
-                        ->dehydrated(fn ($state) => filled($state)),
+                    ->dehydrated(fn (string $state): bool => filled($state)),
+                FileUpload::make('profile_image')
+                    ->image()
+                    ->dehydrated(fn (string $state): bool => filled($state)),
             ]);
     }
 }

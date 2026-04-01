@@ -18,17 +18,17 @@ class LikeForm
                 Select::make('user_id')
                     ->relationship('user', 'username')
                     ->searchable()
-                    ->getSearchResultsUsing(fn (string $search) =>
+                    ->getSearchResultsUsing(fn (string $search): array =>
                         User::where('name', 'like', "%{$search}%")
                             ->orWhere('second_name', 'like', "%{$search}%")
                             ->orWhere('username', 'like', "%{$search}%")
                             ->limit(50)
                             ->get()
-                            ->mapWithKeys(fn ($user) => [
+                            ->mapWithKeys(fn (User $user) => [
                                 $user->id => "{$user->name} {$user->second_name} (@{$user->username})"
                             ])
                     )
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->name} {$record->second_name} (@{$record->username})")
+                    ->getOptionLabelFromRecordUsing(fn (User $record): string => "{$record->name} {$record->second_name} (@{$record->username})")
                     ->preload()
                     ->disabledOn('edit')
                     ->required(),
@@ -51,7 +51,7 @@ class LikeForm
                                     ->with('user')
                                     ->limit(50)
                                     ->get()
-                                    ->mapWithKeys(fn ($post) => [
+                                    ->mapWithKeys(fn (Post $post): array => [
                                         $post->id => "(@{$post->user->username}) — " . str($post->text)->limit(40)
                                     ]),
 
@@ -59,7 +59,7 @@ class LikeForm
                                     ->with('user')
                                     ->limit(50)
                                     ->get()
-                                    ->mapWithKeys(fn ($comment) => [
+                                    ->mapWithKeys(fn (Comment $comment): array => [
                                         $comment->id => "(@{$comment->user->username}) — " . str($comment->text)->limit(40)
                                     ]),
 
