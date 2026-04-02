@@ -23,6 +23,7 @@ final class AuthController
         ]);
 
         $user = User::query()->create($data);
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -31,7 +32,7 @@ final class AuthController
         ], 201);
     }
 
-    public function login(Request $request): mixed
+    public function login(Request $request): JsonResponse
     {
         $data = $request->validate([
             'username' => ['required'],
@@ -41,7 +42,7 @@ final class AuthController
         $user = User::query()->where('username', $data['username'])->first();
 
         if (! $user || ! Hash::check($data['password'], $user->password)) {
-            return ValidationException::withMessages([
+            throw ValidationException::withMessages([
                 'message' => 'Invalid credentials',
             ]);
         }
@@ -60,15 +61,6 @@ final class AuthController
 
         return response()->json([
             'message' => 'Logged out',
-        ]);
-    }
-
-    public function clear(Request $request): JsonResponse
-    {
-        $request->user()->tokens()->delete();
-
-        return response()->json([
-            'message' => 'Token cleared',
         ]);
     }
 }
