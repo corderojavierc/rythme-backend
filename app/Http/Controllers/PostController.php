@@ -14,7 +14,7 @@ class PostController
      */
      public function index()
      {
-         $posts = Post::with(['music', 'user'])->paginate(10);
+         $posts = Post::with(['music', 'user'])->orderBy('created_at', 'desc')->paginate(120);
 
          return PostResource::collection($posts);
      }
