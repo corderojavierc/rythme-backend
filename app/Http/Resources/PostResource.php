@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\User;
-use App\Models\Music;
 
-class PostResource extends JsonResource
+final class PostResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,19 +16,21 @@ class PostResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $post = $this->resource;
+
         return [
-            'profile_image' => $this->user?->profile_image,
-            'name' => $this->user?->name,
-            'second_name' => $this->user?->second_name,
-            'user_name' => $this->user?->username,
-            'cover_url' => $this->music?->cover_url,
-            'music' => $this->music?->title,
-            'artist' => $this->music?->artist,
-            'rating' => $this->rating,
-            'title' => $this->text,
-            'count_liked' => $this->count_likes,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'profile_image' => $post->user?->profile_image,
+            'name' => $post->user?->name,
+            'second_name' => $post->user?->second_name,
+            'user_name' => $post->user?->username,
+            'cover_url' => $post->music?->cover_url,
+            'music' => $post->music?->title,
+            'artist' => $post->music?->artist,
+            'rating' => $post->rating,
+            'title' => $post->text,
+            'count_liked' => $post->count_likes,
+            'created_at' => $post->created_at,
+            'updated_at' => $post->updated_at,
         ];
     }
 }
