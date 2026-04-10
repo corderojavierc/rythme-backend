@@ -1,25 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
 
-class UserController
+final class UserController
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $users = User::paginate(60);
+        $users = User::query()->paginate(60);
+
         return response()->json($users);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(): void
     {
         //
     }
@@ -27,7 +29,7 @@ class UserController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(): void
     {
         //
     }
@@ -35,7 +37,7 @@ class UserController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(): void
     {
         //
     }
@@ -43,7 +45,7 @@ class UserController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(): void
     {
         //
     }
