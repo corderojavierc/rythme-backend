@@ -8,7 +8,8 @@ use Carbon\CarbonInterface;
 use Database\Factories\FollowFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Override;
 
 /**
@@ -18,7 +19,7 @@ use Override;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-final class Follow extends Model
+final class Follow extends Pivot
 {
     /** @use HasFactory<FollowFactory> */
     use HasFactory;
@@ -40,5 +41,15 @@ final class Follow extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    public function follower(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'follower_id');
+    }
+
+    public function followed(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'followed_id');
     }
 }

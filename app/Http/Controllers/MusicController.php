@@ -24,7 +24,7 @@ final class MusicController
     {
         $query = $request->input('query');
         if (! $query) {
-            return response()->json(['error' => 'Escribe algo'], 400);
+            return response()->json(['error' => 'Error en el servidor'], 400);
         }
 
         try {

@@ -37,6 +37,7 @@ final class User extends Authenticatable implements MustVerifyEmail
 
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+
     use HasUuids;
     use Notifiable;
 
@@ -102,7 +103,7 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Comment::class);
     }
 
-    public function gustar(): MorphToMany
+    public function likes(): MorphToMany
     {
         return $this->morphToMany(Like::class, 'likeable');
     }
