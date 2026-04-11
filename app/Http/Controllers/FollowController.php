@@ -35,7 +35,14 @@ final class FollowController
             'followed_id' => $request->followed_id,
         ]);
 
-        return response()->json(null, 201);
+        if (Follow::query()->where([
+            'follower_id' => $request->follower_id,
+            'followed_id' => $request->followed_id,
+        ])->exists()) {
+            return response()->json(true, 201);
+        } else {
+            return response()->json(false, 400);
+        }
     }
 
     /**
@@ -49,8 +56,18 @@ final class FollowController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(): void
+    public function destroy(Request $request)
     {
-        //
+        $request->validate([
+            'follower_id' => ['required', 'exists:users,id'],
+            'followed_id' => ['required', 'exists:users,id'],
+        ]);
+
+        Follow::query()->where([
+            'follower_id' => $request->follower_id,
+            'followed_id' => $request->followed_id,
+        ])->delete();
+
+        return response()->json(true, 204);
     }
 }

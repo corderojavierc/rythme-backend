@@ -21,4 +21,6 @@ Route::get('posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('users', [UserController::class, 'index'])->name('users.index');
 
 Route::get('follows/{id}', [FollowController::class, 'index'])->name('follows.index');
+
 Route::post('follows', [FollowController::class, 'store'])->name('follows.store');
+Route::delete('follows', [FollowController::class, 'destroy'])->name('follows.destroy');
