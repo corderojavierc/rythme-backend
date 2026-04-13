@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Carbon\CarbonInterface;
-use Database\Factories\CommentFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +16,7 @@ final class Comment extends Model
     use HasFactory;
     use HasUuids;
 
+    #[Override]
     protected $table = 'comments';
 
     public function casts(): array

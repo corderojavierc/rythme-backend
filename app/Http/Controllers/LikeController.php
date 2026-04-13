@@ -6,83 +6,91 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\LikeResource;
 use App\Models\Comment;
-use App\Models\Follow;
 use App\Models\Like;
 use App\Models\Post;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final class LikeController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index($id)
+    public function index(string $id): AnonymousResourceCollection
     {
-        $likes = Like::query()->with('user', 'likeable')->where('user_id', $id)->get();
+        $likes = Like::query()
+            ->with(['user', 'likeable'])
+            ->where('user_id', $id)
+            ->get();
+
         return LikeResource::collection($likes);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-     public function store(Request $request)
-     {
-         $request->validate([
-             'user_id' => ['required', 'exists:users,id'],
-             'likeable_type' => ['required', 'string'],
-             'likeable_id' => ['required', 'string'],
-         ]);
-
-         $like = Like::query()->create([
-             'user_id' => $request->user_id,
-             'likeable_type' => $request->likeable_type,
-             'likeable_id' => $request->likeable_id,
-         ]);
-
-         if ($request->likeable_type === 'App\Models\Post') {
-             $post = Post::query()->find($request->likeable_id);
-
-             if ($post) {
-                 $post->increment('count_likes');
-             }
-         }
-
-         if ($request->likeable_type === 'App\Models\Comment') {
-             $comment = Comment::query()->find($request->likeable_id);
-
-             if ($comment) {
-                 $comment->increment('count_likes');
-             }
-         }
-
-         return response()->json(true, 201);
-     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(): void
+    public function store(Request $request): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Request $request)
-    {
-        $request->validate([
+        /** @var array{user_id: string, likeable_type: string, likeable_id: string} $validated */
+        $validated = $request->validate([
             'user_id' => ['required', 'exists:users,id'],
             'likeable_type' => ['required', 'string'],
             'likeable_id' => ['required', 'string'],
         ]);
 
-        Like::query()->where([
-            'user_id' => $request->user_id,
-            'likeable_type' => $request->likeable_type,
-            'likeable_id' => $request->likeable_id,
-        ])->delete();
+        Like::query()->create($validated);
+
+        $this->incrementLikeable($validated['likeable_type'], $validated['likeable_id']);
+
+        return response()->json(true, 201);
+    }
+
+    public function destroy(Request $request): JsonResponse
+    {
+        /** @var array{user_id: string, likeable_type: string, likeable_id: string} $validated */
+        $validated = $request->validate([
+            'user_id' => ['required', 'exists:users,id'],
+            'likeable_type' => ['required', 'string'],
+            'likeable_id' => ['required', 'string'],
+        ]);
+
+        Like::query()->where($validated)->delete();
+
+        $this->decrementLikeable($validated['likeable_type'], $validated['likeable_id']);
 
         return response()->json(true, 204);
+    }
+
+    private function incrementLikeable(string $type, string $id): void
+    {
+        if ($type === Post::class) {
+            $post = Post::query()->find($id);
+
+            if ($post) {
+                $post->increment('count_likes');
+            }
+        }
+
+        if ($type === Comment::class) {
+            $comment = Comment::query()->find($id);
+
+            if ($comment) {
+                $comment->increment('count_likes');
+            }
+        }
+    }
+
+    private function decrementLikeable(string $type, string $id): void
+    {
+        if ($type === Post::class) {
+            $post = Post::query()->find($id);
+
+            if ($post) {
+                $post->decrement('count_likes');
+            }
+        }
+
+        if ($type === Comment::class) {
+            $comment = Comment::query()->find($id);
+
+            if ($comment) {
+                $comment->decrement('count_likes');
+            }
+        }
     }
 }
