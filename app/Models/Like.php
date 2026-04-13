@@ -13,27 +13,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Override;
 
-/**
- * @property-read string $id
- * @property-read string $user_id
- * @property-read string $likeable_type
- * @property-read string $likeable_id
- * @property-read CarbonInterface $created_at
- * @property-read CarbonInterface $updated_at
- */
 final class Like extends Model
 {
-    /** @use HasFactory<LikeFactory> */
     use HasFactory;
-
     use HasUuids;
 
-    #[Override]
     protected $table = 'likes';
 
-    /**
-     * @return array<string, string>
-     */
     public function casts(): array
     {
         return [
@@ -46,7 +32,10 @@ final class Like extends Model
         ];
     }
 
-    public function target(): MorphTo
+    /**
+     * ✅ Relación polimórfica correcta
+     */
+    public function likeable(): MorphTo
     {
         return $this->morphTo();
     }

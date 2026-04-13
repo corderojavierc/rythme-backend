@@ -14,29 +14,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Override;
 
-/**
- * @property-read string $id
- * @property-read string $user_id
- * @property-read string $music_id
- * @property-read string $text
- * @property-read float $rating
- * @property-read int $count_likes
- * @property-read CarbonInterface $created_at
- * @property-read CarbonInterface $updated_at
- */
 final class Post extends Model
 {
-    /** @use HasFactory<PostFactory> */
     use HasFactory;
-
     use HasUuids;
 
-    #[Override]
     protected $table = 'posts';
 
-    /**
-     * @return array<string, string>
-     */
     public function casts(): array
     {
         return [
@@ -53,12 +37,12 @@ final class Post extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function music(): BelongsTo
     {
-        return $this->belongsTo(Music::class, 'music_id', 'id');
+        return $this->belongsTo(Music::class, 'music_id');
     }
 
     public function comments(): HasMany
@@ -66,6 +50,9 @@ final class Post extends Model
         return $this->hasMany(Comment::class);
     }
 
+    /**
+     * ✅ Polimórfico correcto
+     */
     public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'likeable');

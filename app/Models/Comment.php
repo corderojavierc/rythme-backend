@@ -13,28 +13,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Override;
 
-/**
- * @property-read string $id
- * @property-read string $post_id
- * @property-read string $user_id
- * @property-read string $text
- * @property-read int $count_likes
- * @property-read CarbonInterface $created_at
- * @property-read CarbonInterface $updated_at
- */
 final class Comment extends Model
 {
-    /** @use HasFactory<CommentFactory> */
     use HasFactory;
-
     use HasUuids;
 
-    #[Override]
     protected $table = 'comments';
 
-    /**
-     * @return array<string, string>
-     */
     public function casts(): array
     {
         return [
@@ -58,6 +43,9 @@ final class Comment extends Model
         return $this->belongsTo(Post::class);
     }
 
+    /**
+     * ✅ Polimórfico correcto
+     */
     public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'likeable');
