@@ -19,6 +19,7 @@ final class PostResource extends JsonResource
         $post = $this->resource;
 
         return [
+            'id' => $post->id,
             'profile_image' => $post->user?->profile_image,
             'name' => $post->user?->name,
             'second_name' => $post->user?->second_name,

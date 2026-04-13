@@ -32,9 +32,6 @@ final class Like extends Model
         ];
     }
 
-    /**
-     * ✅ Relación polimórfica correcta
-     */
     public function likeable(): MorphTo
     {
         return $this->morphTo();
