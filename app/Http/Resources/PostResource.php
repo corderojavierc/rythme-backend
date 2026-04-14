@@ -24,6 +24,7 @@ final class PostResource extends JsonResource
             'name' => $post->user?->name,
             'second_name' => $post->user?->second_name,
             'user_name' => $post->user?->username,
+            'user_id' => $post->user?->id,
             'cover_url' => $post->music?->cover_url,
             'music' => $post->music?->title,
             'artist' => $post->music?->artist,
