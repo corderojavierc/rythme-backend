@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -37,9 +38,20 @@ final class PostController
     /**
      * Display the specified resource.
      */
-    public function show(): void
+    public function show($id): JsonResponse|PostResource
     {
-        //
+        try {
+            $post = Post::with(['music', 'user'])
+                ->withExists(['likes as is_liked' => function ($query) {
+                    $query->where('user_id', auth()->id());
+                }])
+                ->findOrFail($id);
+            return new PostResource($post);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Post not found',
+            ], 404);
+        }
     }
 
     /**
