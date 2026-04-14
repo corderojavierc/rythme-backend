@@ -7,7 +7,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-final class FollowResource extends JsonResource
+final class LikeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +16,11 @@ final class FollowResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $follow = $this->resource;
+        $like = $this->resource;
 
         return [
-            'id' => $follow->followed?->id,
+            'type' => $like->likeable_type,
+            'id' => $like->likeable_id,
         ];
     }
 }

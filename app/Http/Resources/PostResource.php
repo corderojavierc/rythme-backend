@@ -19,6 +19,7 @@ final class PostResource extends JsonResource
         $post = $this->resource;
 
         return [
+            'id' => $post->id,
             'profile_image' => $post->user?->profile_image,
             'name' => $post->user?->name,
             'second_name' => $post->user?->second_name,
@@ -28,7 +29,8 @@ final class PostResource extends JsonResource
             'artist' => $post->music?->artist,
             'rating' => $post->rating,
             'title' => $post->text,
-            'count_liked' => $post->count_likes,
+            'count_likes' => $post->count_likes,
+            'is_liked' => (bool) $post->is_liked,
             'created_at' => $post->created_at,
             'updated_at' => $post->updated_at,
         ];

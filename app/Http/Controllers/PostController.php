@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final class PostController
@@ -15,7 +16,12 @@ final class PostController
      */
     public function index(): AnonymousResourceCollection
     {
-        $posts = Post::with(['music', 'user'])->latest()->paginate(120);
+        $posts = Post::with(['music', 'user'])
+            ->withExists(['likes as is_liked' => function (Builder $query): void {
+                $query->where('user_id', auth()->id());
+            }])
+            ->latest()
+            ->paginate(120);
 
         return PostResource::collection($posts);
     }

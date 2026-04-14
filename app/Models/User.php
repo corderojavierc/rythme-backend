@@ -4,40 +4,20 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Carbon\CarbonInterface;
-use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Override;
 
-/**
- * @property-read string $id
- * @property-read string $username
- * @property-read string $name
- * @property-read string $second_name
- * @property-read string $email
- * @property-read CarbonInterface|null $email_verified_at
- * @property-read int $is_verified_as
- * @property-read string $password
- * @property-read string|null $remember_token
- * @property-read string $profile_name
- * @property-read CarbonInterface $created_at
- * @property-read CarbonInterface $updated_at
- */
 final class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
-
-    /** @use HasFactory<UserFactory> */
     use HasFactory;
-
     use HasUuids;
     use Notifiable;
 
@@ -53,18 +33,12 @@ final class User extends Authenticatable implements MustVerifyEmail
         'password',
     ];
 
-    /**
-     * @var list<string>
-     */
     #[Override]
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * @return array<string, string>
-     */
     public function casts(): array
     {
         return [
@@ -98,14 +72,14 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Post::class);
     }
 
-    public function comment(): HasMany
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
 
-    public function likes(): MorphToMany
+    public function likes(): HasMany
     {
-        return $this->morphToMany(Like::class, 'likeable');
+        return $this->hasMany(Like::class);
     }
 
     public function createdMusic(): BelongsToMany
@@ -133,7 +107,3 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(ArtistApplication::class);
     }
 }
-
-/*
-
- */
