@@ -42,9 +42,6 @@ final class Comment extends Model
         return $this->belongsTo(Post::class);
     }
 
-    /**
-     * ✅ Polimórfico correcto
-     */
     public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'likeable');

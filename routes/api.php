@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
@@ -21,12 +22,15 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('users', [UserController::class, 'index'])->name('users.index');
 
     Route::get('follows/{id}', [FollowController::class, 'index'])->name('follows.index');
-
     Route::post('follows', [FollowController::class, 'store'])->name('follows.store');
     Route::delete('follows', [FollowController::class, 'destroy'])->name('follows.destroy');
 
     Route::get('likes/{id}', [LikeController::class, 'index'])->name('likes.index');
-
     Route::post('likes', [LikeController::class, 'store'])->name('likes.store');
     Route::delete('likes', [LikeController::class, 'destroy'])->name('likes.destroy');
+
+    Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+    Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    Route::get('comments/{id}', [CommentController::class, 'show'])->name('comments.show');
 });
