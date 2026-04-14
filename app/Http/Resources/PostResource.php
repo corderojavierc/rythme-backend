@@ -30,7 +30,7 @@ final class PostResource extends JsonResource
             'rating' => $post->rating,
             'title' => $post->text,
             'count_likes' => $post->count_likes,
-            'is_liked' => (bool) $post->is_liked,
+            'is_liked' => is_null($post->is_liked) ? null : (bool) $post->is_liked,
             'created_at' => $post->created_at,
             'updated_at' => $post->updated_at,
         ];
