@@ -6,8 +6,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\PostResource;
 use App\Models\Post;
-use Illuminate\Http\JsonResponse;
+use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final class PostController
@@ -19,10 +20,11 @@ final class PostController
     {
         $posts = Post::with(['music', 'user'])
             ->withExists(['likes as is_liked' => function (Builder $query): void {
-                $query->where('user_id', auth()->id());
+                $query->where('user_id', auth()->id())
+                    ->where('likeable_type', Post::class);
             }])
             ->latest()
-            ->paginate(120);
+            ->paginate(15);
 
         return PostResource::collection($posts);
     }
@@ -30,24 +32,26 @@ final class PostController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(): void
+    public function store(): JsonResponse
     {
-        //
+        return response()->json([]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id): JsonResponse|PostResource
+    public function show(string $id): JsonResponse|PostResource
     {
         try {
+            /** @var Post $post */
             $post = Post::with(['music', 'user'])
-                ->withExists(['likes as is_liked' => function ($query) {
+                ->withExists(['likes as is_liked' => function (Builder $query): void {
                     $query->where('user_id', auth()->id());
                 }])
                 ->findOrFail($id);
+
             return new PostResource($post);
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return response()->json([
                 'message' => 'Post not found',
             ], 404);
@@ -57,16 +61,16 @@ final class PostController
     /**
      * Update the specified resource in storage.
      */
-    public function update(): void
+    public function update(): JsonResponse
     {
-        //
+        return response()->json([]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(): void
+    public function destroy(): JsonResponse
     {
-        //
+        return response()->json([]);
     }
 }

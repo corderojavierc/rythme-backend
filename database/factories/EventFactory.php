@@ -6,14 +6,12 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 final class EventFactory extends Factory
 {
     public function definition(): array
     {
         return [
-            'id' => Str::uuid(),
             'user_id' => User::factory(),
             'title' => $this->faker->sentence(4),
             'description' => $this->faker->paragraph(),

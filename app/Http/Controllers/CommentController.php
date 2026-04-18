@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
+use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class CommentController
+final class CommentController
 {
     /**
      * Display a listing of the resource.
@@ -21,7 +24,7 @@ class CommentController
                 $query->where('user_id', auth()->id());
             }])
             ->latest()
-            ->paginate(120);
+            ->paginate(20);
 
         return CommentResource::collection($posts);
     }
@@ -32,11 +35,11 @@ class CommentController
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'post_id' => 'required|exists:posts,id',
-            'text' => 'required|string',
+            'post_id' => ['required', 'exists:posts,id'],
+            'text' => ['required', 'string'],
         ]);
 
-        $comment = Comment::create([
+        Comment::query()->create([
             'post_id' => $data['post_id'],
             'user_id' => auth()->id(),
             'text' => $data['text'],
@@ -49,12 +52,14 @@ class CommentController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): CommentResource|JsonResponse
     {
         try {
-            $comment = Comment::findOrFail($id);
-            return response()->json($comment, 200);
-        } catch (\Exception $e) {
+            /** @var Comment $comment */
+            $comment = Comment::query()->findOrFail($id);
+
+            return new CommentResource($comment);
+        } catch (Exception) {
             return response()->json([
                 'message' => 'Comment not found',
             ], 404);
@@ -64,27 +69,29 @@ class CommentController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(): JsonResponse
     {
-        //
+        return response()->json([]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         try {
-            $comment = Comment::findOrFail($id);
+            /** @var Comment $comment */
+            $comment = Comment::query()->findOrFail($id);
             if ($comment->user_id !== auth()->id()) {
                 return response()->json([
                     'message' => 'You are not authorized to delete this comment',
                 ], 403);
             }
+
             $comment->delete();
 
             return response()->json(true, 200);
-        } catch (\Exception $e) {
+        } catch (Exception) {
             return response()->json(false, 404);
         }
     }

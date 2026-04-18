@@ -9,7 +9,6 @@ use App\Models\ArtistApplication;
 use App\Models\Comment;
 use App\Models\Event;
 use App\Models\Follow;
-use App\Models\Like;
 use App\Models\Music;
 use App\Models\Post;
 use App\Models\Recommendation;
@@ -80,24 +79,6 @@ final class DatabaseSeeder extends Seeder
                 'post_id' => $post->id,
                 'user_id' => $randomUser->id,
             ]);
-
-            Like::factory(random_int(1, 5))->create([
-                'user_id' => $randomUser->id,
-                'likeable_type' => Post::class,
-                'likeable_id' => $post->id,
-            ]);
-
-            foreach ($comments as $comment) {
-                /** @var User $likeUser */
-                $likeUser = $users->random();
-
-                Like::factory(random_int(0, 3))->create([
-                    'user_id' => $likeUser->id,
-                    'likeable_type' => Comment::class,
-                    'likeable_id' => $comment->getKey(),
-                ]);
-            }
         }
-
     }
 }
