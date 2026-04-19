@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\MusicController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -34,4 +35,10 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::get('comments/{id}', [CommentController::class, 'show'])->name('comments.show');
+
+    Route::get('music', [MusicController::class, 'index'])->name('music.index');
+    Route::post('music', [MusicController::class, 'store'])->name('music.store');
+    Route::delete('music/{id}', [MusicController::class, 'destroy'])->name('music.destroy');
+    Route::get('music/{id}', [MusicController::class, 'show'])->name('music.show');
+    Route::post('/music/search', [MusicController::class, 'search'])->name('api.music.search');
 });
