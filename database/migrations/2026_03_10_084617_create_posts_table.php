@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('rating', 3, 2);
             $table->integer('count_likes')->default(0);
             $table->integer('count_comments')->default(0);
+            $table->unique(['user_id', 'music_id']);
             $table->timestamps();
         });
     }

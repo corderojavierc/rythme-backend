@@ -19,6 +19,10 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('clear', [AuthController::class, 'clear'])->name('clear');
 
     Route::get('posts', [PostController::class, 'index'])->name('posts.index');
+    Route::get('posts/followed', [PostController::class, 'getFollowedPosts'])->name('posts.followed');
+    Route::post('posts', [PostController::class, 'store'])->name('posts.store');
+    Route::delete('posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::get('/posts/check/{music_id}', [PostController::class, 'checkPost']);
     Route::get('posts/{id}', [PostController::class, 'show'])->name('posts.show');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');

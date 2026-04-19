@@ -17,8 +17,8 @@ final class PostFactory extends Factory
             'music_id' => Music::factory(),
             'text' => $this->faker->paragraph(),
             'rating' => $this->faker->randomFloat(2, 0, 5),
-            'count_likes' => $this->faker->numberBetween(0, 0),
-            'count_comments' => $this->faker->numberBetween(0, 0),
+            'count_likes' => 0,
+            'count_comments' => 0,
         ];
     }
 }
