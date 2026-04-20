@@ -12,20 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Carbon;
 use Override;
 
-/**
- * @property-read string $id
- * @property-read string $user_id
- * @property-read string $music_id
- * @property-read string $text
- * @property-read float $rating
- * @property-read int $count_likes
- * @property-read int $count_comments
- * @property-read Carbon $created_at
- * @property-read Carbon $updated_at
- */
 #[UseFactory(PostFactory::class)]
 final class Post extends Model
 {
@@ -34,6 +22,17 @@ final class Post extends Model
 
     #[Override]
     protected $table = 'posts';
+
+    public static function booted(): void
+    {
+        self::created(function (Post $post): void {
+            $post->updateMusicRatings();
+        });
+
+        self::deleted(function (Post $post): void {
+            $post->updateMusicRatings();
+        });
+    }
 
     public function casts(): array
     {
@@ -68,5 +67,21 @@ final class Post extends Model
     public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'likeable');
+    }
+
+    private function updateMusicRatings(): void
+    {
+        $stats = self::query()
+            ->where('music_id', $this->music_id)
+            ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as total')
+            ->first();
+
+        MusicRating::query()->updateOrCreate(
+            ['music_id' => $this->music_id],
+            [
+                'rating' => $stats->avg_rating ?? 0,
+                'count_ratings' => $stats->total ?? 0,
+            ]
+        );
     }
 }
