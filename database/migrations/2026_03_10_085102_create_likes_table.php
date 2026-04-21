@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->unique(['user_id', 'likeable_type', 'likeable_id']);
-            $table->morphs('likeable');
+            $table->uuidMorphs('likeable');
             $table->timestamps();
         });
     }
