@@ -23,6 +23,15 @@ final class Post extends Model
     #[Override]
     protected $table = 'posts';
 
+    protected $fillable = [
+        'user_id',
+        'music_id',
+        'text',
+        'rating',
+        'count_likes',
+        'count_comments',
+    ];
+
     public static function booted(): void
     {
         self::created(function (Post $post): void {

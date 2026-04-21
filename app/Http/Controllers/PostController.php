@@ -23,8 +23,7 @@ final class PostController
     {
         $posts = Post::with(['music', 'user'])
             ->withExists(['likes as is_liked' => function (Builder $query): void {
-                $query->where('user_id', auth()->id())
-                    ->where('likeable_type', Post::class);
+                $query->where('user_id', auth()->id());
             }])
             ->latest()
             ->paginate(15);
@@ -144,8 +143,7 @@ final class PostController
         $posts = Post::query()
             ->with(['music', 'user'])
             ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
-                $query->where('user_id', $currentUserId)
-                    ->where('likeable_type', Post::class);
+                $query->where('user_id', $currentUserId);
             }])
             ->whereIn('user_id', function (QueryBuilder $query) use ($currentUserId): void {
                 $query->select('followed_id')

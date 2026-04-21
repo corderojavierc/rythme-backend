@@ -22,6 +22,12 @@ final class Like extends Model
     #[Override]
     protected $table = 'likes';
 
+    protected $fillable = [
+        'user_id',
+        'likeable_type',
+        'likeable_id',
+    ];
+
     public static function booted(): void
     {
         self::created(function (Like $like): void {
