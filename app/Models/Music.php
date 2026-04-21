@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Override;
 
 /**
@@ -62,5 +63,10 @@ final class Music extends Model
     public function recommendated(): BelongsToMany
     {
         return $this->belongsToMany(Recommendation::class, 'recommendations');
+    }
+
+    public function rating(): HasOne
+    {
+        return $this->hasOne(MusicRating::class);
     }
 }

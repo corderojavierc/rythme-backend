@@ -26,6 +26,8 @@ final class AuthController
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        $user = User::query()->where('username', $data['username'])->first();
+
         return response()->json([
             'user' => $user,
             'token' => $token,
