@@ -16,7 +16,7 @@ final class CommentFactory extends Factory
             'post_id' => Post::factory(),
             'user_id' => User::factory(),
             'text' => $this->faker->paragraph(),
-            'count_likes' => $this->faker->numberBetween(0),
+            'count_likes' => 0,
         ];
     }
 }

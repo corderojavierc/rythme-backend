@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
+use App\Models\Post;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -52,18 +53,25 @@ final class CommentController
     /**
      * Display the specified resource.
      */
-    public function show(string $id): CommentResource|JsonResponse
+    public function show(string $id): AnonymousResourceCollection|JsonResponse
     {
         try {
-            /** @var Comment $comment */
-            $comment = Comment::query()->findOrFail($id);
+                $post = Post::query()->findOrFail($id);
 
-            return new CommentResource($comment);
-        } catch (Exception) {
-            return response()->json([
-                'message' => 'Comment not found',
-            ], 404);
-        }
+                $comments = $post->comments()
+                    ->with(['user'])
+                    ->withExists(['likes as is_liked' => function (Builder $query): void {
+                        $query->where('user_id', auth()->id());
+                    }])
+                    ->latest()
+                    ->paginate(10);
+
+                return CommentResource::collection($comments);
+            } catch (Exception) {
+                return response()->json([
+                    'message' => 'Post not found',
+                ], 404);
+            }
     }
 
     /**
