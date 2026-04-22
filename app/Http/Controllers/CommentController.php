@@ -56,22 +56,22 @@ final class CommentController
     public function show(string $id): AnonymousResourceCollection|JsonResponse
     {
         try {
-                $post = Post::query()->findOrFail($id);
+            $post = Post::query()->findOrFail($id);
 
-                $comments = $post->comments()
-                    ->with(['user'])
-                    ->withExists(['likes as is_liked' => function (Builder $query): void {
-                        $query->where('user_id', auth()->id());
-                    }])
-                    ->latest()
-                    ->paginate(10);
+            $comments = $post->comments()
+                ->with(['user'])
+                ->withExists(['likes as is_liked' => function (Builder $query): void {
+                    $query->where('user_id', auth()->id());
+                }])
+                ->latest()
+                ->paginate(10);
 
-                return CommentResource::collection($comments);
-            } catch (Exception) {
-                return response()->json([
-                    'message' => 'Post not found',
-                ], 404);
-            }
+            return CommentResource::collection($comments);
+        } catch (Exception) {
+            return response()->json([
+                'message' => 'Post not found',
+            ], 404);
+        }
     }
 
     /**
