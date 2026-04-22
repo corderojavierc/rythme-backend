@@ -22,6 +22,7 @@ final class Like extends Model
     #[Override]
     protected $table = 'likes';
 
+    #[Override]
     protected $fillable = [
         'user_id',
         'likeable_type',

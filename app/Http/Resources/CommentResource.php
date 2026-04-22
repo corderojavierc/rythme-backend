@@ -9,22 +9,21 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 final class CommentResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         $comment = $this->resource;
 
         return [
             'id' => $comment->id,
+            'profile_image' => $comment->user?->profile_image,
+            'name' => $comment->user?->name,
+            'second_name' => $comment->user?->second_name,
+            'user_name' => $comment->user?->username,
             'user_id' => $comment->user_id,
             'post_id' => $comment->post_id,
             'text' => $comment->text,
-            'count_likes' => $comment->count_likes,
-            'is_liked' => (bool) $comment->is_liked,
+            'is_liked' => is_null($comment->is_liked) ? null : (bool) $comment->is_liked,
+            'count_likes' => (int) $comment->count_likes,
         ];
     }
 }
