@@ -45,4 +45,5 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::delete('music/{id}', [MusicController::class, 'destroy'])->name('music.destroy');
     Route::get('music/{id}', [MusicController::class, 'show'])->name('music.show');
     Route::post('/music/search', [MusicController::class, 'search'])->name('api.music.search');
+    Route::get('music/{id}/posts', [MusicController::class, 'getPosts'])->name('music.posts');
 });
