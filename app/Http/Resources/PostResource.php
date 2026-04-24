@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Models\MusicRating;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,6 +18,7 @@ final class PostResource extends JsonResource
     public function toArray(Request $request): array
     {
         $post = $this->resource;
+        $rating = MusicRating::find($post->music_id);
 
         return [
             'id' => $post->id,
@@ -34,6 +36,9 @@ final class PostResource extends JsonResource
             'count_likes' => $post->count_likes,
             'count_comments' => $post->count_comments,
             'is_liked' => is_null($post->is_liked) ? null : (bool) $post->is_liked,
+            'global_rating' => $rating->rating ?? '',
+            'count_ratings' => $rating->count_ratings ?? 0,
+            'is_valorated' => (bool) $post->is_valorated,
             'created_at' => $post->created_at,
             'updated_at' => $post->updated_at,
         ];

@@ -19,17 +19,24 @@ final class PostController
     /**
      * Display a listing of the resource.
      */
-    public function index(): AnonymousResourceCollection
-    {
-        $posts = Post::with(['music', 'user'])
-            ->withExists(['likes as is_liked' => function (Builder $query): void {
-                $query->where('user_id', auth()->id());
-            }])
-            ->latest()
-            ->paginate(15);
+     public function index(): AnonymousResourceCollection
+     {
+         $currentUserId = auth()->id();
 
-        return PostResource::collection($posts);
-    }
+         $posts = Post::with(['music', 'user'])
+             ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
+                 $query->where('user_id', $currentUserId);
+             }])
+             ->withExists(['music as is_valorated' => function (Builder $query) use ($currentUserId): void {
+                 $query->whereHas('post', function (Builder $pQuery) use ($currentUserId) {
+                     $pQuery->where('user_id', $currentUserId);
+                 });
+             }])
+             ->latest()
+             ->paginate(15);
+
+         return PostResource::collection($posts);
+     }
 
     /**
      * Store a newly created resource in storage.
@@ -145,7 +152,12 @@ final class PostController
             ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
                 $query->where('user_id', $currentUserId);
             }])
-            ->whereIn('user_id', function (QueryBuilder $query) use ($currentUserId): void {
+            ->withExists(['music as is_valorated' => function (Builder $query) use ($currentUserId): void {
+                $query->whereHas('post', function (Builder $pQuery) use ($currentUserId) {
+                    $pQuery->where('user_id', $currentUserId);
+                });
+            }])
+            ->whereIn('user_id', function ($query) use ($currentUserId): void {
                 $query->select('followed_id')
                     ->from('follows')
                     ->where('follower_id', $currentUserId);

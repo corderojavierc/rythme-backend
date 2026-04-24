@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Resources\MusicResource;
+use App\Http\Resources\PostResource;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use App\Models\Music;
+use App\Models\Post;
 use App\Services\SpotifyService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -81,9 +84,10 @@ final class MusicController
         }
     }
 
-    public function show(): JsonResponse
+    public function show(string $id): MusicResource
     {
-        return response()->json([]);
+        $music = Music::findOrFail($id);
+        return new MusicResource($music);
     }
 
     public function update(): JsonResponse
@@ -94,5 +98,26 @@ final class MusicController
     public function destroy(): JsonResponse
     {
         return response()->json([]);
+    }
+
+    public function getPosts(string $id): AnonymousResourceCollection
+    {
+        $currentUserId = auth()->id();
+        Music::findOrFail($id);
+
+        $posts = Post::where('music_id', $id)
+            ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
+                $query->where('user_id', $currentUserId);
+            }])
+            ->withExists(['music as is_valorated' => function (Builder $query) use ($currentUserId): void {
+                $query->whereHas('post', function (Builder $pQuery) use ($currentUserId) {
+                    $pQuery->where('user_id', $currentUserId);
+                });
+            }])
+            ->with(['user', 'music'])
+            ->latest()
+            ->paginate(10);
+
+        return PostResource::collection($posts);
     }
 }
