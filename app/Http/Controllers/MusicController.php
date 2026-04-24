@@ -102,11 +102,17 @@ final class MusicController
 
     public function getPosts(string $id): AnonymousResourceCollection
     {
+        $currentUserId = auth()->id();
         Music::findOrFail($id);
 
         $posts = Post::where('music_id', $id)
-            ->withExists(['likes as is_liked' => function (Builder $query): void {
-                $query->where('user_id', auth()->id());
+            ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
+                $query->where('user_id', $currentUserId);
+            }])
+            ->withExists(['music as is_valorated' => function (Builder $query) use ($currentUserId): void {
+                $query->whereHas('post', function (Builder $pQuery) use ($currentUserId) {
+                    $pQuery->where('user_id', $currentUserId);
+                });
             }])
             ->with(['user', 'music'])
             ->latest()

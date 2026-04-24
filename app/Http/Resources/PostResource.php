@@ -38,6 +38,7 @@ final class PostResource extends JsonResource
             'is_liked' => is_null($post->is_liked) ? null : (bool) $post->is_liked,
             'global_rating' => $rating->rating ?? '',
             'count_ratings' => $rating->count_ratings ?? 0,
+            'is_valorated' => (bool) $post->is_valorated,
             'created_at' => $post->created_at,
             'updated_at' => $post->updated_at,
         ];
