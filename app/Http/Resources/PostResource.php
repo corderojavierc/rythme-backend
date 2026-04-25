@@ -18,7 +18,7 @@ final class PostResource extends JsonResource
     public function toArray(Request $request): array
     {
         $post = $this->resource;
-        $rating = MusicRating::find($post->music_id);
+        $rating = MusicRating::query()->find($post->music_id);
 
         return [
             'id' => $post->id,

@@ -8,10 +8,11 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
 
 final class PostController
@@ -19,24 +20,24 @@ final class PostController
     /**
      * Display a listing of the resource.
      */
-     public function index(): AnonymousResourceCollection
-     {
-         $currentUserId = auth()->id();
+    public function index(): AnonymousResourceCollection
+    {
+        $currentUserId = auth()->id();
 
-         $posts = Post::with(['music', 'user'])
-             ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
-                 $query->where('user_id', $currentUserId);
-             }])
-             ->withExists(['music as is_valorated' => function (Builder $query) use ($currentUserId): void {
-                 $query->whereHas('post', function (Builder $pQuery) use ($currentUserId) {
-                     $pQuery->where('user_id', $currentUserId);
-                 });
-             }])
-             ->latest()
-             ->paginate(15);
+        $posts = Post::with(['music', 'user'])
+            ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
+                $query->where('user_id', $currentUserId);
+            }])
+            ->withExists(['music as is_valorated' => function (Builder $query) use ($currentUserId): void {
+                $query->whereHas('post', function (Builder $pQuery) use ($currentUserId): void {
+                    $pQuery->where('user_id', $currentUserId);
+                });
+            }])
+            ->latest()
+            ->paginate(15);
 
-         return PostResource::collection($posts);
-     }
+        return PostResource::collection($posts);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -145,19 +146,20 @@ final class PostController
 
     public function getFollowedPosts(): AnonymousResourceCollection
     {
-        $currentUserId = auth()->id();
+        $currentUserId = (string) auth()->id();
 
+        /** @var LengthAwarePaginator $posts */
         $posts = Post::query()
             ->with(['music', 'user'])
             ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
                 $query->where('user_id', $currentUserId);
             }])
             ->withExists(['music as is_valorated' => function (Builder $query) use ($currentUserId): void {
-                $query->whereHas('post', function (Builder $pQuery) use ($currentUserId) {
+                $query->whereHas('post', function (Builder $pQuery) use ($currentUserId): void {
                     $pQuery->where('user_id', $currentUserId);
                 });
             }])
-            ->whereIn('user_id', function ($query) use ($currentUserId): void {
+            ->whereIn('user_id', function (QueryBuilder $query) use ($currentUserId): void {
                 $query->select('followed_id')
                     ->from('follows')
                     ->where('follower_id', $currentUserId);

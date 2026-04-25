@@ -16,11 +16,11 @@ final class MusicResource extends JsonResource
     {
         /** @var Music $music */
         $music = $this->resource;
-        $ratingInfo = MusicRating::where('music_id', $music->id)->first();
+        $ratingInfo = MusicRating::query()->where('music_id', $music->id)->first();
         $userHasPost = false;
 
         if (auth()->check()) {
-            $userHasPost = Post::where('music_id', $music->id)
+            $userHasPost = Post::query()->where('music_id', $music->id)
                 ->where('user_id', auth()->id())
                 ->exists();
         }
