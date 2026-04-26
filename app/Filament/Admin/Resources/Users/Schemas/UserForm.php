@@ -38,6 +38,12 @@ final class UserForm
                 FileUpload::make('profile_image')
                     ->image()
                     ->dehydrated(fn (string $state): bool => filled($state)),
+                TextInput::make('followers')
+                    ->disabled(),
+                TextInput::make('following')
+                    ->disabled(),
+                TextInput::make('posts')
+                    ->disabled(),
             ]);
     }
 }

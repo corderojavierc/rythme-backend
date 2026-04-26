@@ -29,6 +29,21 @@ final class Follow extends Pivot
     #[Override]
     protected $table = 'follows';
 
+    public static function boot(): void
+    {
+        parent::boot();
+
+        self::created(function (Follow $follow): void {
+            $follow->followed()->increment('followers');
+            $follow->follower()->increment('following');
+        });
+
+        self::deleted(function (Follow $follow): void {
+            $follow->followed()->decrement('followers');
+            $follow->follower()->decrement('following');
+        });
+    }
+
     /**
      * @return array<string, string>
      */

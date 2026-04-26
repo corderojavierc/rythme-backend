@@ -6,11 +6,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\MusicResource;
 use App\Http\Resources\PostResource;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use App\Models\Music;
 use App\Models\Post;
 use App\Services\SpotifyService;
 use Exception;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -86,7 +86,8 @@ final class MusicController
 
     public function show(string $id): MusicResource
     {
-        $music = Music::findOrFail($id);
+        $music = Music::query()->findOrFail($id);
+
         return new MusicResource($music);
     }
 
@@ -103,14 +104,14 @@ final class MusicController
     public function getPosts(string $id): AnonymousResourceCollection
     {
         $currentUserId = auth()->id();
-        Music::findOrFail($id);
+        Music::query()->findOrFail($id);
 
-        $posts = Post::where('music_id', $id)
+        $posts = Post::query()->where('music_id', $id)
             ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
                 $query->where('user_id', $currentUserId);
             }])
             ->withExists(['music as is_valorated' => function (Builder $query) use ($currentUserId): void {
-                $query->whereHas('post', function (Builder $pQuery) use ($currentUserId) {
+                $query->whereHas('post', function (Builder $pQuery) use ($currentUserId): void {
                     $pQuery->where('user_id', $currentUserId);
                 });
             }])
