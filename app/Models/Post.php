@@ -37,10 +37,12 @@ final class Post extends Model
     {
         self::created(function (Post $post): void {
             $post->updateMusicRatings();
+            $post->user()->increment('posts');
         });
 
         self::deleted(function (Post $post): void {
             $post->updateMusicRatings();
+            $post->user()->decrement('posts');
         });
     }
 

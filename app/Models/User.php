@@ -25,6 +25,9 @@ use Override;
  * @property-read string $email
  * @property-read CarbonInterface|null $email_verified_at
  * @property-read string $password
+ * @property-read int $followers
+ * @property-read int $following
+ * @property-read int $posts
  * @property-read string|null $remember_token
  * @property-read string $profile_image
  * @property-read CarbonInterface $created_at
@@ -40,15 +43,6 @@ final class User extends Authenticatable implements MustVerifyEmail
 
     #[Override]
     protected $table = 'users';
-
-    #[Override]
-    protected $fillable = [
-        'username',
-        'name',
-        'second_name',
-        'email',
-        'password',
-    ];
 
     #[Override]
     protected $hidden = [
@@ -67,6 +61,9 @@ final class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'is_verified_as' => 'string',
             'password' => 'hashed',
+            'followers' => 'integer',
+            'following' => 'integer',
+            'posts' => 'integer',
             'remember_token' => 'string',
             'profile_image' => 'string',
             'created_at' => 'datetime',
