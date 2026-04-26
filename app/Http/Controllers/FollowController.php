@@ -45,16 +45,15 @@ final class FollowController
         return response()->json(true, 201);
     }
 
-    public function destroy(Request $request): JsonResponse
-    {
-        /** @var array{follower_id: string, followed_id: string} $validated */
+    public function destroy(Request $request): JsonResponse {
         $validated = $request->validate([
             'follower_id' => ['required', 'exists:users,id'],
             'followed_id' => ['required', 'exists:users,id'],
         ]);
 
-        Follow::query()->where($validated)->delete();
+        Follow::query()->where($validated)->get()->each->delete();
 
         return response()->json(true, 204);
     }
+
 }
