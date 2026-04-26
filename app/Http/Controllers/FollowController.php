@@ -45,7 +45,8 @@ final class FollowController
         return response()->json(true, 201);
     }
 
-    public function destroy(Request $request): JsonResponse {
+    public function destroy(Request $request): JsonResponse
+    {
         $validated = $request->validate([
             'follower_id' => ['required', 'exists:users,id'],
             'followed_id' => ['required', 'exists:users,id'],
@@ -55,5 +56,4 @@ final class FollowController
 
         return response()->json(true, 204);
     }
-
 }
