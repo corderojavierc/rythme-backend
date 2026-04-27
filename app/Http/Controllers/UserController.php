@@ -21,9 +21,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 final class UserController
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(): JsonResponse
     {
         $users = User::query()->paginate(60);
@@ -31,33 +28,21 @@ final class UserController
         return response()->json($users);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(): void
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(): void
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(): void
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(): void
     {
         //
@@ -96,6 +81,8 @@ final class UserController
 
     public function getLiked(string $id): AnonymousResourceCollection
     {
+        $authUserId = (string) auth()->id();
+
         /** @var LengthAwarePaginator $likes */
         $likes = Like::query()
             ->where('user_id', $id)
@@ -110,7 +97,7 @@ final class UserController
             ->latest()
             ->paginate(15);
 
-        $items = $likes->getCollection()->map(function (Like $like) use ($id): ?Model {
+        $items = $likes->getCollection()->map(function (Like $like) use ($authUserId): ?Model {
             /** @var Post|Comment|null $model */
             $model = $like->likeable;
 
@@ -118,11 +105,11 @@ final class UserController
                 return null;
             }
 
-            $model->setAttribute('is_liked', true);
+            $model->setAttribute('is_liked', $model->likes()->where('user_id', $authUserId)->exists());
 
             if ($model instanceof Post) {
-                $model->setAttribute('is_valorated', $model->music()->whereHas('post', function (Builder $q) use ($id): void {
-                    $q->where('user_id', $id);
+                $model->setAttribute('is_valorated', $model->music()->whereHas('post', function (Builder $q) use ($authUserId): void {
+                    $q->where('user_id', $authUserId);
                 })->exists());
             }
 
