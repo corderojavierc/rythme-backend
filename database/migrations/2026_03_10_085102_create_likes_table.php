@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('likes', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
-            $table->morphs('likeable');
+            $table->unique(['user_id', 'likeable_type', 'likeable_id']);
+            $table->uuidMorphs('likeable');
             $table->timestamps();
         });
     }

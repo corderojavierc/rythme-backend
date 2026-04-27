@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Event;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Event>
- */
 final class EventFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'user_id' => User::factory(),
+            'title' => $this->faker->sentence(4),
+            'description' => $this->faker->paragraph(),
+            'location' => $this->faker->address(),
+            'date' => $this->faker->dateTimeBetween('now', '+1 year')->format('Y-m-d H:i:s'),
+            'image' => $this->faker->optional()->imageUrl(800, 600, 'party'),
+            'capacity' => (string) $this->faker->numberBetween(50, 10000),
         ];
     }
 }

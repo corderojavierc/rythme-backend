@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Database\Factories\PostFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,29 +14,38 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Override;
 
-/**
- * @property-read string $id
- * @property-read string $user_id
- * @property-read string $music_id
- * @property-read string $text
- * @property-read decimal $rating
- * @property-read int $count_likes
- * @property-read CarbonInterface $created_at
- * @property-read CarbonInterface $updated_at
- */
+#[UseFactory(PostFactory::class)]
 final class Post extends Model
 {
-    /** @use HasFactory<PostFactory> */
     use HasFactory;
-
     use HasUuids;
 
     #[Override]
     protected $table = 'posts';
 
-    /**
-     * @return array<string, string>
-     */
+    #[Override]
+    protected $fillable = [
+        'user_id',
+        'music_id',
+        'text',
+        'rating',
+        'count_likes',
+        'count_comments',
+    ];
+
+    public static function booted(): void
+    {
+        self::created(function (Post $post): void {
+            $post->updateMusicRatings();
+            $post->user()->increment('posts');
+        });
+
+        self::deleted(function (Post $post): void {
+            $post->updateMusicRatings();
+            $post->user()->decrement('posts');
+        });
+    }
+
     public function casts(): array
     {
         return [
@@ -45,6 +55,7 @@ final class Post extends Model
             'text' => 'string',
             'rating' => 'decimal:2',
             'count_likes' => 'integer',
+            'count_comments' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
@@ -52,12 +63,12 @@ final class Post extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function music(): BelongsTo
     {
-        return $this->belongsTo(Music::class, 'music_id', 'id');
+        return $this->belongsTo(Music::class, 'music_id');
     }
 
     public function comments(): HasMany
@@ -68,5 +79,21 @@ final class Post extends Model
     public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'likeable');
+    }
+
+    private function updateMusicRatings(): void
+    {
+        $stats = self::query()
+            ->where('music_id', $this->music_id)
+            ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as total')
+            ->first();
+
+        MusicRating::query()->updateOrCreate(
+            ['music_id' => $this->music_id],
+            [
+                'rating' => $stats->avg_rating ?? 0,
+                'count_ratings' => $stats->total ?? 0,
+            ]
+        );
     }
 }

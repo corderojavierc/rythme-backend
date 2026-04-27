@@ -15,6 +15,7 @@ test('to array', function (): void {
             'text',
             'rating',
             'count_likes',
+            'count_comments',
             'created_at',
             'updated_at',
         ]);

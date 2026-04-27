@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Database\Factories\CommentFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,28 +13,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Override;
 
-/**
- * @property-read string $id
- * @property-read string $post_id
- * @property-read string $user_id
- * @property-read string $text
- * @property-read int $count_likes
- * @property-read CarbonInterface $created_at
- * @property-read CarbonInterface $updated_at
- */
+#[UseFactory(CommentFactory::class)]
 final class Comment extends Model
 {
-    /** @use HasFactory<CommentFactory> */
     use HasFactory;
-
     use HasUuids;
 
     #[Override]
     protected $table = 'comments';
 
-    /**
-     * @return array<string, string>
-     */
+    public static function booted(): void
+    {
+        self::created(function (Comment $comment): void {
+            $comment->post()->increment('count_comments');
+        });
+
+        self::deleted(function (Comment $comment): void {
+            $comment->post()->decrement('count_comments');
+        });
+    }
+
     public function casts(): array
     {
         return [

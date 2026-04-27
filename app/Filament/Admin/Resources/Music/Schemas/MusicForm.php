@@ -22,7 +22,7 @@ final class MusicForm
                     ->required(),
                 FileUpload::make('cover_url')
                     ->image()
-                    ->dehydrated(fn ($state): bool => filled($state))
+                    ->dehydrated(fn (string $state): bool => filled($state))
                     ->required(),
                 DateTimePicker::make('release_date')
                     ->required(),

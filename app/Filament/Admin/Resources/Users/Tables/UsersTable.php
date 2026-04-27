@@ -36,6 +36,15 @@ final class UsersTable
                 TextColumn::make('is_verified_as')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('followers')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('following')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('posts')
+                    ->numeric()
+                    ->sortable(),
                 ImageColumn::make('profile_image'),
                 TextColumn::make('created_at')
                     ->dateTime()

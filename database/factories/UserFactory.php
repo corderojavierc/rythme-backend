@@ -22,11 +22,14 @@ final class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'username' => fake()->name(),
+            'username' => fake()->unique()->userName(),
             'name' => fake()->name(),
             'second_name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'followers' => 0,
+            'following' => 0,
+            'posts' => 0,
             'password' => self::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'profile_image' => $this->profilePic(),

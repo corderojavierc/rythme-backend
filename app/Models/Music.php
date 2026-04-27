@@ -4,28 +4,31 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Database\Factories\MusicFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Override;
 
 /**
  * @property-read string $id
  * @property-read string $title
+ * @property-read string $artist
  * @property-read string $cover_url
  * @property-read string $description
  * @property-read string $release_date
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
+#[UseFactory(MusicFactory::class)]
 final class Music extends Model
 {
-    /** @use HasFactory<MusicFactory> */
     use HasFactory;
-
     use HasUuids;
 
     #[Override]
@@ -60,5 +63,10 @@ final class Music extends Model
     public function recommendated(): BelongsToMany
     {
         return $this->belongsToMany(Recommendation::class, 'recommendations');
+    }
+
+    public function rating(): HasOne
+    {
+        return $this->hasOne(MusicRating::class);
     }
 }

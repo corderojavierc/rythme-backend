@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Database\Factories\LikeFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,27 +13,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Override;
 
-/**
- * @property-read string $id
- * @property-read string $user_id
- * @property-read string $likeable_type
- * @property-read string $likeable_id
- * @property-read CarbonInterface $created_at
- * @property-read CarbonInterface $updated_at
- */
+#[UseFactory(LikeFactory::class)]
 final class Like extends Model
 {
-    /** @use HasFactory<LikeFactory> */
     use HasFactory;
-
     use HasUuids;
 
     #[Override]
     protected $table = 'likes';
 
-    /**
-     * @return array<string, string>
-     */
+    #[Override]
+    protected $fillable = [
+        'user_id',
+        'likeable_type',
+        'likeable_id',
+    ];
+
+    public static function booted(): void
+    {
+        self::created(function (Like $like): void {
+            $like->likeable()->increment('count_likes');
+        });
+
+        self::deleted(function (Like $like): void {
+            $like->likeable()->decrement('count_likes');
+        });
+    }
+
     public function casts(): array
     {
         return [
@@ -45,7 +52,7 @@ final class Like extends Model
         ];
     }
 
-    public function target(): MorphTo
+    public function likeable(): MorphTo
     {
         return $this->morphTo();
     }

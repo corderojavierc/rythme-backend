@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
+use Database\Factories\EventParticipantFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Override;
@@ -15,10 +19,11 @@ use Override;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
+#[UseFactory(EventParticipantFactory::class)]
 final class EventParticipant extends Model
 {
-    /** @use HasFactory<\Database\Factories\EventParticipantFactory> */
     use HasFactory;
+    use HasUuids;
 
     #[Override]
     protected $table = 'event_participants';

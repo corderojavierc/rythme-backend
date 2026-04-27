@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
+use Database\Factories\FollowFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Override;
 
 /**
@@ -16,15 +20,29 @@ use Override;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-final class Follow extends Model
+#[UseFactory(FollowFactory::class)]
+final class Follow extends Pivot
 {
-    /** @use HasFactory<\Database\Factories\FollowFactory> */
     use HasFactory;
-
     use HasUuids;
 
     #[Override]
     protected $table = 'follows';
+
+    public static function boot(): void
+    {
+        parent::boot();
+
+        self::created(function (Follow $follow): void {
+            $follow->followed()->increment('followers');
+            $follow->follower()->increment('following');
+        });
+
+        self::deleted(function (Follow $follow): void {
+            $follow->followed()->decrement('followers');
+            $follow->follower()->decrement('following');
+        });
+    }
 
     /**
      * @return array<string, string>
@@ -38,5 +56,15 @@ final class Follow extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    public function follower(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'follower_id');
+    }
+
+    public function followed(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'followed_id');
     }
 }

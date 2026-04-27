@@ -34,10 +34,16 @@ final class UserForm
                     ->required(),
                 TextInput::make('password')
                     ->password()
-                    ->dehydrated(fn ($state): bool => filled($state)),
+                    ->dehydrated(fn (string $state): bool => filled($state)),
                 FileUpload::make('profile_image')
                     ->image()
-                    ->dehydrated(fn ($state): bool => filled($state)),
+                    ->dehydrated(fn (string $state): bool => filled($state)),
+                TextInput::make('followers')
+                    ->disabled(),
+                TextInput::make('following')
+                    ->disabled(),
+                TextInput::make('posts')
+                    ->disabled(),
             ]);
     }
 }
