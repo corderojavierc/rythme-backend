@@ -8,32 +8,31 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('artist_applications', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
-            $table->boolean('artist');
-            $table->integer('followers');
+            $table->string('type');
+            $table->string('status');
+            $table->integer('followers')->default(0);
             $table->integer('listeners')->nullable();
+
             $table->string('youtube')->nullable();
             $table->string('tiktok')->nullable();
             $table->string('instagram')->nullable();
             $table->string('spotify')->nullable();
             $table->string('twitch')->nullable();
-            $table->string('description');
+
+            $table->text('description');
+            $table->text('admin_notes')->nullable();
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('artist_applications');
+        Schema::dropIfExists('verification_applications');
     }
 };

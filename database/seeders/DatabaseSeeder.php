@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\ArtistApplication;
 use App\Models\Comment;
 use App\Models\Event;
 use App\Models\Follow;
@@ -19,12 +18,12 @@ final class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
-            'username' => 'javi',
-            'name' => 'javi',
-            'second_name' => 'cordero',
-            'email' => 'javi@gmail.com',
-            'password' => 'javi123',
-            'profile_image' => 'https://api.dicebear.com/9.x/thumbs/svg?seed=javi',
+            'username' => config('app.username', 'admin'),
+            'name' => config('app.userfirstname', 'admin'),
+            'second_name' => config('app.second_name', 'admin'),
+            'email' => config('app.email', 'admin@admin.com'),
+            'password' => config('app.password', 'admin'),
+            'profile_image' => config('app.image', 'https://api.dicebear.com/9.x/thumbs/svg?seed=admin'),
         ]);
 
         $users = User::factory(10)->create();
@@ -32,12 +31,6 @@ final class DatabaseSeeder extends Seeder
 
         foreach ($users as $user) {
             /** @var User $user */
-            if (random_int(1, 100) <= 30) {
-                ArtistApplication::factory()->create([
-                    'user_id' => $user->id,
-                ]);
-            }
-
             Event::factory(random_int(1, 3))->create([
                 'user_id' => $user->id,
             ]);
