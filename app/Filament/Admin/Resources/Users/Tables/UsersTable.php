@@ -36,6 +36,9 @@ final class UsersTable
                 TextColumn::make('is_verified_as')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('type')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('followers')
                     ->numeric()
                     ->sortable(),

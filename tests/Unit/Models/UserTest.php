@@ -15,7 +15,7 @@ test('to array', function (): void {
             'second_name',
             'email',
             'email_verified_at',
-            'is_verified_as',
+            'type',
             'followers',
             'following',
             'posts',

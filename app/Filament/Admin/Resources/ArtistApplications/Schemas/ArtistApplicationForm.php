@@ -7,7 +7,6 @@ namespace App\Filament\Admin\Resources\ArtistApplications\Schemas;
 use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Collection;
 
@@ -32,7 +31,7 @@ final class ArtistApplicationForm
                     ->getOptionLabelFromRecordUsing(fn (User $record): string => sprintf('%s %s (@%s)', $record->name, $record->second_name, $record->username))
                     ->preload()
                     ->required(),
-                Toggle::make('artist')
+                TextInput::make('type')
                     ->required(),
                 TextInput::make('followers')
                     ->required()

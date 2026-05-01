@@ -1,0 +1,67 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Enums\ArtistApplicationStatusEnum;
+use App\Models\ArtistApplication;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+
+final class ArtistApplicationController
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): Collection
+    {
+        return ArtistApplication::all();
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request): JsonResponse
+    {
+        if ($this->checkIfUserHasPendingApplication()) {
+            return response()->json([
+                'error' => 'Ya tienes una aplicación pendiente.',
+            ], 400);
+        }
+
+        $data = $request->validate([
+            'type' => ['required', 'string'],
+            'followers' => ['nullable', 'integer'],
+            'listeners' => ['nullable', 'integer'],
+            'youtube' => ['nullable', 'string'],
+            'tiktok' => ['nullable', 'string'],
+            'instagram' => ['nullable', 'string'],
+            'spotify' => ['nullable', 'string'],
+            'twitch' => ['nullable', 'string'],
+            'description' => ['required', 'string'],
+        ]);
+
+        $application = ArtistApplication::query()->create([
+            'user_id' => auth()->id(),
+            ...$data,
+        ]);
+
+        return response()->json($application, 201);
+    }
+
+    public function hasApplication(): JsonResponse
+    {
+        return response()->json([
+            'has_application' => $this->checkIfUserHasPendingApplication(),
+        ]);
+    }
+
+    private function checkIfUserHasPendingApplication(): bool
+    {
+        return ArtistApplication::query()->where('user_id', auth()->id())
+            ->where('status', ArtistApplicationStatusEnum::SENT)
+            ->exists();
+    }
+}

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ArtistApplicationStatusEnum;
+use App\Enums\UserTypeEnum;
 use Carbon\CarbonInterface;
-use Database\Factories\ArtistApplicationFactory;
-use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +16,8 @@ use Override;
 /**
  * @property-read string $id
  * @property-read string $user_id
- * @property-read bool $artist
+ * @property-read UserTypeEnum $type
+ * @property-read ArtistApplicationStatusEnum $status
  * @property-read int $followers
  * @property-read int | null $listeners
  * @property-read string | null $youtube
@@ -25,10 +26,10 @@ use Override;
  * @property-read string | null $spotify
  * @property-read string | null $twitch
  * @property-read string $description
+ * @property-read string | null $admin_notes
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-#[UseFactory(ArtistApplicationFactory::class)]
 final class ArtistApplication extends Model
 {
     use HasFactory;
@@ -45,7 +46,8 @@ final class ArtistApplication extends Model
         return [
             'id' => 'string',
             'user_id' => 'string',
-            'artist' => 'boolean',
+            'type' => UserTypeEnum::class,
+            'status' => ArtistApplicationStatusEnum::class,
             'followers' => 'integer',
             'listeners' => 'integer',
             'youtube' => 'string',
@@ -54,6 +56,7 @@ final class ArtistApplication extends Model
             'spotify' => 'string',
             'twitch' => 'string',
             'description' => 'string',
+            'admin_notes' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
