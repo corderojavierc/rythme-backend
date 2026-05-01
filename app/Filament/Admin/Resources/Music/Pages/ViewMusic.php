@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Posts\Pages;
+namespace App\Filament\Admin\Resources\Music\Pages;
 
-use App\Filament\Admin\Resources\Posts\PostResource;
+use App\Filament\Admin\Resources\Music\MusicResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
-class ViewPost extends ViewRecord
+class ViewMusic extends ViewRecord
 {
-    protected static string $resource = PostResource::class;
+    protected static string $resource = MusicResource::class;
 
     protected function getHeaderActions(): array
     {

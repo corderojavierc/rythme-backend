@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Admin\Resources\Comments;
 
 use App\Filament\Admin\Resources\Comments\Pages\CreateComment;
+use App\Filament\Admin\Resources\Comments\Pages\EditComment;
 use App\Filament\Admin\Resources\Comments\Pages\ListComments;
 use App\Filament\Admin\Resources\Comments\Pages\ViewComment;
 use App\Filament\Admin\Resources\Comments\Schemas\CommentForm;
@@ -16,14 +15,11 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Override;
 
-final class CommentResource extends Resource
+class CommentResource extends Resource
 {
-    #[Override]
     protected static ?string $model = Comment::class;
 
-    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     public static function form(Schema $schema): Schema
@@ -53,7 +49,8 @@ final class CommentResource extends Resource
         return [
             'index' => ListComments::route('/'),
             'create' => CreateComment::route('/create'),
-            'view' => ViewComment::route('/{record}/view'),
+            'view' => ViewComment::route('/{record}'),
+            'edit' => EditComment::route('/{record}/edit'),
         ];
     }
 }

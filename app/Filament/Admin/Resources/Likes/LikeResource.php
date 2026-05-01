@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Admin\Resources\Likes;
 
 use App\Filament\Admin\Resources\Likes\Pages\CreateLike;
+use App\Filament\Admin\Resources\Likes\Pages\EditLike;
 use App\Filament\Admin\Resources\Likes\Pages\ListLikes;
 use App\Filament\Admin\Resources\Likes\Pages\ViewLike;
 use App\Filament\Admin\Resources\Likes\Schemas\LikeForm;
@@ -16,14 +15,11 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Override;
 
-final class LikeResource extends Resource
+class LikeResource extends Resource
 {
-    #[Override]
     protected static ?string $model = Like::class;
 
-    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     public static function form(Schema $schema): Schema
@@ -53,7 +49,8 @@ final class LikeResource extends Resource
         return [
             'index' => ListLikes::route('/'),
             'create' => CreateLike::route('/create'),
-            'view' => ViewLike::route('/{record}/view'),
+            'view' => ViewLike::route('/{record}'),
+            'edit' => EditLike::route('/{record}/edit'),
         ];
     }
 }

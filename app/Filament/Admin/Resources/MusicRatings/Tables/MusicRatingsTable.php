@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Admin\Resources\MusicRatings\Tables;
 
 use Filament\Actions\BulkActionGroup;
@@ -11,7 +9,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-final class MusicRatingsTable
+class MusicRatingsTable
 {
     public static function configure(Table $table): Table
     {

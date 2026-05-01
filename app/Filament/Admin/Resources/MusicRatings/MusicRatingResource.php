@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Admin\Resources\MusicRatings;
 
 use App\Filament\Admin\Resources\MusicRatings\Pages\CreateMusicRating;
@@ -17,14 +15,11 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Override;
 
-final class MusicRatingResource extends Resource
+class MusicRatingResource extends Resource
 {
-    #[Override]
     protected static ?string $model = MusicRating::class;
 
-    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     public static function form(Schema $schema): Schema

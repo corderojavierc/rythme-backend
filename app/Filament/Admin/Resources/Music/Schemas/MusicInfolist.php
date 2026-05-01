@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Filament\Admin\Resources\MusicRatings\Schemas;
+namespace App\Filament\Admin\Resources\Music\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
-class MusicRatingInfolist
+class MusicInfolist
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextEntry::make('music.title')
-                    ->label('Music'),
-                TextEntry::make('rating')
-                    ->numeric(),
-                TextEntry::make('count_ratings')
-                    ->numeric(),
+                TextEntry::make('id')
+                    ->label('ID'),
+                TextEntry::make('title'),
+                TextEntry::make('artist'),
+                TextEntry::make('cover_url'),
+                TextEntry::make('release_date'),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

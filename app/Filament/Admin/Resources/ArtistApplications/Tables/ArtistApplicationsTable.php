@@ -1,16 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Admin\Resources\ArtistApplications\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-final class ArtistApplicationsTable
+class ArtistApplicationsTable
 {
     public static function configure(Table $table): Table
     {
@@ -22,8 +21,10 @@ final class ArtistApplicationsTable
                 TextColumn::make('user.name')
                     ->searchable(),
                 TextColumn::make('type')
+                    ->badge()
                     ->searchable(),
                 TextColumn::make('status')
+                    ->badge()
                     ->searchable(),
                 TextColumn::make('followers')
                     ->numeric()
@@ -41,8 +42,6 @@ final class ArtistApplicationsTable
                     ->searchable(),
                 TextColumn::make('twitch')
                     ->searchable(),
-                TextColumn::make('description')
-                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -56,6 +55,7 @@ final class ArtistApplicationsTable
                 //
             ])
             ->recordActions([
+                ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

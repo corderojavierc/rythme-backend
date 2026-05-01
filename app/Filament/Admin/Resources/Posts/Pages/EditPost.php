@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Likes\Pages;
+namespace App\Filament\Admin\Resources\Posts\Pages;
 
-use App\Filament\Admin\Resources\Likes\LikeResource;
+use App\Filament\Admin\Resources\Posts\PostResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditLike extends EditRecord
+class EditPost extends EditRecord
 {
-    protected static string $resource = LikeResource::class;
+    protected static string $resource = PostResource::class;
 
     protected function getHeaderActions(): array
     {

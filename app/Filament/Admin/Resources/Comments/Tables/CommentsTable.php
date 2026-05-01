@@ -1,16 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Admin\Resources\Comments\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-final class CommentsTable
+class CommentsTable
 {
     public static function configure(Table $table): Table
     {
@@ -18,12 +17,10 @@ final class CommentsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
                 TextColumn::make('post.id')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('user.username')
+                    ->searchable(),
+                TextColumn::make('user.name')
                     ->searchable(),
                 TextColumn::make('text')
                     ->searchable(),
@@ -44,6 +41,7 @@ final class CommentsTable
             ])
             ->recordActions([
                 ViewAction::make(),
+                EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -3,19 +3,17 @@
 namespace App\Filament\Admin\Resources\ArtistApplications\Pages;
 
 use App\Filament\Admin\Resources\ArtistApplications\ArtistApplicationResource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
-class EditArtistApplication extends EditRecord
+class ViewArtistApplication extends ViewRecord
 {
     protected static string $resource = ArtistApplicationResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            EditAction::make(),
         ];
     }
 }

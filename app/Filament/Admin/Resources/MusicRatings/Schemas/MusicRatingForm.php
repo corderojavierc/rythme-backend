@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Admin\Resources\MusicRatings\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
-final class MusicRatingForm
+class MusicRatingForm
 {
     public static function configure(Schema $schema): Schema
     {

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Comments\Schemas;
+namespace App\Filament\Admin\Resources\Events\Schemas;
 
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
-class CommentInfolist
+class EventInfolist
 {
     public static function configure(Schema $schema): Schema
     {
@@ -13,13 +14,15 @@ class CommentInfolist
             ->components([
                 TextEntry::make('id')
                     ->label('ID'),
-                TextEntry::make('post.id')
-                    ->label('Post'),
                 TextEntry::make('user.name')
                     ->label('User'),
-                TextEntry::make('text'),
-                TextEntry::make('count_likes')
-                    ->numeric(),
+                TextEntry::make('title'),
+                TextEntry::make('description'),
+                TextEntry::make('location'),
+                TextEntry::make('date'),
+                ImageEntry::make('image')
+                    ->placeholder('-'),
+                TextEntry::make('capacity'),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

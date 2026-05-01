@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Filament\Admin\Resources\Posts;
 
 use App\Filament\Admin\Resources\Posts\Pages\CreatePost;
+use App\Filament\Admin\Resources\Posts\Pages\EditPost;
 use App\Filament\Admin\Resources\Posts\Pages\ListPosts;
 use App\Filament\Admin\Resources\Posts\Pages\ViewPost;
 use App\Filament\Admin\Resources\Posts\Schemas\PostForm;
@@ -16,15 +15,14 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Override;
 
-final class PostResource extends Resource
+class PostResource extends Resource
 {
-    #[Override]
     protected static ?string $model = Post::class;
 
-    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static ?string $recordTitleAttribute = '';
 
     public static function form(Schema $schema): Schema
     {
@@ -53,7 +51,8 @@ final class PostResource extends Resource
         return [
             'index' => ListPosts::route('/'),
             'create' => CreatePost::route('/create'),
-            'view' => ViewPost::route('/{record}/view'),
+            'view' => ViewPost::route('/{record}'),
+            'edit' => EditPost::route('/{record}/edit'),
         ];
     }
 }
