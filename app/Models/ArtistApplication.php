@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\UserTypeEnum;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Override;
 /**
  * @property-read string $id
  * @property-read string $user_id
- * @property-read string $type
+ * @property-read UserTypeEnum $type
  * @property-read string $status
  * @property-read int $followers
  * @property-read int | null $listeners
@@ -44,7 +45,7 @@ final class ArtistApplication extends Model
         return [
             'id' => 'string',
             'user_id' => 'string',
-            'type' => 'string',
+            'type' => UserTypeEnum::class,
             'status' => 'string',
             'followers' => 'integer',
             'listeners' => 'integer',

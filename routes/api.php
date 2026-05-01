@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ArtistApplicationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
@@ -49,4 +50,9 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('music/{id}', [MusicController::class, 'show'])->name('music.show');
     Route::post('/music/search', [MusicController::class, 'search'])->name('api.music.search');
     Route::get('music/{id}/posts', [MusicController::class, 'getPosts'])->name('music.posts');
+
+    Route::get('artist-applications', [ArtistApplicationController::class, 'index'])->name('artist-applications.index');
+    Route::post('artist-applications', [ArtistApplicationController::class, 'store'])->name('artist-applications.store');
+    Route::delete('artist-applications/{id}', [ArtistApplicationController::class, 'destroy'])->name('artist-applications.destroy');
+    Route::get('artist-applications/{id}', [ArtistApplicationController::class, 'show'])->name('artist-applications.show');
 });

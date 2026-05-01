@@ -14,7 +14,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->string('type');
-            $table->string('status');
+            $table->string('status')->nullable();
             $table->integer('followers')->default(0);
             $table->integer('listeners')->nullable();
 

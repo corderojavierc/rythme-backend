@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\UserTypeEnum;
 use Carbon\CarbonInterface;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -25,6 +26,7 @@ use Override;
  * @property-read string $email
  * @property-read CarbonInterface|null $email_verified_at
  * @property-read string $password
+ * @property-read UserTypeEnum $type
  * @property-read int $followers
  * @property-read int $following
  * @property-read int $posts
@@ -61,6 +63,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'is_verified_as' => 'string',
             'password' => 'hashed',
+            'type' => UserTypeEnum::class,
             'followers' => 'integer',
             'following' => 'integer',
             'posts' => 'integer',
