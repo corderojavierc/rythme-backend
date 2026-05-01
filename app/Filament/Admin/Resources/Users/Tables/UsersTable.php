@@ -16,40 +16,61 @@ class UsersTable
     {
         return $table
             ->columns([
+                ImageColumn::make('profile_image')
+                    ->circular()
+                    ->defaultImageUrl(fn ($record) => 'https://api.dicebear.com/9.x/thumbs/svg?seed=' . urlencode($record->username)),
+
                 TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('username')
-                    ->searchable(),
-                TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('second_name')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label('Email address')
-                    ->searchable(),
-                TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->searchable()
+                    ->sortable()
+                    ->copyable(),
+
                 TextColumn::make('type')
                     ->badge()
-                    ->sortable(),
+                    ->sortable()
+                    ->color(fn ($state) => match($state) {
+                        'admin'  => 'danger',
+                        'mod'    => 'warning',
+                        default  => 'gray',
+                    }),
+
+                TextColumn::make('email_verified_at')
+                    ->label('Verified')
+                    ->dateTime('d/m/Y')
+                    ->sortable()
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No'),
+
                 TextColumn::make('followers')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-users'),
+
                 TextColumn::make('following')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-user-plus'),
+
                 TextColumn::make('posts')
                     ->numeric()
-                    ->sortable(),
-                ImageColumn::make('profile_image'),
+                    ->sortable()
+                    ->icon('heroicon-o-document-text'),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Joined')
+                    ->dateTime('d/m/Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -64,6 +85,8 @@ class UsersTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->striped();
     }
 }

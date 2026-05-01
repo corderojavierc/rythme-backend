@@ -16,28 +16,50 @@ class EventsTable
     {
         return $table
             ->columns([
+                ImageColumn::make('image')
+                    ->square(),
+
                 TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('user.name')
-                    ->searchable(),
+                    ->label('Organizer')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('description')
+                    ->limit(60)
+                    ->tooltip(fn ($record) => $record->description)
                     ->searchable(),
+
                 TextColumn::make('location')
-                    ->searchable(),
+                    ->searchable()
+                    ->icon('heroicon-o-map-pin'),
+
                 TextColumn::make('date')
-                    ->searchable(),
-                ImageColumn::make('image'),
+                    ->label('Event Date')
+                    ->date('d/m/Y')
+                    ->sortable(),
+
                 TextColumn::make('capacity')
-                    ->searchable(),
+                    ->numeric()
+                    ->sortable()
+                    ->icon('heroicon-o-user-group'),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -52,6 +74,8 @@ class EventsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('date', 'desc')
+            ->striped();
     }
 }

@@ -17,22 +17,34 @@ class CommentsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
-                TextColumn::make('post.id')
-                    ->searchable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('user.name')
-                    ->searchable(),
-                TextColumn::make('text')
-                    ->searchable(),
-                TextColumn::make('count_likes')
-                    ->numeric()
+                    ->label('User')
+                    ->searchable()
                     ->sortable(),
+
+                TextColumn::make('text')
+                    ->label('Comment')
+                    ->limit(80)
+                    ->tooltip(fn ($record) => $record->text)
+                    ->searchable(),
+
+                TextColumn::make('count_likes')
+                    ->label('Likes')
+                    ->numeric()
+                    ->sortable()
+                    ->icon('heroicon-o-heart'),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -47,6 +59,8 @@ class CommentsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->striped();
     }
 }

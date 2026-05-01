@@ -17,37 +17,82 @@ class ArtistApplicationsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('user.name')
-                    ->searchable(),
+                    ->label('Applicant')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('type')
                     ->badge()
-                    ->searchable(),
+                    ->sortable()
+                    ->color(fn ($state) => match($state) {
+                        'artist' => 'info',
+                        'band'   => 'warning',
+                        default  => 'gray',
+                    }),
+
                 TextColumn::make('status')
                     ->badge()
-                    ->searchable(),
+                    ->sortable()
+                    ->color(fn ($state) => match($state) {
+                        'approved' => 'success',
+                        'pending'  => 'warning',
+                        'rejected' => 'danger',
+                        default    => 'gray',
+                    }),
+
                 TextColumn::make('followers')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-users'),
+
                 TextColumn::make('listeners')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-musical-note'),
+
                 TextColumn::make('youtube')
-                    ->searchable(),
+                    ->icon('heroicon-o-video-camera')
+                    ->url(fn ($record) => $record->youtube)
+                    ->openUrlInNewTab()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('tiktok')
-                    ->searchable(),
+                    ->icon('heroicon-o-device-phone-mobile')
+                    ->url(fn ($record) => $record->tiktok)
+                    ->openUrlInNewTab()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('instagram')
-                    ->searchable(),
+                    ->icon('heroicon-o-camera')
+                    ->url(fn ($record) => $record->instagram)
+                    ->openUrlInNewTab()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('spotify')
-                    ->searchable(),
+                    ->icon('heroicon-o-musical-note')
+                    ->url(fn ($record) => $record->spotify)
+                    ->openUrlInNewTab()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('twitch')
-                    ->searchable(),
+                    ->icon('heroicon-o-tv')
+                    ->url(fn ($record) => $record->twitch)
+                    ->openUrlInNewTab()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Applied At')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -62,6 +107,8 @@ class ArtistApplicationsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->striped();
     }
 }

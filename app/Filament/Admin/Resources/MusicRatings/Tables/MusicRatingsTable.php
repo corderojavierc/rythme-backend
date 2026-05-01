@@ -16,19 +16,33 @@ class MusicRatingsTable
         return $table
             ->columns([
                 TextColumn::make('music.title')
-                    ->searchable(),
+                    ->label('Song')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('rating')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color(fn ($state) => match(true) {
+                        $state >= 4 => 'success',
+                        $state >= 2 => 'warning',
+                        default     => 'danger',
+                    }),
+
                 TextColumn::make('count_ratings')
+                    ->label('Total Ratings')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-star'),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -43,6 +57,8 @@ class MusicRatingsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('rating', 'desc')
+            ->striped();
     }
 }

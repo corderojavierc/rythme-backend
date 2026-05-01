@@ -17,19 +17,39 @@ class LikesTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
-                TextColumn::make('user.name')
-                    ->searchable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('user.username')
+                    ->label('User')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('likeable_type')
-                    ->searchable(),
+                    ->label('Type')
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => class_basename($state))
+                    ->color(fn ($state) => match(class_basename($state)) {
+                        'Post'    => 'info',
+                        'Comment' => 'warning',
+                        default   => 'gray',
+                    }),
+
                 TextColumn::make('likeable_id')
-                    ->searchable(),
+                    ->label('Target ID')
+                    ->sortable(),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Liked At')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -42,8 +62,10 @@ class LikesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->striped();
     }
 }
