@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\ArtistApplications\Pages;
 
 use App\Filament\Admin\Resources\ArtistApplications\ArtistApplicationResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Override;
 
-class EditArtistApplication extends EditRecord
+final class EditArtistApplication extends EditRecord
 {
+    #[Override]
     protected static string $resource = ArtistApplicationResource::class;
 
     protected function getHeaderActions(): array

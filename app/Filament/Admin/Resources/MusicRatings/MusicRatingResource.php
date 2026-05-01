@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\MusicRatings;
 
 use App\Filament\Admin\Resources\MusicRatings\Pages\CreateMusicRating;
@@ -15,15 +17,29 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Override;
 use UnitEnum;
 
-class MusicRatingResource extends Resource
+final class MusicRatingResource extends Resource
 {
+    #[Override]
     protected static ?string $model = MusicRating::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
+    #[Override]
     protected static string|UnitEnum|null $navigationGroup = 'Music';
+
+    #[Override]
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedStar;
+
+    #[Override]
+    protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::Star;
+
+    #[Override]
+    protected static ?string $recordTitleAttribute = 'id';
+
+    #[Override]
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {
@@ -35,16 +51,36 @@ class MusicRatingResource extends Resource
         return MusicRatingInfolist::configure($schema);
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return [
+            'music.title',
+            'music.artist',
+        ];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return $record->music->title ?? 'Unknown Music';
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Artist' => $record->music->artist ?? 'N/A',
+            'Rating' => (string) ($record->rating ?? '0'),
+            'Total Ratings' => (string) ($record->count_ratings ?? '0'),
+        ];
+    }
+
+    public static function getNavigationBadge(): string
+    {
+        return (string) self::getModel()::query()->count();
+    }
+
     public static function table(Table $table): Table
     {
         return MusicRatingsTable::configure($table);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

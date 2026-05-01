@@ -24,9 +24,9 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
-use Filament\Support\Components\Component;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\IconSize;
+use Filament\Support\Enums\VerticalAlignment;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\ImageColumn;
@@ -45,7 +45,7 @@ final class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::morphMap([
-            'post'    => Post::class,
+            'post' => Post::class,
             'comment' => Comment::class,
         ]);
 
@@ -60,31 +60,23 @@ final class AppServiceProvider extends ServiceProvider
 
     private function translatableComponents(): void
     {
-        $classes = [
-            Field::class,
-            BaseFilter::class,
-            Tabs::class,
-            Action::class,
-            Section::class,
-            Wizard::class,
-            Step::class,
-            Column::class,
-            Entry::class,
-            FusedGroup::class,
-            Tab::class,
-        ];
-
-        foreach ($classes as $component) {
-            $component::configureUsing(function (Component $component): void {
-                $component->translateLabel();
-            });
-        }
+        Field::configureUsing(fn (Field $field): Field => $field->translateLabel());
+        BaseFilter::configureUsing(fn (BaseFilter $filter): BaseFilter => $filter->translateLabel());
+        Tabs::configureUsing(fn (Tabs $tabs): Tabs => $tabs->translateLabel());
+        Action::configureUsing(fn (Action $action): Action => $action->translateLabel());
+        Section::configureUsing(fn (Section $section): Section => $section->translateLabel());
+        Wizard::configureUsing(fn (Wizard $wizard): Wizard => $wizard->translateLabel());
+        Step::configureUsing(fn (Step $step): Step => $step->translateLabel());
+        Column::configureUsing(fn (Column $column): Column => $column->translateLabel());
+        Entry::configureUsing(fn (Entry $entry): Entry => $entry->translateLabel());
+        FusedGroup::configureUsing(fn (FusedGroup $fusedGroup): FusedGroup => $fusedGroup->translateLabel());
+        Tab::configureUsing(fn (Tab $tab): Tab => $tab->translateLabel());
     }
 
     private function configureNotifications(): void
     {
         Notifications::alignment(Alignment::Center);
-        Notifications::verticalAlignment(\Filament\Support\Enums\VerticalAlignment::End);
+        Notifications::verticalAlignment(VerticalAlignment::End);
     }
 
     private function configureActions(): void

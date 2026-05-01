@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Posts\Tables;
 
+use App\Models\Post;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -9,7 +12,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class PostsTable
+final class PostsTable
 {
     public static function configure(Table $table): Table
     {
@@ -34,17 +37,17 @@ class PostsTable
                 TextColumn::make('text')
                     ->label('Content')
                     ->limit(40)
-                    ->tooltip(fn ($record) => $record->text)
+                    ->tooltip(fn (Post $record): string => $record->text)
                     ->searchable(),
 
                 TextColumn::make('rating')
                     ->numeric()
                     ->sortable()
                     ->badge()
-                    ->color(fn ($state) => match(true) {
+                    ->color(fn (mixed $state): string => match (true) {
                         $state >= 4 => 'success',
                         $state >= 2 => 'warning',
-                        default     => 'danger',
+                        default => 'danger',
                     }),
 
                 TextColumn::make('count_likes')

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Events\Tables;
 
+use App\Models\Event;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -10,7 +13,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class EventsTable
+final class EventsTable
 {
     public static function configure(Table $table): Table
     {
@@ -36,7 +39,7 @@ class EventsTable
 
                 TextColumn::make('description')
                     ->limit(60)
-                    ->tooltip(fn ($record) => $record->description)
+                    ->tooltip(fn (Event $record): string => $record->description)
                     ->searchable(),
 
                 TextColumn::make('location')

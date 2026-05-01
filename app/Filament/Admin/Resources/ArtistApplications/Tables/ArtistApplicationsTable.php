@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\ArtistApplications\Tables;
 
+use App\Models\ArtistApplication;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -9,7 +12,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class ArtistApplicationsTable
+final class ArtistApplicationsTable
 {
     public static function configure(Table $table): Table
     {
@@ -29,20 +32,20 @@ class ArtistApplicationsTable
                 TextColumn::make('type')
                     ->badge()
                     ->sortable()
-                    ->color(fn ($state) => match($state) {
+                    ->color(fn (mixed $state): string => match ($state) {
                         'artist' => 'info',
-                        'band'   => 'warning',
-                        default  => 'gray',
+                        'band' => 'warning',
+                        default => 'gray',
                     }),
 
                 TextColumn::make('status')
                     ->badge()
                     ->sortable()
-                    ->color(fn ($state) => match($state) {
+                    ->color(fn (mixed $state): string => match ($state) {
                         'approved' => 'success',
-                        'pending'  => 'warning',
+                        'pending' => 'warning',
                         'rejected' => 'danger',
-                        default    => 'gray',
+                        default => 'gray',
                     }),
 
                 TextColumn::make('followers')
@@ -57,31 +60,31 @@ class ArtistApplicationsTable
 
                 TextColumn::make('youtube')
                     ->icon('heroicon-o-video-camera')
-                    ->url(fn ($record) => $record->youtube)
+                    ->url(fn (ArtistApplication $record): ?string => $record->youtube)
                     ->openUrlInNewTab()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('tiktok')
                     ->icon('heroicon-o-device-phone-mobile')
-                    ->url(fn ($record) => $record->tiktok)
+                    ->url(fn (ArtistApplication $record): ?string => $record->tiktok)
                     ->openUrlInNewTab()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('instagram')
                     ->icon('heroicon-o-camera')
-                    ->url(fn ($record) => $record->instagram)
+                    ->url(fn (ArtistApplication $record): ?string => $record->instagram)
                     ->openUrlInNewTab()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('spotify')
                     ->icon('heroicon-o-musical-note')
-                    ->url(fn ($record) => $record->spotify)
+                    ->url(fn (ArtistApplication $record): ?string => $record->spotify)
                     ->openUrlInNewTab()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('twitch')
                     ->icon('heroicon-o-tv')
-                    ->url(fn ($record) => $record->twitch)
+                    ->url(fn (ArtistApplication $record): ?string => $record->twitch)
                     ->openUrlInNewTab()
                     ->toggleable(isToggledHiddenByDefault: true),
 

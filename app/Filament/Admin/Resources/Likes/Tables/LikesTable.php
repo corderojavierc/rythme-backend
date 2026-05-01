@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Likes\Tables;
 
+use App\Models\Comment;
+use App\Models\Post;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
-class LikesTable
+final class LikesTable
 {
     public static function configure(Table $table): Table
     {
@@ -31,16 +36,17 @@ class LikesTable
                     ->searchable()
                     ->sortable()
                     ->badge()
-                    ->formatStateUsing(fn ($state) => class_basename($state))
-                    ->color(fn ($state) => match(class_basename($state)) {
-                        'Post'    => 'info',
+                    ->formatStateUsing(fn (string $state): string => class_basename($state))
+                    ->color(fn (string $state): string => match (class_basename($state)) {
+                        'Post' => 'info',
                         'Comment' => 'warning',
-                        default   => 'gray',
+                        default => 'gray',
                     }),
 
                 TextColumn::make('likeable_id')
                     ->label('Target ID')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 TextColumn::make('created_at')
                     ->label('Liked At')
@@ -54,7 +60,12 @@ class LikesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('likeable_type')
+                    ->label('Target Type')
+                    ->options([
+                        Post::class => 'Post',
+                        Comment::class => 'Comment',
+                    ]),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -62,7 +73,7 @@ class LikesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                DeleteBulkAction::make(),
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc')

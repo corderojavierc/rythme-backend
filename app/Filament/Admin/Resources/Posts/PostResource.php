@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Posts;
 
 use App\Filament\Admin\Resources\Posts\Pages\CreatePost;
@@ -15,18 +17,27 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use Override;
 use UnitEnum;
 
-
-class PostResource extends Resource
+final class PostResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Post::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    #[Override]
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
-    protected static ?string $recordTitleAttribute = '';
+    #[Override]
+    protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::DocumentText;
 
+    #[Override]
     protected static string|UnitEnum|null $navigationGroup = 'Content';
+
+    #[Override]
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {
@@ -38,16 +49,37 @@ class PostResource extends Resource
         return PostInfolist::configure($schema);
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return [
+            'id',
+            'text',
+        ];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        /** @var Post $record */
+        return Str::limit($record->text ?? 'Post sin texto', 30);
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        /** @var Post $record */
+        return [
+            'Author' => $record->user->username ?? 'N/A',
+            'Rating' => (string) ($record->rating ?? '0'),
+        ];
+    }
+
+    public static function getNavigationBadge(): string
+    {
+        return (string) self::getModel()::query()->count();
+    }
+
     public static function table(Table $table): Table
     {
         return PostsTable::configure($table);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

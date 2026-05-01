@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\MusicRatings\Tables;
 
 use Filament\Actions\BulkActionGroup;
@@ -9,7 +11,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class MusicRatingsTable
+final class MusicRatingsTable
 {
     public static function configure(Table $table): Table
     {
@@ -24,10 +26,10 @@ class MusicRatingsTable
                     ->numeric()
                     ->sortable()
                     ->badge()
-                    ->color(fn ($state) => match(true) {
+                    ->color(fn (mixed $state): string => match (true) {
                         $state >= 4 => 'success',
                         $state >= 2 => 'warning',
-                        default     => 'danger',
+                        default => 'danger',
                     }),
 
                 TextColumn::make('count_ratings')

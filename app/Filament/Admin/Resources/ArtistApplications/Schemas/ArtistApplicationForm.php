@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\ArtistApplications\Schemas;
 
 use App\Enums\ArtistApplicationStatusEnum;
 use App\Enums\UserTypeEnum;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
-class ArtistApplicationForm
+final class ArtistApplicationForm
 {
     public static function configure(Schema $schema): Schema
     {

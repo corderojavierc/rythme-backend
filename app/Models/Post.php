@@ -20,8 +20,10 @@ final class Post extends Model
     use HasFactory;
     use HasUuids;
 
+    #[Override]
     protected $table = 'posts';
 
+    #[Override]
     protected $fillable = [
         'user_id',
         'music_id',

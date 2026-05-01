@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Music;
 
 use App\Filament\Admin\Resources\Music\Pages\CreateMusic;
@@ -15,15 +17,29 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Override;
 use UnitEnum;
 
-class MusicResource extends Resource
+final class MusicResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Music::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
+    #[Override]
     protected static string|UnitEnum|null $navigationGroup = 'Music';
+
+    #[Override]
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMusicalNote;
+
+    #[Override]
+    protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::MusicalNote;
+
+    #[Override]
+    protected static ?string $recordTitleAttribute = 'title';
+
+    #[Override]
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {
@@ -35,16 +51,34 @@ class MusicResource extends Resource
         return MusicInfolist::configure($schema);
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return [
+            'title',
+            'artist',
+        ];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return $record->title ?? 'Unknown Title';
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Artist' => $record->artist ?? 'N/A',
+        ];
+    }
+
+    public static function getNavigationBadge(): string
+    {
+        return (string) self::getModel()::query()->count();
+    }
+
     public static function table(Table $table): Table
     {
         return MusicTable::configure($table);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Users\Schemas;
 
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
-class UserInfolist
+final class UserInfolist
 {
     public static function configure(Schema $schema): Schema
     {

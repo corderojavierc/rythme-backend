@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\MusicRatings\Pages;
 
 use App\Filament\Admin\Resources\MusicRatings\MusicRatingResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Override;
 
-class ListMusicRatings extends ListRecords
+final class ListMusicRatings extends ListRecords
 {
+    #[Override]
     protected static string $resource = MusicRatingResource::class;
 
     protected function getHeaderActions(): array

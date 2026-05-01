@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Likes\Pages;
 
 use App\Filament\Admin\Resources\Likes\LikeResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Override;
 
-class EditLike extends EditRecord
+final class EditLike extends EditRecord
 {
+    #[Override]
     protected static string $resource = LikeResource::class;
 
     protected function getHeaderActions(): array

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Users\Tables;
 
+use App\Models\User;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -10,7 +13,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class UsersTable
+final class UsersTable
 {
     public static function configure(Table $table): Table
     {
@@ -18,7 +21,7 @@ class UsersTable
             ->columns([
                 ImageColumn::make('profile_image')
                     ->circular()
-                    ->defaultImageUrl(fn ($record) => 'https://api.dicebear.com/9.x/thumbs/svg?seed=' . urlencode($record->username)),
+                    ->defaultImageUrl(fn (User $record): string => 'https://api.dicebear.com/9.x/thumbs/svg?seed='.urlencode((string) $record->username)),
 
                 TextColumn::make('id')
                     ->label('ID')
@@ -34,10 +37,10 @@ class UsersTable
                 TextColumn::make('type')
                     ->badge()
                     ->sortable()
-                    ->color(fn ($state) => match($state) {
-                        'admin'  => 'danger',
-                        'mod'    => 'warning',
-                        default  => 'gray',
+                    ->color(fn (mixed $state): string => match ($state) {
+                        'admin' => 'danger',
+                        'mod' => 'warning',
+                        default => 'gray',
                     }),
 
                 TextColumn::make('email_verified_at')
@@ -45,8 +48,8 @@ class UsersTable
                     ->dateTime('d/m/Y')
                     ->sortable()
                     ->badge()
-                    ->color(fn ($state) => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No'),
+                    ->color(fn (mixed $state): string => $state ? 'success' : 'danger')
+                    ->formatStateUsing(fn (mixed $state): string => $state ? 'Yes' : 'No'),
 
                 TextColumn::make('followers')
                     ->numeric()

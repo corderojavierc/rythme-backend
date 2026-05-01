@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Comments\Tables;
 
+use App\Models\Comment;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -9,7 +12,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class CommentsTable
+final class CommentsTable
 {
     public static function configure(Table $table): Table
     {
@@ -29,7 +32,7 @@ class CommentsTable
                 TextColumn::make('text')
                     ->label('Comment')
                     ->limit(80)
-                    ->tooltip(fn ($record) => $record->text)
+                    ->tooltip(fn (Comment $record): string => $record->text)
                     ->searchable(),
 
                 TextColumn::make('count_likes')
