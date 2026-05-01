@@ -23,6 +23,8 @@ final class ArtistApplicationsTable
                     ->searchable(),
                 TextColumn::make('type')
                     ->searchable(),
+                TextColumn::make('status')
+                    ->searchable(),
                 TextColumn::make('followers')
                     ->numeric()
                     ->sortable(),

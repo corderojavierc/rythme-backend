@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\ArtistApplicationStatusEnum;
 use App\Models\ArtistApplication;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -21,9 +23,14 @@ final class ArtistApplicationController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): ArtistApplication
+    public function store(Request $request): JsonResponse
     {
-        $userId = auth()->id();
+        if ($this->checkIfUserHasPendingApplication()) {
+            return response()->json([
+                'error' => 'Ya tienes una aplicación pendiente.',
+            ], 400);
+        }
+
         $data = $request->validate([
             'type' => ['required', 'string'],
             'followers' => ['nullable', 'integer'],
@@ -33,36 +40,28 @@ final class ArtistApplicationController
             'instagram' => ['nullable', 'string'],
             'spotify' => ['nullable', 'string'],
             'twitch' => ['nullable', 'string'],
-            'description' => ['string'],
+            'description' => ['required', 'string'],
         ]);
 
-        return ArtistApplication::query()->create([
-            'user_id' => $userId,
+        $application = ArtistApplication::query()->create([
+            'user_id' => auth()->id(),
             ...$data,
         ]);
+
+        return response()->json($application, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(): void
+    public function hasApplication(): JsonResponse
     {
-        //
+        return response()->json([
+            'has_application' => $this->checkIfUserHasPendingApplication(),
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(): void
+    private function checkIfUserHasPendingApplication(): bool
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(): void
-    {
-        //
+        return ArtistApplication::query()->where('user_id', auth()->id())
+            ->where('status', ArtistApplicationStatusEnum::SENT)
+            ->exists();
     }
 }

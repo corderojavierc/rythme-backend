@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ArtistApplicationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MusicController;
 use App\Http\Controllers\PostController;
@@ -13,7 +14,7 @@ arch()->preset()->strict()->ignoring([
     MusicController::class,
     PostController::class,
     UserController::class,
-
+    ArtistApplicationController::class,
 ]);
 arch()->preset()->laravel()->ignoring([
     'App\Providers\Filament',
@@ -21,12 +22,14 @@ arch()->preset()->laravel()->ignoring([
     MusicController::class,
     PostController::class,
     UserController::class,
+    ArtistApplicationController::class,
 ]);
 arch()->preset()->security()->ignoring([
     'assert',
     MusicController::class,
     PostController::class,
     UserController::class,
+    ArtistApplicationController::class,
 ]);
 
 arch('controllers')

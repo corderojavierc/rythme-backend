@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ArtistApplicationStatusEnum;
 use App\Enums\UserTypeEnum;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -16,7 +17,7 @@ use Override;
  * @property-read string $id
  * @property-read string $user_id
  * @property-read UserTypeEnum $type
- * @property-read string $status
+ * @property-read ArtistApplicationStatusEnum $status
  * @property-read int $followers
  * @property-read int | null $listeners
  * @property-read string | null $youtube
@@ -46,7 +47,7 @@ final class ArtistApplication extends Model
             'id' => 'string',
             'user_id' => 'string',
             'type' => UserTypeEnum::class,
-            'status' => 'string',
+            'status' => ArtistApplicationStatusEnum::class,
             'followers' => 'integer',
             'listeners' => 'integer',
             'youtube' => 'string',

@@ -53,6 +53,5 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::get('artist-applications', [ArtistApplicationController::class, 'index'])->name('artist-applications.index');
     Route::post('artist-applications', [ArtistApplicationController::class, 'store'])->name('artist-applications.store');
-    Route::delete('artist-applications/{id}', [ArtistApplicationController::class, 'destroy'])->name('artist-applications.destroy');
-    Route::get('artist-applications/{id}', [ArtistApplicationController::class, 'show'])->name('artist-applications.show');
+    Route::get('artist-applications/has', [ArtistApplicationController::class, 'hasApplication'])->name('artist-applications.has');
 });
