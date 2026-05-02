@@ -36,9 +36,6 @@ final class MusicRatingResource extends Resource
     protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::Star;
 
     #[Override]
-    protected static ?string $recordTitleAttribute = 'id';
-
-    #[Override]
     protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
@@ -56,20 +53,23 @@ final class MusicRatingResource extends Resource
         return [
             'music.title',
             'music.artist',
+            'music_id',
         ];
     }
 
     public static function getGlobalSearchResultTitle(Model $record): string
     {
-        return $record->music->title ?? 'Unknown Music';
+        /** @var MusicRating $record */
+        return $record->music->title ?? 'Unknown Track';
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {
+        /** @var MusicRating $record */
         return [
             'Artist' => $record->music->artist ?? 'N/A',
-            'Rating' => (string) ($record->rating ?? '0'),
-            'Total Ratings' => (string) ($record->count_ratings ?? '0'),
+            'Rating' => (string) ($record->rating ?? '0.00'),
+            'Total' => (string) ($record->count_ratings ?? '0'),
         ];
     }
 
