@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\ArtistApplications;
 
+use App\Enums\ArtistApplicationStatusEnum;
 use App\Filament\Admin\Resources\ArtistApplications\Pages\CreateArtistApplication;
 use App\Filament\Admin\Resources\ArtistApplications\Pages\ListArtistApplications;
 use App\Filament\Admin\Resources\ArtistApplications\Pages\ViewArtistApplication;
@@ -71,7 +72,7 @@ final class ArtistApplicationResource extends Resource
 
     public static function getNavigationBadge(): string
     {
-        return (string) self::getModel()::query()->count();
+        return (string) self::getModel()::query()->where('status', ArtistApplicationStatusEnum::SENT)->count();
     }
 
     public static function table(Table $table): Table

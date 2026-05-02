@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\ArtistApplications\Tables;
 
+use App\Enums\ArtistApplicationStatusEnum;
+use App\Enums\UserTypeEnum;
 use App\Models\ArtistApplication;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 final class ArtistApplicationsTable
@@ -99,7 +102,11 @@ final class ArtistApplicationsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->options(ArtistApplicationStatusEnum::class)
+                    ->default(ArtistApplicationStatusEnum::SENT),
+                SelectFilter::make('type')
+                    ->options(UserTypeEnum::class),
             ])
             ->recordActions([
                 ViewAction::make(),

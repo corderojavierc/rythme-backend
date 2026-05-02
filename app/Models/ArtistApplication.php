@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\ArtistApplicationStatusEnum;
 use App\Enums\UserTypeEnum;
 use Carbon\CarbonInterface;
+use Exception;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,19 +15,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Override;
 
 /**
- * @property-read string $id
- * @property-read string $user_id
- * @property-read UserTypeEnum $type
- * @property-read ArtistApplicationStatusEnum $status
- * @property-read int $followers
- * @property-read int | null $listeners
- * @property-read string | null $youtube
- * @property-read string | null $tiktok
- * @property-read string | null $instagram
- * @property-read string | null $spotify
- * @property-read string | null $twitch
- * @property-read string $description
- * @property-read string | null $admin_notes
+ * @property string $id
+ * @property string $user_id
+ * @property UserTypeEnum $type
+ * @property ArtistApplicationStatusEnum $status
+ * @property int $followers
+ * @property int|null $listeners
+ * @property string|null $youtube
+ * @property string|null $tiktok
+ * @property string|null $instagram
+ * @property string|null $spotify
+ * @property string|null $twitch
+ * @property string $description
+ * @property string|null $admin_notes
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
@@ -39,24 +40,52 @@ final class ArtistApplication extends Model
     protected $table = 'artist_applications';
 
     /**
-     * @return array<string, string>
+     * @throws Exception
      */
+    public function acceptApplication(string $id, string $adminNotes): bool
+    {
+        $application = $this->findOrFail($id);
+        /** @var User $user */
+        $user = User::query()->findOrFail($application->user_id);
+        $application->status = ArtistApplicationStatusEnum::ACCEPTED;
+        $application->admin_notes = $adminNotes;
+        $application->save();
+
+        if ($application->type === UserTypeEnum::ARTIST) {
+            $user->type = UserTypeEnum::ARTIST;
+        } elseif ($application->type === UserTypeEnum::CREATOR) {
+            $user->type = UserTypeEnum::CREATOR;
+        }
+
+        $user->save();
+
+        return true;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function declineApplication(string $id, string $adminNotes): bool
+    {
+        $application = $this->findOrFail($id);
+        $application->status = ArtistApplicationStatusEnum::DECLINED;
+        $application->admin_notes = $adminNotes;
+        $application->save();
+
+        return true;
+    }
+
+    /**
+     * @return array<string, string|class-string>
+     */
+    #[Override]
     public function casts(): array
     {
         return [
-            'id' => 'string',
-            'user_id' => 'string',
             'type' => UserTypeEnum::class,
             'status' => ArtistApplicationStatusEnum::class,
             'followers' => 'integer',
             'listeners' => 'integer',
-            'youtube' => 'string',
-            'tiktok' => 'string',
-            'instagram' => 'string',
-            'spotify' => 'string',
-            'twitch' => 'string',
-            'description' => 'string',
-            'admin_notes' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

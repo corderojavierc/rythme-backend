@@ -58,6 +58,15 @@ final class ArtistApplicationInfolist
                                 ->prose()
                                 ->columnSpanFull(),
                         ]),
+
+                    Section::make('Admin Notes')
+                        ->icon(Heroicon::ClipboardDocument)
+                        ->schema([
+                            TextEntry::make('admin_notes')
+                                ->hiddenLabel()
+                                ->prose()
+                                ->columnSpanFull(),
+                        ]),
                 ])
                     ->columnSpan(['lg' => 2]),
 
