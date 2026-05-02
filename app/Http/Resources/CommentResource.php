@@ -17,7 +17,6 @@ final class CommentResource extends JsonResource
             'id' => $comment->id,
             'profile_image' => $comment->user?->profile_image,
             'name' => $comment->user?->name,
-            'second_name' => $comment->user?->second_name,
             'user_name' => $comment->user?->username,
             'user_type' => $comment->user?->type,
             'user_id' => $comment->user_id,

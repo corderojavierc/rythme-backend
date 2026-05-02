@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->string('type');
-            $table->string('status')->default(ArtistApplicationStatusEnum::SENT);
+            $table->string('status')->default(ArtistApplicationStatusEnum::SENT->value);
             $table->integer('followers')->default(0);
             $table->integer('listeners')->nullable();
 
@@ -34,6 +34,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('verification_applications');
+        Schema::dropIfExists('artist_applications');
     }
 };

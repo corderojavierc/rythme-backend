@@ -25,7 +25,6 @@ final class UserFactory extends Factory
         return [
             'username' => fake()->unique()->userName(),
             'name' => fake()->name(),
-            'second_name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'type' => UserTypeEnum::USER,

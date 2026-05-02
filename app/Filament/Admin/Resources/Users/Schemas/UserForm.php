@@ -31,11 +31,6 @@ final class UserForm
                                     ->required()
                                     ->maxLength(255),
 
-                                TextInput::make('second_name')
-                                    ->label('Last name')
-                                    ->required()
-                                    ->maxLength(255),
-
                                 TextInput::make('username')
                                     ->prefix('@')
                                     ->required()

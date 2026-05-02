@@ -12,7 +12,6 @@ test('to array', function (): void {
             'id',
             'username',
             'name',
-            'second_name',
             'email',
             'email_verified_at',
             'type',

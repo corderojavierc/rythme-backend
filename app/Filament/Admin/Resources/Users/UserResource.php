@@ -55,7 +55,6 @@ final class UserResource extends Resource
         return [
             'username',
             'name',
-            'second_name',
             'email',
         ];
     }
@@ -63,7 +62,7 @@ final class UserResource extends Resource
     public static function getGlobalSearchResultTitle(Model $record): string
     {
         /** @var User $record */
-        return mb_trim($record->name.' '.$record->second_name).' (@'.$record->username.')';
+        return mb_trim($record->name).' (@'.$record->username.')';
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array

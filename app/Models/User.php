@@ -22,7 +22,6 @@ use Override;
  * @property-read string $id
  * @property-read string $username
  * @property-read string $name
- * @property-read string $second_name
  * @property-read string $email
  * @property-read CarbonInterface|null $email_verified_at
  * @property-read string $password
@@ -58,7 +57,6 @@ final class User extends Authenticatable implements MustVerifyEmail
             'id' => 'string',
             'username' => 'string',
             'name' => 'string',
-            'second_name' => 'string',
             'email' => 'string',
             'email_verified_at' => 'datetime',
             'is_verified_as' => 'string',

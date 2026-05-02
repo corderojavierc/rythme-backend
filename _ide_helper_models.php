@@ -193,7 +193,6 @@ namespace App\Models{
  * @property-read string $id
  * @property-read string $username
  * @property-read string $name
- * @property-read string $second_name
  * @property-read string $email
  * @property-read CarbonInterface|null $email_verified_at
  * @property-read integer $is_verified_as
@@ -231,4 +230,3 @@ namespace App\Models{
  */
 	final class User extends \Eloquent implements \Illuminate\Contracts\Auth\MustVerifyEmail {}
 }
-

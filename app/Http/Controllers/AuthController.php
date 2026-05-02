@@ -17,7 +17,6 @@ final class AuthController
         $data = $request->validate([
             'username' => ['required', 'max:255'],
             'name' => ['required', 'max:255'],
-            'second_name' => ['required', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
