@@ -54,4 +54,16 @@ final class SpotifyService
             'release_date' => $track['album']['release_date'],
         ]));
     }
+
+    public static function getArtistName(string $artistId): ?string
+    {
+        try {
+            /** @var array<string, mixed> $artist */
+            $artist = Spotify::artist($artistId)->get();
+
+            return $artist['name'] ?? null;
+        } catch (Exception) {
+            return null;
+        }
+    }
 }

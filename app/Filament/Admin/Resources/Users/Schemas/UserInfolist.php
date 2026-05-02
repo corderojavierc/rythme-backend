@@ -34,7 +34,7 @@ final class UserInfolist
 
                                 Group::make([
                                     TextEntry::make('name')
-                                        ->formatStateUsing(fn (User $record): string => mb_trim(sprintf('%s', $record->name)))
+                                        ->formatStateUsing(fn (User $record): string => mb_trim($record->name))
                                         ->weight(FontWeight::Bold)
                                         ->size(TextSize::Large),
 

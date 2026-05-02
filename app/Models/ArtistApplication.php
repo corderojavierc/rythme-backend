@@ -7,7 +7,6 @@ namespace App\Models;
 use App\Enums\ArtistApplicationStatusEnum;
 use App\Enums\UserTypeEnum;
 use Carbon\CarbonInterface;
-use Exception;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,9 +38,6 @@ final class ArtistApplication extends Model
     #[Override]
     protected $table = 'artist_applications';
 
-    /**
-     * @throws Exception
-     */
     public function acceptApplication(string $id, string $adminNotes): bool
     {
         $application = $this->findOrFail($id);
@@ -50,7 +46,6 @@ final class ArtistApplication extends Model
         $application->status = ArtistApplicationStatusEnum::ACCEPTED;
         $application->admin_notes = $adminNotes;
         $application->save();
-
         if ($application->type === UserTypeEnum::ARTIST) {
             $user->type = UserTypeEnum::ARTIST;
         } elseif ($application->type === UserTypeEnum::CREATOR) {
@@ -62,9 +57,6 @@ final class ArtistApplication extends Model
         return true;
     }
 
-    /**
-     * @throws Exception
-     */
     public function declineApplication(string $id, string $adminNotes): bool
     {
         $application = $this->findOrFail($id);
@@ -75,9 +67,6 @@ final class ArtistApplication extends Model
         return true;
     }
 
-    /**
-     * @return array<string, string|class-string>
-     */
     #[Override]
     public function casts(): array
     {

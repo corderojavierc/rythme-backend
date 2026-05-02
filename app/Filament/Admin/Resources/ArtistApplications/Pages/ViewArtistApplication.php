@@ -26,6 +26,7 @@ final class ViewArtistApplication extends ViewRecord
                 ->hidden(function (): bool {
                     /** @var ArtistApplication $record */
                     $record = $this->getRecord();
+
                     return $record->status !== ArtistApplicationStatusEnum::SENT;
                 })
                 ->requiresConfirmation()
@@ -59,6 +60,7 @@ final class ViewArtistApplication extends ViewRecord
                 ->hidden(function (): bool {
                     /** @var ArtistApplication $record */
                     $record = $this->getRecord();
+
                     return $record->status !== ArtistApplicationStatusEnum::SENT;
                 })
                 ->action(function (array $data): void {

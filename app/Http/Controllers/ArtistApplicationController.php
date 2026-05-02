@@ -6,23 +6,18 @@ namespace App\Http\Controllers;
 
 use App\Enums\ArtistApplicationStatusEnum;
 use App\Models\ArtistApplication;
+use App\Services\SpotifyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 final class ArtistApplicationController
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(): Collection
     {
         return ArtistApplication::all();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request): JsonResponse
     {
         if ($this->checkIfUserHasPendingApplication()) {
@@ -43,8 +38,16 @@ final class ArtistApplicationController
             'description' => ['required', 'string'],
         ]);
 
+        if (! empty($data['spotify'])) {
+            $resolvedName = SpotifyService::getArtistName($data['spotify']);
+            if ($resolvedName) {
+                $data['spotify'] = $resolvedName;
+            }
+        }
+
         $application = ArtistApplication::query()->create([
             'user_id' => auth()->id(),
+            'status' => ArtistApplicationStatusEnum::SENT,
             ...$data,
         ]);
 
