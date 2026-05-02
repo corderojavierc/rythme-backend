@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Comments\Pages;
 
 use App\Filament\Admin\Resources\Comments\CommentResource;
-use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\ViewRecord;
 use Override;
 
@@ -17,7 +17,7 @@ final class ViewComment extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

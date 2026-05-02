@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Likes;
 
 use App\Filament\Admin\Resources\Likes\Pages\CreateLike;
-use App\Filament\Admin\Resources\Likes\Pages\EditLike;
 use App\Filament\Admin\Resources\Likes\Pages\ListLikes;
 use App\Filament\Admin\Resources\Likes\Pages\ViewLike;
 use App\Filament\Admin\Resources\Likes\Schemas\LikeForm;
@@ -34,9 +33,6 @@ final class LikeResource extends Resource
 
     #[Override]
     protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::Heart;
-
-    #[Override]
-    protected static ?string $recordTitleAttribute = 'id';
 
     #[Override]
     protected static ?int $navigationSort = 3;
@@ -89,7 +85,6 @@ final class LikeResource extends Resource
             'index' => ListLikes::route('/'),
             'create' => CreateLike::route('/create'),
             'view' => ViewLike::route('/{record}'),
-            'edit' => EditLike::route('/{record}/edit'),
         ];
     }
 }

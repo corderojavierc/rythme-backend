@@ -14,7 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('music_ratings', function (Blueprint $table): void {
-            $table->foreignUuid('music_id')->primary()->constrained('musics')->cascadeOnDelete();
+            $table->uuid('music_id')->primary();
+            $table->foreign('music_id')->references('id')->on('musics')->cascadeOnDelete();
             $table->decimal('rating', 3, 2)->default(0);
             $table->unsignedInteger('count_ratings')->default(0);
             $table->timestamps();

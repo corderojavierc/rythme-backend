@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\ArtistApplications;
 
 use App\Filament\Admin\Resources\ArtistApplications\Pages\CreateArtistApplication;
-use App\Filament\Admin\Resources\ArtistApplications\Pages\EditArtistApplication;
 use App\Filament\Admin\Resources\ArtistApplications\Pages\ListArtistApplications;
 use App\Filament\Admin\Resources\ArtistApplications\Pages\ViewArtistApplication;
 use App\Filament\Admin\Resources\ArtistApplications\Schemas\ArtistApplicationForm;
@@ -34,9 +33,6 @@ final class ArtistApplicationResource extends Resource
 
     #[Override]
     protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::Identification;
-
-    #[Override]
-    protected static ?string $recordTitleAttribute = 'id';
 
     #[Override]
     protected static ?int $navigationSort = 1;
@@ -89,7 +85,6 @@ final class ArtistApplicationResource extends Resource
             'index' => ListArtistApplications::route('/'),
             'create' => CreateArtistApplication::route('/create'),
             'view' => ViewArtistApplication::route('/{record}'),
-            'edit' => EditArtistApplication::route('/{record}/edit'),
         ];
     }
 }

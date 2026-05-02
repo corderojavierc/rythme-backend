@@ -6,8 +6,8 @@ namespace App\Filament\Admin\Resources\Posts\Tables;
 
 use App\Models\Post;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -77,7 +77,7 @@ final class PostsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

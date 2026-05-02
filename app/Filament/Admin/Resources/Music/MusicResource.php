@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Music;
 
 use App\Filament\Admin\Resources\Music\Pages\CreateMusic;
-use App\Filament\Admin\Resources\Music\Pages\EditMusic;
 use App\Filament\Admin\Resources\Music\Pages\ListMusic;
 use App\Filament\Admin\Resources\Music\Pages\ViewMusic;
 use App\Filament\Admin\Resources\Music\Schemas\MusicForm;
@@ -30,13 +29,13 @@ final class MusicResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = 'Music';
 
     #[Override]
+    protected static ?string $recordTitleAttribute = 'title';
+
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMusicalNote;
 
     #[Override]
     protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::MusicalNote;
-
-    #[Override]
-    protected static ?string $recordTitleAttribute = 'title';
 
     #[Override]
     protected static ?int $navigationSort = 3;
@@ -87,7 +86,6 @@ final class MusicResource extends Resource
             'index' => ListMusic::route('/'),
             'create' => CreateMusic::route('/create'),
             'view' => ViewMusic::route('/{record}'),
-            'edit' => EditMusic::route('/{record}/edit'),
         ];
     }
 }

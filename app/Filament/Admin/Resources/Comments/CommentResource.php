@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Comments;
 
 use App\Filament\Admin\Resources\Comments\Pages\CreateComment;
-use App\Filament\Admin\Resources\Comments\Pages\EditComment;
 use App\Filament\Admin\Resources\Comments\Pages\ListComments;
 use App\Filament\Admin\Resources\Comments\Pages\ViewComment;
 use App\Filament\Admin\Resources\Comments\Schemas\CommentForm;
@@ -35,9 +34,6 @@ final class CommentResource extends Resource
 
     #[Override]
     protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::ChatBubbleLeftEllipsis;
-
-    #[Override]
-    protected static ?string $recordTitleAttribute = 'id';
 
     #[Override]
     protected static ?int $navigationSort = 2;
@@ -90,7 +86,6 @@ final class CommentResource extends Resource
             'index' => ListComments::route('/'),
             'create' => CreateComment::route('/create'),
             'view' => ViewComment::route('/{record}'),
-            'edit' => EditComment::route('/{record}/edit'),
         ];
     }
 }

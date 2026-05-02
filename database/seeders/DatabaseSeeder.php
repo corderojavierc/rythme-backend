@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\UserTypeEnum;
 use App\Models\Comment;
 use App\Models\Event;
 use App\Models\Follow;
@@ -24,6 +25,7 @@ final class DatabaseSeeder extends Seeder
             'email' => config('app.email', 'admin@admin.com'),
             'password' => config('app.password', 'admin'),
             'profile_image' => config('app.image', 'https://api.dicebear.com/9.x/thumbs/svg?seed=admin'),
+            'type' => UserTypeEnum::ADMIN,
         ]);
 
         $users = User::factory(10)->create();

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Music\Pages;
 
 use App\Filament\Admin\Resources\Music\MusicResource;
-use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Override;
 
@@ -17,7 +16,6 @@ final class ViewMusic extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make(),
         ];
     }
 }

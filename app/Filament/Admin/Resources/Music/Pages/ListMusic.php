@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Music\Pages;
 
 use App\Filament\Admin\Resources\Music\MusicResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Override;
 
@@ -17,7 +16,6 @@ final class ListMusic extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
         ];
     }
 }

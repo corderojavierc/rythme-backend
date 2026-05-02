@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Events;
 
 use App\Filament\Admin\Resources\Events\Pages\CreateEvent;
-use App\Filament\Admin\Resources\Events\Pages\EditEvent;
 use App\Filament\Admin\Resources\Events\Pages\ListEvents;
 use App\Filament\Admin\Resources\Events\Pages\ViewEvent;
 use App\Filament\Admin\Resources\Events\Schemas\EventForm;
@@ -34,9 +33,6 @@ final class EventResource extends Resource
 
     #[Override]
     protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::Calendar;
-
-    #[Override]
-    protected static ?string $recordTitleAttribute = 'title';
 
     #[Override]
     protected static ?int $navigationSort = 4;
@@ -88,7 +84,6 @@ final class EventResource extends Resource
             'index' => ListEvents::route('/'),
             'create' => CreateEvent::route('/create'),
             'view' => ViewEvent::route('/{record}'),
-            'edit' => EditEvent::route('/{record}/edit'),
         ];
     }
 }
