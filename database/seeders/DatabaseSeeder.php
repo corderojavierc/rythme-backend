@@ -21,7 +21,6 @@ final class DatabaseSeeder extends Seeder
         User::factory()->create([
             'username' => config('app.username', 'admin'),
             'name' => config('app.userfirstname', 'admin'),
-            'second_name' => config('app.second_name', 'admin'),
             'email' => config('app.email', 'admin@admin.com'),
             'password' => config('app.password', 'admin'),
             'profile_image' => config('app.image', 'https://api.dicebear.com/9.x/thumbs/svg?seed=admin'),

@@ -39,9 +39,9 @@ enum UserTypeEnum: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::ARTIST => 'blue',
-            self::CREATOR => 'green',
-            self::ADMIN => 'purple',
+            self::ARTIST => 'artist-color',
+            self::CREATOR => 'creator-color',
+            self::ADMIN => 'admin-color',
             self::USER => 'gray',
         };
     }

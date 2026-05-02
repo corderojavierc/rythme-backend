@@ -38,8 +38,7 @@ final class ViewArtistApplication extends ViewRecord
                 ->action(function (array $data): void {
                     /** @var ArtistApplication $record */
                     $record = $this->getRecord();
-                    $adminNotes = $data['admin_notes'];
-                    $record->acceptApplication($record->id, $adminNotes);
+                    $record->acceptApplication($record->id, $data['admin_notes']);
 
                     Notification::make()
                         ->title('Application accepted')
@@ -67,8 +66,7 @@ final class ViewArtistApplication extends ViewRecord
                 ->action(function (array $data): void {
                     /** @var ArtistApplication $record */
                     $record = $this->getRecord();
-                    $adminNotes = $data['admin_notes'];
-                    $record->declineApplication($record->id, $adminNotes);
+                    $record->declineApplication($record->id, $data['admin_notes']);
 
                     Notification::make()
                         ->title('Application declined')

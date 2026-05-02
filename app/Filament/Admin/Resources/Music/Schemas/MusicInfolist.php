@@ -27,7 +27,6 @@ final class MusicInfolist
                             Group::make([
                                 ImageEntry::make('cover_image')
                                     ->hiddenLabel()
-                                    ->circular()
                                     ->defaultImageUrl(fn (Music $record): string => $record->cover_url ?? '')
                                     ->columnSpan(1),
 
@@ -57,9 +56,7 @@ final class MusicInfolist
 
                             TextEntry::make('cover_url')
                                 ->label('Source URL')
-                                ->limit(30)
                                 ->copyable()
-                                ->icon(Heroicon::Link)
                                 ->color('gray'),
                         ]),
 

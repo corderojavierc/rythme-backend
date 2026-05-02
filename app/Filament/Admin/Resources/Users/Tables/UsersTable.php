@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Users\Tables;
 
+use App\Enums\UserTypeEnum;
 use App\Models\User;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -11,6 +12,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 final class UsersTable
@@ -36,20 +38,7 @@ final class UsersTable
 
                 TextColumn::make('type')
                     ->badge()
-                    ->sortable()
-                    ->color(fn (mixed $state): string => match ($state) {
-                        'admin' => 'danger',
-                        'mod' => 'warning',
-                        default => 'gray',
-                    }),
-
-                TextColumn::make('email_verified_at')
-                    ->label('Verified')
-                    ->dateTime('d/m/Y')
-                    ->sortable()
-                    ->badge()
-                    ->color(fn (mixed $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn (mixed $state): string => $state ? 'Yes' : 'No'),
+                    ->sortable(),
 
                 TextColumn::make('followers')
                     ->numeric()
@@ -78,7 +67,8 @@ final class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('type')
+                    ->options(UserTypeEnum::class),
             ])
             ->recordActions([
                 ViewAction::make(),
