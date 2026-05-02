@@ -40,7 +40,6 @@ final class UserInfolist
                                         ->size(TextSize::Large),
 
                                     TextEntry::make('username')
-                                        ->prefix('@')
                                         ->icon(Heroicon::AtSymbol)
                                         ->color('gray'),
 

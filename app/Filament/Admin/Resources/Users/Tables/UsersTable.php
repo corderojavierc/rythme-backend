@@ -43,14 +43,6 @@ final class UsersTable
                         default => 'gray',
                     }),
 
-                TextColumn::make('email_verified_at')
-                    ->label('Verified')
-                    ->dateTime('d/m/Y')
-                    ->sortable()
-                    ->badge()
-                    ->color(fn (mixed $state): string => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn (mixed $state): string => $state ? 'Yes' : 'No'),
-
                 TextColumn::make('followers')
                     ->numeric()
                     ->sortable()
