@@ -33,22 +33,11 @@ final class ArtistApplicationsTable
 
                 TextColumn::make('type')
                     ->badge()
-                    ->sortable()
-                    ->color(fn (mixed $state): string => match ($state) {
-                        'artist' => 'info',
-                        'band' => 'warning',
-                        default => 'gray',
-                    }),
+                    ->sortable(),
 
                 TextColumn::make('status')
                     ->badge()
-                    ->sortable()
-                    ->color(fn (mixed $state): string => match ($state) {
-                        'approved' => 'success',
-                        'pending' => 'warning',
-                        'rejected' => 'danger',
-                        default => 'gray',
-                    }),
+                    ->sortable(),
 
                 TextColumn::make('followers')
                     ->numeric()

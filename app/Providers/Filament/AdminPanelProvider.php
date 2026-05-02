@@ -34,6 +34,9 @@ final class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->brandName('RythMe')
             ->colors([
+                'artist-color' => '#ff478e',
+                'creator-color' => '#4a84ff',
+                'admin-color' => '#f5c842',
                 'primary' => '#4F7FFF',
                 'secondary' => '#FF4F8B',
                 'success' => '#3DDC97',

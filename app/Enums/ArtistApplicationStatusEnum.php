@@ -36,9 +36,9 @@ enum ArtistApplicationStatusEnum: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::SENT => 'blue',
-            self::ACCEPTED => 'green',
-            self::DECLINED => 'red',
+            self::SENT => 'primary',
+            self::ACCEPTED => 'success',
+            self::DECLINED => 'danger',
         };
     }
 }
