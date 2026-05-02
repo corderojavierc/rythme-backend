@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Likes\Pages;
 
 use App\Filament\Admin\Resources\Likes\LikeResource;
-use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\ViewRecord;
 use Override;
 
@@ -17,7 +16,6 @@ final class ViewLike extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
         ];
     }
 }

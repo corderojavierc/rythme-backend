@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Users\Pages;
 
 use App\Filament\Admin\Resources\Users\UserResource;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 use Override;
 
-final class ListUsers extends ListRecords
+final class ViewUser extends ViewRecord
 {
     #[Override]
     protected static string $resource = UserResource::class;
@@ -16,6 +17,7 @@ final class ListUsers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            EditAction::make(),
         ];
     }
 }

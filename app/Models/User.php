@@ -26,7 +26,7 @@ use Override;
  * @property-read string $email
  * @property-read CarbonInterface|null $email_verified_at
  * @property-read string $password
- * @property-read UserTypeEnum $type
+ * @property UserTypeEnum $type
  * @property-read int $followers
  * @property-read int $following
  * @property-read int $posts

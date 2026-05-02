@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Posts\Pages;
 
 use App\Filament\Admin\Resources\Posts\PostResource;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
+use Filament\Resources\Pages\EditRecord;
 use Override;
 
-final class ListPosts extends ListRecords
+final class EditPost extends EditRecord
 {
     #[Override]
     protected static string $resource = PostResource::class;
@@ -16,6 +18,8 @@ final class ListPosts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            ViewAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

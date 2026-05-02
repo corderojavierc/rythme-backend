@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Likes\Schemas;
 
-use App\Models\Comment;
 use App\Models\Post;
-use App\Models\User;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Collection;
+use Filament\Support\Icons\Heroicon;
 
 final class LikeForm
 {
@@ -17,61 +18,39 @@ final class LikeForm
     {
         return $schema
             ->components([
-                Select::make('user_id')
-                    ->relationship('user', 'username')
-                    ->searchable()
-                    ->getSearchResultsUsing(fn (string $search): Collection => User::query()->where('name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('second_name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('username', 'like', sprintf('%%%s%%', $search))
-                        ->limit(50)
-                        ->get()
-                        ->mapWithKeys(fn (User $user): array => [
-                            $user->id => sprintf('%s %s (@%s)', $user->name, $user->second_name, $user->username),
-                        ])
-                    )
-                    ->getOptionLabelFromRecordUsing(fn (User $record): string => sprintf('%s %s (@%s)', $record->name, $record->second_name, $record->username))
-                    ->preload()
-                    ->disabledOn('edit')
-                    ->required(),
+                Group::make()
+                    ->schema([
+                        Section::make('Polymorphic Target')
+                            ->icon(Heroicon::Heart)
+                            ->schema([
+                                TextInput::make('likeable_type')
+                                    ->label('Resource Type')
+                                    ->placeholder(Post::class)
+                                    ->required(),
 
-                Select::make('likeable_type')
-                    ->options([
-                        Post::class => 'Post',
-                        Comment::class => 'Comment',
+                                TextInput::make('likeable_id')
+                                    ->label('Resource ID')
+                                    ->placeholder('UUID')
+                                    ->required(),
+                            ])
+                            ->columns(2),
                     ])
-                    ->disabledOn('edit')
-                    ->required()
-                    ->live(),
+                    ->columnSpan(['lg' => 2]),
+                Group::make()
+                    ->schema([
+                        Section::make('Owner')
+                            ->schema([
+                                Select::make('user_id')
+                                    ->relationship('user', 'username')
+                                    ->searchable()
+                                    ->preload()
+                                    ->native(false)
+                                    ->required(),
+                            ]),
+                    ])
+                    ->columnSpan(['lg' => 1]),
 
-                Select::make('likeable_id')
-                    ->disabledOn('edit')
-                    ->options(function (callable $get) {
-                        $type = $get('likeable_type');
-
-                        return match ($type) {
-                            Post::class => Post::query()
-                                ->with('user')
-                                ->limit(50)
-                                ->get()
-                                ->mapWithKeys(fn (Post $post): array => [
-                                    $post->id => sprintf('(@%s) — ', $post->user).str($post->text)->limit(40),
-                                ]),
-
-                            Comment::class => Comment::query()
-                                ->with('user')
-                                ->limit(50)
-                                ->get()
-                                ->mapWithKeys(fn (Comment $comment): array => [
-                                    $comment->id => sprintf('(@%s) — ', $comment->user).str($comment->text)->limit(40),
-                                ]),
-
-                            default => [],
-                        };
-                    })
-                    ->searchable()
-                    ->required()
-                    ->live()
-                    ->disabled(fn (callable $get): bool => blank($get('likeable_type'))),
-            ]);
+            ])
+            ->columns(3);
     }
 }

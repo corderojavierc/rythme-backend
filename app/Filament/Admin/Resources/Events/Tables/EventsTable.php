@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Events\Tables;
 
+use App\Models\Event;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -17,28 +18,50 @@ final class EventsTable
     {
         return $table
             ->columns([
+                ImageColumn::make('image')
+                    ->square(),
+
                 TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
-                TextColumn::make('user_id')
-                    ->searchable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('user.name')
+                    ->label('Organizer')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('description')
+                    ->limit(60)
+                    ->tooltip(fn (Event $record): string => $record->description)
                     ->searchable(),
+
                 TextColumn::make('location')
-                    ->searchable(),
+                    ->searchable()
+                    ->icon('heroicon-o-map-pin'),
+
                 TextColumn::make('date')
-                    ->searchable(),
-                ImageColumn::make('image'),
+                    ->label('Event Date')
+                    ->date('d/m/Y')
+                    ->sortable(),
+
                 TextColumn::make('capacity')
-                    ->searchable(),
+                    ->numeric()
+                    ->sortable()
+                    ->icon('heroicon-o-user-group'),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -46,12 +69,14 @@ final class EventsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('date', 'desc')
+            ->striped();
     }
 }

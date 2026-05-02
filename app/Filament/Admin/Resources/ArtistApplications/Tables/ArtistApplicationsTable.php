@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\ArtistApplications\Tables;
 
+use App\Enums\ArtistApplicationStatusEnum;
+use App\Enums\UserTypeEnum;
+use App\Models\ArtistApplication;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 final class ArtistApplicationsTable
@@ -18,50 +22,101 @@ final class ArtistApplicationsTable
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('user.name')
-                    ->searchable(),
+                    ->label('Applicant')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('type')
-                    ->searchable(),
+                    ->badge()
+                    ->sortable()
+                    ->color(fn (mixed $state): string => match ($state) {
+                        'artist' => 'info',
+                        'band' => 'warning',
+                        default => 'gray',
+                    }),
+
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->badge()
+                    ->sortable()
+                    ->color(fn (mixed $state): string => match ($state) {
+                        'approved' => 'success',
+                        'pending' => 'warning',
+                        'rejected' => 'danger',
+                        default => 'gray',
+                    }),
+
                 TextColumn::make('followers')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-users'),
+
                 TextColumn::make('listeners')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-musical-note'),
+
                 TextColumn::make('youtube')
-                    ->searchable(),
+                    ->icon('heroicon-o-video-camera')
+                    ->url(fn (ArtistApplication $record): ?string => $record->youtube)
+                    ->openUrlInNewTab()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('tiktok')
-                    ->searchable(),
+                    ->icon('heroicon-o-device-phone-mobile')
+                    ->url(fn (ArtistApplication $record): ?string => $record->tiktok)
+                    ->openUrlInNewTab()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('instagram')
-                    ->searchable(),
+                    ->icon('heroicon-o-camera')
+                    ->url(fn (ArtistApplication $record): ?string => $record->instagram)
+                    ->openUrlInNewTab()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('spotify')
-                    ->searchable(),
+                    ->icon('heroicon-o-musical-note')
+                    ->url(fn (ArtistApplication $record): ?string => $record->spotify)
+                    ->openUrlInNewTab()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('twitch')
-                    ->searchable(),
-                TextColumn::make('description')
-                    ->searchable(),
+                    ->icon('heroicon-o-tv')
+                    ->url(fn (ArtistApplication $record): ?string => $record->twitch)
+                    ->openUrlInNewTab()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Applied At')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->options(ArtistApplicationStatusEnum::class)
+                    ->default(ArtistApplicationStatusEnum::SENT),
+                SelectFilter::make('type')
+                    ->options(UserTypeEnum::class),
             ])
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->striped();
     }
 }
