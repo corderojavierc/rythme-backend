@@ -42,8 +42,6 @@ final class PostResource extends JsonResource
             'global_rating' => $rating->rating ?? '',
             'count_ratings' => $rating->count_ratings ?? 0,
             'is_valorated' => (bool) $post->is_valorated,
-            'created_at' => $post->created_at,
-            'updated_at' => $post->updated_at,
         ];
     }
 }

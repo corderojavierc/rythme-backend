@@ -32,8 +32,6 @@ final class MusicResource extends JsonResource
             'rating' => $ratingInfo->rating ?? 0,
             'count_ratings' => $ratingInfo->count_ratings ?? 0,
             'is_valorated' => $userHasPost,
-            'release_date' => $music->release_date,
-            'created_at' => $music->created_at,
         ];
     }
 }
