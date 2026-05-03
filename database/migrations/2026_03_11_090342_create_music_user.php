@@ -8,22 +8,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('music_user', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('music_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('music_id')->constrained('musics')->onDelete('cascade');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('music_user');

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Users\Schemas;
 
+use App\Enums\UserTypeEnum;
 use App\Models\User;
-use BackedEnum;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Group;
@@ -47,6 +47,11 @@ final class UserInfolist
                                         ->copyable()
                                         ->copyMessage('Email copied')
                                         ->copyMessageDuration(1500),
+
+                                    TextEntry::make('spotify_id')
+                                        ->icon(Heroicon::AtSymbol)
+                                        ->hidden(fn (User $record): bool => $record->type !== UserTypeEnum::ARTIST)
+                                        ->color('gray'),
                                 ])
                                     ->columns(2)
                                     ->columnSpan(['default' => 4, 'sm' => 3]),
@@ -66,8 +71,12 @@ final class UserInfolist
                             TextEntry::make('posts')
                                 ->numeric()
                                 ->icon(Heroicon::DocumentText),
+
+                            TextEntry::make('musics')
+                                ->numeric()
+                                ->icon(Heroicon::MusicalNote),
                         ])
-                        ->columns(3),
+                        ->columns(4),
                 ])
                     ->columnSpan(['lg' => 2]),
 
@@ -75,12 +84,7 @@ final class UserInfolist
                     Section::make('Account Status')
                         ->schema([
                             TextEntry::make('type')
-                                ->badge()
-                                ->color(fn (string|BackedEnum $state): string => match ($state instanceof BackedEnum ? $state->value : $state) {
-                                    'admin' => 'danger',
-                                    'mod' => 'warning',
-                                    default => 'gray',
-                                }),
+                                ->badge(),
 
                             TextEntry::make('email_verified_at')
                                 ->label('Verified')

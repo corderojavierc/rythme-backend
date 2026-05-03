@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Users;
 use App\Filament\Admin\Resources\Users\Pages\CreateUser;
 use App\Filament\Admin\Resources\Users\Pages\ListUsers;
 use App\Filament\Admin\Resources\Users\Pages\ViewUser;
+use App\Filament\Admin\Resources\Users\RelationManagers\CreatedMusicRelationManager;
 use App\Filament\Admin\Resources\Users\Schemas\UserForm;
 use App\Filament\Admin\Resources\Users\Schemas\UserInfolist;
 use App\Filament\Admin\Resources\Users\Tables\UsersTable;
@@ -56,6 +57,13 @@ final class UserResource extends Resource
             'username',
             'name',
             'email',
+        ];
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            CreatedMusicRelationManager::class,
         ];
     }
 

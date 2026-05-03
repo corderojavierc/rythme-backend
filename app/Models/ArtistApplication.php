@@ -41,18 +41,35 @@ final class ArtistApplication extends Model
     public function acceptApplication(string $id, string $adminNotes): bool
     {
         $application = $this->findOrFail($id);
-        /** @var User $user */
+
         $user = User::query()->findOrFail($application->user_id);
+
         $application->status = ArtistApplicationStatusEnum::ACCEPTED;
         $application->admin_notes = $adminNotes;
         $application->save();
+
         if ($application->type === UserTypeEnum::ARTIST) {
             $user->type = UserTypeEnum::ARTIST;
         } elseif ($application->type === UserTypeEnum::CREATOR) {
             $user->type = UserTypeEnum::CREATOR;
         }
 
+        $spotifyId = null;
+        if (! empty($application->spotify)) {
+            $spotifyId = $application->spotify;
+
+            if (preg_match('/artist\/([a-zA-Z0-9]+)/', (string) $spotifyId, $matches)) {
+                $spotifyId = $matches[1];
+            }
+
+            $user->spotify_id = $spotifyId;
+        }
+
         $user->save();
+
+        if ($spotifyId) {
+            $this->linkSpotifyMusicToUser($user, $spotifyId);
+        }
 
         return true;
     }
@@ -83,5 +100,20 @@ final class ArtistApplication extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    private function linkSpotifyMusicToUser(User $user, string $cleanSpotifyId): void
+    {
+        $musicIds = Music::query()
+            ->whereJsonContains('spotify_artist_ids', $cleanSpotifyId)
+            ->pluck('id');
+
+        if ($musicIds->isNotEmpty()) {
+            $sync = $user->createdMusic()->syncWithoutDetaching($musicIds);
+
+            if (! empty($sync['attached'])) {
+                $user->increment('musics', count($sync['attached']));
+            }
+        }
     }
 }

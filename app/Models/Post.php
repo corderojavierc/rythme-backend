@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -14,6 +15,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Override;
 
+/**
+ * @property string $id
+ * @property string $user_id
+ * @property string $music_id
+ * @property string $text
+ * @property float $rating
+ * @property int $count_likes
+ * @property int $count_comments
+ * @property-read CarbonInterface $created_at
+ * @property-read CarbonInterface $updated_at
+ */
 #[UseFactory(PostFactory::class)]
 final class Post extends Model
 {
