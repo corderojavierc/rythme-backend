@@ -1,12 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
-use App\Models\MusicRating;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
-class MusicRatingPolicy
+final class MusicRatingPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,7 +19,7 @@ class MusicRatingPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, MusicRating $musicRating): bool
+    public function view(User $user): bool
     {
         return $user->isAdmin();
     }
@@ -27,7 +27,7 @@ class MusicRatingPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(): bool
     {
         return false;
     }
@@ -35,7 +35,7 @@ class MusicRatingPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, MusicRating $musicRating): bool
+    public function update(): bool
     {
         return false;
     }
@@ -43,7 +43,7 @@ class MusicRatingPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, MusicRating $musicRating): bool
+    public function delete(): bool
     {
         return false;
     }
@@ -51,7 +51,7 @@ class MusicRatingPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, MusicRating $musicRating): bool
+    public function restore(): bool
     {
         return false;
     }
@@ -59,7 +59,7 @@ class MusicRatingPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, MusicRating $musicRating): bool
+    public function forceDelete(): bool
     {
         return false;
     }
