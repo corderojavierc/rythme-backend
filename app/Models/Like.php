@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Database\Factories\LikeFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -13,6 +14,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Override;
 
+/**
+ * @property string $id
+ * @property string $user_id
+ * @property string $likeable_type
+ * @property string $likeable_id
+ * @property-read CarbonInterface $created_at
+ * @property-read CarbonInterface $updated_at
+ */
 #[UseFactory(LikeFactory::class)]
 final class Like extends Model
 {

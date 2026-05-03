@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Carbon\CarbonInterface;
 use Database\Factories\MusicFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -34,15 +33,22 @@ final class Music extends Model
     #[Override]
     protected $table = 'musics';
 
-    /**
-     * @return array<string, string>
-     */
+    public static function booted(): void
+    {
+        self::deleting(function (Music $music): void {
+            foreach ($music->createdBy as $user) {
+                $user->decrement('musics');
+            }
+        });
+    }
+
     public function casts(): array
     {
         return [
             'id' => 'string',
             'title' => 'string',
             'artist' => 'string',
+            'spotify_artist_ids' => 'array',
             'cover_url' => 'string',
             'release_date' => 'datetime',
             'created_at' => 'datetime',

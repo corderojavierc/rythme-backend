@@ -31,6 +31,7 @@ final class UserFactory extends Factory
             'followers' => 0,
             'following' => 0,
             'posts' => 0,
+            'musics' => 0,
             'password' => self::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'profile_image' => $this->profilePic(),

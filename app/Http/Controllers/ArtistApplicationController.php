@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\ArtistApplicationStatusEnum;
 use App\Models\ArtistApplication;
-use App\Services\SpotifyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -37,13 +36,6 @@ final class ArtistApplicationController
             'twitch' => ['nullable', 'string'],
             'description' => ['required', 'string'],
         ]);
-
-        if (! empty($data['spotify'])) {
-            $resolvedName = SpotifyService::getArtistName($data['spotify']);
-            if ($resolvedName) {
-                $data['spotify'] = $resolvedName;
-            }
-        }
 
         $application = ArtistApplication::query()->create([
             'user_id' => auth()->id(),

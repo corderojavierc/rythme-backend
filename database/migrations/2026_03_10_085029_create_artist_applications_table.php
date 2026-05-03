@@ -18,16 +18,13 @@ return new class extends Migration
             $table->string('status')->default(ArtistApplicationStatusEnum::SENT->value);
             $table->integer('followers')->default(0);
             $table->integer('listeners')->nullable();
-
             $table->string('youtube')->nullable();
             $table->string('tiktok')->nullable();
             $table->string('instagram')->nullable();
             $table->string('spotify')->nullable();
             $table->string('twitch')->nullable();
-
             $table->text('description');
             $table->text('admin_notes')->nullable();
-
             $table->timestamps();
         });
     }

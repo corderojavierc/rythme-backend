@@ -18,9 +18,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('type')->default(UserTypeEnum::USER->value);
+            $table->string('spotify_id')->nullable()->unique();
             $table->integer('followers')->default(0);
             $table->integer('following')->default(0);
             $table->integer('posts')->default(0);
+            $table->integer('musics')->default(0);
             $table->string('password');
             $table->rememberToken();
             $table->string('profile_image')->default('https://api.dicebear.com/9.x/thumbs/svg?seed=username');

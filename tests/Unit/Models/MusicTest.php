@@ -12,6 +12,7 @@ test('to array', function (): void {
             'id',
             'title',
             'artist',
+            'spotify_artist_ids',
             'cover_url',
             'release_date',
             'created_at',

@@ -28,10 +28,8 @@ final class MusicController
             'name' => ['required', 'string', 'min:2'],
         ]);
 
-        /** @var string $query */
         $query = $data['name'];
 
-        /** @var Music|null $music */
         $music = Music::query()->where('title', 'like', sprintf('%%%s%%', $query))
             ->orWhere('artist', 'like', sprintf('%%%s%%', $query))
             ->first();
@@ -53,7 +51,6 @@ final class MusicController
             'name' => ['required', 'string', 'min:2'],
         ]);
 
-        /** @var string $query */
         $query = $data['name'];
         $limit = 5;
 
@@ -78,7 +75,6 @@ final class MusicController
                 'source' => $localSongs->count() > 0 ? 'mixed' : 'external',
                 'count' => $combined->count(),
             ]);
-
         } catch (Exception) {
             return MusicResource::collection($localSongs);
         }
