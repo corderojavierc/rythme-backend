@@ -7,6 +7,8 @@ namespace App\Models;
 use App\Enums\UserTypeEnum;
 use Carbon\CarbonInterface;
 use Database\Factories\UserFactory;
+use Filament\Panel;
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -15,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 use Override;
 
@@ -35,7 +38,7 @@ use Override;
  * @property-read CarbonInterface $updated_at
  */
 #[UseFactory(UserFactory::class)]
-final class User extends Authenticatable implements MustVerifyEmail
+final class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     use HasApiTokens;
     use HasFactory;
@@ -72,6 +75,35 @@ final class User extends Authenticatable implements MustVerifyEmail
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->type === UserTypeEnum::ADMIN;
+    }
+
+    public function isArtist(): bool
+    {
+        return $this->type === UserTypeEnum::ARTIST;
+    }
+
+    public function isCreator(): bool
+    {
+        return $this->type === UserTypeEnum::CREATOR;
+    }
+
+    public function isUser(): bool
+    {
+        return $this->type === UserTypeEnum::USER;
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if (!in_array($this->type, [UserTypeEnum::ADMIN])) {
+            Auth::logout();
+            abort(403, 'You dont have permission to access this section.');
+        }
+        return true;
     }
 
     public function followers(): BelongsToMany

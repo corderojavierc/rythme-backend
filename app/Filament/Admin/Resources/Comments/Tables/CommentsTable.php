@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Comments\Tables;
 
 use App\Models\Comment;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -55,6 +56,7 @@ final class CommentsTable
             ])
             ->recordActions([
                 ViewAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
