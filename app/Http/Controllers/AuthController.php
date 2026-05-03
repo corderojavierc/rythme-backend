@@ -21,7 +21,10 @@ final class AuthController
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
 
-        $user = User::query()->create($data);
+        $user = User::query()->create([
+            'profile_image' => 'https://api.dicebear.com/9.x/thumbs/svg?seed='.$data['username'],
+            ...$data,
+        ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
