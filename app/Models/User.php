@@ -7,8 +7,8 @@ namespace App\Models;
 use App\Enums\UserTypeEnum;
 use Carbon\CarbonInterface;
 use Database\Factories\UserFactory;
-use Filament\Panel;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -38,7 +38,7 @@ use Override;
  * @property-read CarbonInterface $updated_at
  */
 #[UseFactory(UserFactory::class)]
-final class User extends Authenticatable implements MustVerifyEmail, FilamentUser
+final class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;
@@ -99,10 +99,11 @@ final class User extends Authenticatable implements MustVerifyEmail, FilamentUse
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if (!in_array($this->type, [UserTypeEnum::ADMIN])) {
+        if ($this->type !== UserTypeEnum::ADMIN) {
             Auth::logout();
             abort(403, 'You dont have permission to access this section.');
         }
+
         return true;
     }
 
