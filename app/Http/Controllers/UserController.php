@@ -47,11 +47,10 @@ final class UserController
             ->where('name', 'like', sprintf('%%%s%%', $query))
             ->orWhere('username', 'like', sprintf('%%%s%%', $query))
             ->orderBy('username')
-            ->limit(10)
             ->withExists(['followers as is_following_auth' => function (Builder $query) use ($currentUserId): void {
                 $query->where('follower_id', $currentUserId);
             }])
-            ->get();
+            ->paginate(10);
 
         return UserResource::collection($users);
     }

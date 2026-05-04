@@ -14,6 +14,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 final class MusicController
 {
@@ -47,37 +48,39 @@ final class MusicController
 
     public function search(Request $request): AnonymousResourceCollection
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'min:2'],
-        ]);
+        $request->validate(['name' => ['required', 'string', 'min:1']]);
 
-        $query = $data['name'];
-        $limit = 5;
+        $query = $request->input('name');
+        $perPage = 10;
+        $page = $request->input('page', 1);
 
-        $localSongs = Music::query()->where('title', 'like', sprintf('%%%s%%', $query))
+        $localSongs = Music::query()
+            ->where('title', 'like', sprintf('%%%s%%', $query))
             ->orWhere('artist', 'like', sprintf('%%%s%%', $query))
-            ->limit($limit)
             ->get();
 
-        if ($localSongs->count() >= $limit) {
-            return MusicResource::collection($localSongs)->additional(['source' => 'local']);
+        $combined = $localSongs;
+
+        if ($localSongs->count() < 20) {
+            try {
+                $spotifySongs = SpotifyService::searchInSpotify($query, 20);
+                $combined = $localSongs->concat($spotifySongs)
+                    ->unique(fn (Music $item): string => mb_strtolower($item->title.'|'.$item->artist));
+            } catch (Exception) {
+            }
         }
 
-        try {
-            $spotifySongs = SpotifyService::searchInSpotify($query, 10);
+        $items = $combined->forPage($page, $perPage)->values();
 
-            $combined = $localSongs->concat($spotifySongs)
-                ->unique(fn (Music $item): string => mb_strtolower($item->title.'|'.$item->artist))
-                ->take($limit)
-                ->values();
+        $paginatedResults = new LengthAwarePaginator(
+            $items,
+            $combined->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
-            return MusicResource::collection($combined)->additional([
-                'source' => $localSongs->count() > 0 ? 'mixed' : 'external',
-                'count' => $combined->count(),
-            ]);
-        } catch (Exception) {
-            return MusicResource::collection($localSongs);
-        }
+        return MusicResource::collection($paginatedResults);
     }
 
     public function show(string $id): MusicResource
