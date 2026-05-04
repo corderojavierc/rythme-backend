@@ -74,6 +74,7 @@ final class UserInfolist
 
                             TextEntry::make('musics')
                                 ->numeric()
+                                ->hidden(fn (User $record): bool => $record->type !== UserTypeEnum::ARTIST)
                                 ->icon(Heroicon::MusicalNote),
                         ])
                         ->columns(4),

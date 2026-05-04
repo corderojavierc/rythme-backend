@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\ArtistApplications\Tables;
 use App\Enums\ArtistApplicationStatusEnum;
 use App\Enums\UserTypeEnum;
 use App\Models\ArtistApplication;
+use App\Services\SpotifyService;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
@@ -68,7 +69,21 @@ final class ArtistApplicationsTable
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('spotify')
+                    ->label('Spotify Artist')
                     ->icon('heroicon-o-musical-note')
+                    ->formatStateUsing(function (string $state): ?string {
+                        if ($state === '' || $state === '0') {
+                            return null;
+                        }
+
+                        $cleanId = $state;
+
+                        if (preg_match('/artist\/([a-zA-Z0-9]+)/', $state, $matches)) {
+                            $cleanId = $matches[1];
+                        }
+
+                        return SpotifyService::getArtistName($cleanId) ?? $state;
+                    })
                     ->url(fn (ArtistApplication $record): ?string => $record->spotify)
                     ->openUrlInNewTab()
                     ->toggleable(isToggledHiddenByDefault: true),

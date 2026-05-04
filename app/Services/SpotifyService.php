@@ -71,12 +71,14 @@ final class SpotifyService
 
     public static function getArtistName(string $artistId): ?string
     {
-        try {
-            $artist = Spotify::artist($artistId)->get();
+        return cache()->remember('spotify_artist_name_'.$artistId, now()->addMonth(), function () use ($artistId) {
+            try {
+                $artist = Spotify::artist($artistId)->get();
 
-            return $artist['name'] ?? null;
-        } catch (Exception) {
-            return null;
-        }
+                return $artist['name'] ?? null;
+            } catch (Exception) {
+                return null;
+            }
+        });
     }
 }

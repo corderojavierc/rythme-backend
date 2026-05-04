@@ -128,4 +128,18 @@ final class UserController
 
         return ItemsLikedResource::collection($likes);
     }
+
+    public function me(): UserResource
+    {
+        $currentUserId = auth()->id();
+
+        $user = User::query()
+            ->where('id', $currentUserId)
+            ->withExists(['followers as is_following_auth' => function (Builder $query) use ($currentUserId): void {
+                $query->where('follower_id', $currentUserId);
+            }])
+            ->firstOrFail();
+
+        return new UserResource($user);
+    }
 }

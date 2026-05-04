@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::get('users/search', [UserController::class, 'search'])->name('users.search');
+    Route::get('users/me', [UserController::class, 'me'])->name('users.me');
     Route::get('{id}/posts', [UserController::class, 'getPosts'])->name('users.posts');
     Route::get('{id}/comments', [UserController::class, 'getComments'])->name('users.comments');
     Route::get('{id}/likes', [UserController::class, 'getLiked'])->name('users.likes');
