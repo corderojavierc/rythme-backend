@@ -44,15 +44,15 @@ final class UserController
         $currentUserId = auth()->id();
 
         $users = User::query()
-            ->where(function (Builder $q) use ($query) {
+            ->where(function (Builder $q) use ($query): void {
                 $q->where('username', 'like', sprintf('%%%s%%', $query))
-                  ->orWhere('name', 'like', sprintf('%%%s%%', $query));
+                    ->orWhere('name', 'like', sprintf('%%%s%%', $query));
             })
             ->orderByRaw("
                 CASE type
                     WHEN 'artist' THEN 1
                     WHEN 'creator' THEN 2
-                    WHEN 'user' THEN 3
+                    WHEN 'admin' THEN 3
                     ELSE 4
                 END
             ")
