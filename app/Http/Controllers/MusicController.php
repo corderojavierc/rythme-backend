@@ -130,7 +130,7 @@ final class MusicController
             return response()->json(['message' => 'Este usuario no es un artista.'], 404);
         }
 
-        $musics = $user->createdMusic()->with('createdBy')->get();
+        $musics = $user->createdMusic()->with('createdBy')->paginate(10);
 
         return MusicResource::collection($musics);
     }
