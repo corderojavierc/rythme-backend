@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\ItemsLikedResource;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\UserResource;
 use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Post;
@@ -15,37 +16,43 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 final class UserController
 {
-    public function index(): JsonResponse
+    public function index(): AnonymousResourceCollection
     {
-        $users = User::query()->paginate(60);
+        $currentUserId = auth()->id();
 
-        return response()->json($users);
+        $users = User::query()
+            ->where('id', '!=', $currentUserId)
+            ->withExists(['followers as is_following_auth' => function (Builder $query) use ($currentUserId): void {
+                $query->where('follower_id', $currentUserId);
+            }])
+            ->paginate(10);
+
+        return UserResource::collection($users);
     }
 
-    public function store(): void
+    public function search(Request $request): AnonymousResourceCollection
     {
-        //
-    }
+        $request->validate(['text' => ['required', 'string']]);
 
-    public function show(): void
-    {
-        //
-    }
+        $query = $request->text;
+        $currentUserId = auth()->id();
 
-    public function update(): void
-    {
-        //
-    }
+        $users = User::query()
+            ->where('name', 'like', sprintf('%%%s%%', $query))
+            ->orWhere('username', 'like', sprintf('%%%s%%', $query))
+            ->orderBy('username')
+            ->withExists(['followers as is_following_auth' => function (Builder $query) use ($currentUserId): void {
+                $query->where('follower_id', $currentUserId);
+            }])
+            ->paginate(10);
 
-    public function destroy(): void
-    {
-        //
+        return UserResource::collection($users);
     }
 
     public function getPosts(string $id): AnonymousResourceCollection
@@ -119,5 +126,19 @@ final class UserController
         $likes->setCollection($items);
 
         return ItemsLikedResource::collection($likes);
+    }
+
+    public function me(): UserResource
+    {
+        $currentUserId = auth()->id();
+
+        $user = User::query()
+            ->where('id', $currentUserId)
+            ->withExists(['followers as is_following_auth' => function (Builder $query) use ($currentUserId): void {
+                $query->where('follower_id', $currentUserId);
+            }])
+            ->firstOrFail();
+
+        return new UserResource($user);
     }
 }

@@ -29,6 +29,7 @@ final class PostResource extends JsonResource
             'following' => $post->user?->following,
             'posts' => $post->user?->posts,
             'user_id' => $post->user?->id,
+            'musics' => $post->user?->musics,
             'user_type' => $post->user?->type,
             'music_id' => $post->music?->id,
             'cover_url' => $post->music?->cover_url,
@@ -42,8 +43,6 @@ final class PostResource extends JsonResource
             'global_rating' => $rating->rating ?? '',
             'count_ratings' => $rating->count_ratings ?? 0,
             'is_valorated' => (bool) $post->is_valorated,
-            'created_at' => $post->created_at,
-            'updated_at' => $post->updated_at,
         ];
     }
 }

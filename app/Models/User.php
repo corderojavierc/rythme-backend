@@ -36,6 +36,7 @@ use Override;
  * @property-read string $profile_image
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
+ * @property bool|null $is_following_auth
  */
 #[UseFactory(UserFactory::class)]
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail

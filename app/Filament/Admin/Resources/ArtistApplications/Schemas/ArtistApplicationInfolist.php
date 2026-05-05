@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\ArtistApplications\Schemas;
 
+use App\Services\SpotifyService;
 use BackedEnum;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Group;
@@ -44,7 +45,26 @@ final class ArtistApplicationInfolist
                     Section::make('Social Links')
                         ->columns(2)
                         ->schema([
-                            TextEntry::make('spotify')->icon(Heroicon::Link)->color('primary')->url(fn (mixed $state): string => (string) $state)->openUrlInNewTab(),
+                            TextEntry::make('spotify')
+                                ->label('Spotify Artist')
+                                ->icon(Heroicon::Link)
+                                ->color('primary')
+                                ->hidden(fn (string $state): bool => ! $state)
+                                ->formatStateUsing(function (string $state): ?string {
+                                    if ($state === '' || $state === '0') {
+                                        return null;
+                                    }
+
+                                    $cleanId = $state;
+
+                                    if (preg_match('/artist\/([a-zA-Z0-9]+)/', $state, $matches)) {
+                                        $cleanId = $matches[1];
+                                    }
+
+                                    return SpotifyService::getArtistName($cleanId) ?? $state;
+                                })
+                                ->url(fn (mixed $state): string => 'https://open.spotify.com/intl-es/artist/'.$state)
+                                ->openUrlInNewTab(),
                             TextEntry::make('youtube')->icon(Heroicon::Play)->url(fn (mixed $state): string => (string) $state)->openUrlInNewTab(),
                             TextEntry::make('instagram')->icon(Heroicon::Camera)->url(fn (mixed $state): string => (string) $state)->openUrlInNewTab(),
                             TextEntry::make('tiktok')->icon(Heroicon::VideoCamera)->url(fn (mixed $state): string => (string) $state)->openUrlInNewTab(),

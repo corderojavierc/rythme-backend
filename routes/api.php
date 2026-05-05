@@ -25,8 +25,11 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::delete('posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::get('/posts/check/{music_id}', [PostController::class, 'checkPost']);
     Route::get('posts/{id}', [PostController::class, 'show'])->name('posts.show');
+    Route::post('posts/search', [PostController::class, 'search'])->name('posts.search');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::get('users/search', [UserController::class, 'search'])->name('users.search');
+    Route::get('users/me', [UserController::class, 'me'])->name('users.me');
     Route::get('{id}/posts', [UserController::class, 'getPosts'])->name('users.posts');
     Route::get('{id}/comments', [UserController::class, 'getComments'])->name('users.comments');
     Route::get('{id}/likes', [UserController::class, 'getLiked'])->name('users.likes');

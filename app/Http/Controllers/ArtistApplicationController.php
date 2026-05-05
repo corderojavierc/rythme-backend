@@ -19,9 +19,9 @@ final class ArtistApplicationController
 
     public function store(Request $request): JsonResponse
     {
-        if ($this->checkIfUserHasPendingApplication()) {
+        if ($this->checkIfUserHasPendingOrAcceptedApplication()) {
             return response()->json([
-                'error' => 'Ya tienes una aplicación pendiente.',
+                'error' => 'Ya tienes una aplicación pendiente o aceptada.',
             ], 400);
         }
 
@@ -49,14 +49,17 @@ final class ArtistApplicationController
     public function hasApplication(): JsonResponse
     {
         return response()->json([
-            'has_application' => $this->checkIfUserHasPendingApplication(),
+            'has_application' => $this->checkIfUserHasPendingOrAcceptedApplication(),
         ]);
     }
 
-    private function checkIfUserHasPendingApplication(): bool
+    private function checkIfUserHasPendingOrAcceptedApplication(): bool
     {
         return ArtistApplication::query()->where('user_id', auth()->id())
-            ->where('status', ArtistApplicationStatusEnum::SENT)
+            ->whereIn('status', [
+                ArtistApplicationStatusEnum::SENT,
+                ArtistApplicationStatusEnum::ACCEPTED,
+            ])
             ->exists();
     }
 }
