@@ -8,6 +8,7 @@ use App\Http\Resources\MusicResource;
 use App\Http\Resources\PostResource;
 use App\Models\Music;
 use App\Models\Post;
+use App\Models\User;
 use App\Services\SpotifyService;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -119,5 +120,18 @@ final class MusicController
             ->paginate(10);
 
         return PostResource::collection($posts);
+    }
+
+    public function getUserMusics(string $id): AnonymousResourceCollection|JsonResponse
+    {
+        $user = User::query()->findOrFail($id);
+
+        if (! $user->isArtist()) {
+            return response()->json(['message' => 'Este usuario no es un artista.'], 404);
+        }
+
+        $musics = $user->createdMusic()->with('createdBy')->get();
+
+        return MusicResource::collection($musics);
     }
 }

@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('music/{id}', [MusicController::class, 'show'])->name('music.show');
     Route::post('/music/search', [MusicController::class, 'search'])->name('api.music.search');
     Route::get('music/{id}/posts', [MusicController::class, 'getPosts'])->name('music.posts');
+    Route::get('music/{id}/musics', [MusicController::class, 'getUserMusics'])->name('music.musics');
 
     Route::get('artist-applications', [ArtistApplicationController::class, 'index'])->name('artist-applications.index');
     Route::post('artist-applications', [ArtistApplicationController::class, 'store'])->name('artist-applications.store');
