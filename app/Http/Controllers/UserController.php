@@ -44,11 +44,21 @@ final class UserController
         $currentUserId = auth()->id();
 
         $users = User::query()
-            ->where('name', 'like', sprintf('%%%s%%', $query))
-            ->orWhere('username', 'like', sprintf('%%%s%%', $query))
-            ->orderBy('username')
-            ->withExists(['followers as is_following_auth' => function (Builder $query) use ($currentUserId): void {
-                $query->where('follower_id', $currentUserId);
+            ->where(function (Builder $q) use ($query): void {
+                $q->where('username', 'like', sprintf('%%%s%%', $query))
+                    ->orWhere('name', 'like', sprintf('%%%s%%', $query));
+            })
+            ->orderByRaw("
+                CASE type
+                    WHEN 'artist' THEN 1
+                    WHEN 'creator' THEN 2
+                    WHEN 'admin' THEN 3
+                    ELSE 4
+                END
+            ")
+            ->orderBy('username', 'asc')
+            ->withExists(['followers as is_following_auth' => function (Builder $q) use ($currentUserId): void {
+                $q->where('follower_id', $currentUserId);
             }])
             ->paginate(10);
 
