@@ -28,6 +28,15 @@ final class UserController
 
         $users = User::query()
             ->where('id', '!=', $currentUserId)
+            ->orderByRaw("
+                CASE type
+                    WHEN 'artist' THEN 1
+                    WHEN 'creator' THEN 2
+                    WHEN 'admin' THEN 3
+                    ELSE 4
+                END
+            ")
+            ->orderBy('username', 'asc')
             ->withExists(['followers as is_following_auth' => function (Builder $query) use ($currentUserId): void {
                 $query->where('follower_id', $currentUserId);
             }])
@@ -144,6 +153,20 @@ final class UserController
 
         $user = User::query()
             ->where('id', $currentUserId)
+            ->withExists(['followers as is_following_auth' => function (Builder $query) use ($currentUserId): void {
+                $query->where('follower_id', $currentUserId);
+            }])
+            ->firstOrFail();
+
+        return new UserResource($user);
+    }
+
+    public function show(string $username): UserResource
+    {
+        $currentUserId = auth()->id();
+
+        $user = User::query()
+            ->where('username', $username)
             ->withExists(['followers as is_following_auth' => function (Builder $query) use ($currentUserId): void {
                 $query->where('follower_id', $currentUserId);
             }])
