@@ -33,6 +33,7 @@ final class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->brandName('RythMe')
+            ->homeUrl('http://localhost:5173/')
             ->colors([
                 'artist-color' => '#ff478e',
                 'creator-color' => '#4a84ff',
