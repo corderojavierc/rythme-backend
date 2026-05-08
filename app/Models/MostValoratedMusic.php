@@ -17,7 +17,7 @@ use Override;
  * @property int $rank_position
  * @property string $music_id
  * @property int $count_ratings
- * @property float $avg_rating
+ * @property float $rating
  * @property CarbonInterface $created_at
  * @property CarbonInterface $updated_at
  */
@@ -41,7 +41,7 @@ final class MostValoratedMusic extends Model
         'rank_position',
         'music_id',
         'count_ratings',
-        'avg_rating',
+        'rating',
     ];
 
     public function casts(): array
@@ -49,7 +49,7 @@ final class MostValoratedMusic extends Model
         return [
             'rank_position' => 'integer',
             'count_ratings' => 'integer',
-            'avg_rating' => 'decimal:2',
+            'rating' => 'decimal:2',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

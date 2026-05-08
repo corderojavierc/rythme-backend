@@ -97,13 +97,13 @@ final class Post extends Model
     {
         $stats = self::query()
             ->where('music_id', $this->music_id)
-            ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as total')
+            ->selectRaw('AVG(rating) as rating, COUNT(*) as total')
             ->first();
 
         MusicRating::query()->updateOrCreate(
             ['music_id' => $this->music_id],
             [
-                'rating' => $stats->avg_rating ?? 0,
+                'rating' => $stats->rating ?? 0,
                 'count_ratings' => $stats->total ?? 0,
             ]
         );

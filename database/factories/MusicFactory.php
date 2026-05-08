@@ -19,6 +19,14 @@ final class MusicFactory extends Factory
     private const array SEARCH_TERMS = [
         'love', 'night', 'summer', 'dream', 'fire',
         'heart', 'home', 'road', 'light', 'time',
+        'case', 'nightmare', 'dreamer', 'fireplace', 'heartbeat',
+        'moon', 'star', 'sky', 'cloud', 'wind',
+        'rain', 'storm', 'snow', 'firework', 'lightning',
+        'casa', 'hola', 'adios', 'buenas', 'noche',
+        'verano', 'invierno', 'primavera', 'otono',
+        'sueño', 'feliz', 'triste', 'angustia', 'amor',
+        'odio', 'humo', 'vas', 'niño', 'pista', 'sentido',
+        'estrella', 'nombre', 'sabor', 'temperatura', 'luna',
     ];
 
     #[Override]

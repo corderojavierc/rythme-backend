@@ -16,7 +16,7 @@ final class TopRatedMusicFactory extends Factory
             'period' => Date::now()->startOfMonth()->toDateString(),
             'rank_position' => $this->faker->numberBetween(1, 10),
             'music_id' => Music::factory(),
-            'avg_rating' => $this->faker->randomFloat(2, 3.00, 5.00),
+            'rating' => $this->faker->randomFloat(2, 3.00, 5.00),
             'count_ratings' => $this->faker->numberBetween(10, 10000),
         ];
     }

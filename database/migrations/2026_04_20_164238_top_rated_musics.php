@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('rank_position');
             $table->uuid('music_id');
             $table->foreign('music_id')->references('id')->on('musics')->cascadeOnDelete();
-            $table->decimal('avg_rating', 3, 2);
+            $table->decimal('rating', 4, 2);
             $table->unsignedInteger('count_ratings');
             $table->primary(['period', 'rank_position']);
             $table->timestamps();

@@ -28,4 +28,12 @@ final class PostFactory extends Factory
             'count_comments' => 0,
         ];
     }
+
+    public function lastMonths(int $months = 2): static
+    {
+        return $this->state(fn (): array => [
+            'created_at' => $this->faker->dateTimeBetween(sprintf('-%d months', $months), '-1 month'),
+            'updated_at' => $this->faker->dateTimeBetween(sprintf('-%d months', $months), '-1 month'),
+        ]);
+    }
 }

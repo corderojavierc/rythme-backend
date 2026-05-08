@@ -16,7 +16,7 @@ use Override;
  * @property string $period
  * @property int $rank_position
  * @property string $music_id
- * @property float $avg_rating
+ * @property float $rating
  * @property int $count_ratings
  * @property CarbonInterface $created_at
  * @property CarbonInterface $updated_at
@@ -40,7 +40,7 @@ final class TopRatedMusic extends Model
         'period',
         'rank_position',
         'music_id',
-        'avg_rating',
+        'rating',
         'count_ratings',
     ];
 
@@ -48,7 +48,7 @@ final class TopRatedMusic extends Model
     {
         return [
             'rank_position' => 'integer',
-            'avg_rating' => 'decimal:2',
+            'rating' => 'decimal:2',
             'count_ratings' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',

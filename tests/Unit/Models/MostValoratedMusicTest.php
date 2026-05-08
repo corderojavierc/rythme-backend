@@ -12,7 +12,7 @@ test('to array', function (): void {
             'period',
             'rank_position',
             'music_id',
-            'avg_rating',
+            'rating',
             'count_ratings',
             'updated_at',
             'created_at',
