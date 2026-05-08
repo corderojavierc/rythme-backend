@@ -27,8 +27,15 @@ final class DatabaseSeeder extends Seeder
             'type' => UserTypeEnum::ADMIN,
         ]);
 
-        $users = User::factory(10)->create();
-        $musics = Music::factory(30)->create();
+        $users = User::factory(12)->create();
+
+        $musics = collect();
+        for ($i = 0; $i < 18; $i++) {
+            $music = Music::factory()->create();
+            $musics->push($music);
+        }
+
+        $musics = $musics->unique('id')->values();
 
         foreach ($users as $user) {
             /** @var User $user */
@@ -67,13 +74,23 @@ final class DatabaseSeeder extends Seeder
         $posts = Post::all();
         foreach ($posts as $post) {
             /** @var Post $post */
-            /** @var User $randomUser */
-            $randomUser = $users->random();
+            $commentCount = random_int(0, 3);
 
-            Comment::factory(random_int(1, 4))->create([
-                'post_id' => $post->id,
-                'user_id' => $randomUser->id,
-            ]);
+            if ($commentCount === 0) {
+                continue;
+            }
+
+            $commenters = $users
+                ->where('id', '!=', $post->user_id)
+                ->take($commentCount);
+
+            foreach ($commenters as $commenter) {
+                /** @var User $commenter */
+                Comment::factory()->create([
+                    'post_id' => $post->id,
+                    'user_id' => $commenter->id,
+                ]);
+            }
         }
     }
 }
