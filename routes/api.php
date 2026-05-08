@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\ArtistApplicationController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\FollowController;
-use App\Http\Controllers\LikeController;
-use App\Http\Controllers\MusicController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\ArtistApplicationController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\FollowController;
+use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\MusicController;
+use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('register', [AuthController::class, 'register'])->name('register');
