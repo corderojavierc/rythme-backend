@@ -56,10 +56,12 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/music/search', [MusicController::class, 'search'])->name('api.music.search');
     Route::get('music/{id}/posts', [MusicController::class, 'getPosts'])->name('music.posts');
     Route::get('music/{id}/musics', [MusicController::class, 'getUserMusics'])->name('music.musics');
-    Route::get('musics/top-rated', [RankingController::class, 'topRated'])->name('music.top-rated');
-    Route::get('musics/most-rated', [RankingController::class, 'mostRated'])->name('music.most-rated');
-    Route::get('musics/top-rated-history/{period}', [RankingController::class, 'topRatedHistory'])->name('music.top-rated-history');
-    Route::get('musics/most-rated-history/{period}', [RankingController::class, 'mostRatedHistory'])->name('music.most-rated-history');
+    Route::get('musics/top-rated', [RankingController::class, 'getGeneralTopRated'])->name('music.top-rated');
+    Route::get('musics/most-rated', [RankingController::class, 'getGeneralMostRated'])->name('music.most-rated');
+    Route::get('musics/top-rated/actual', [RankingController::class, 'getTopRated'])->name('music.top-rated');
+    Route::get('musics/most-rated/actual', [RankingController::class, 'getMostRated'])->name('music.most-rated');
+    Route::get('musics/top-rated-history/{period}', [RankingController::class, 'getTopRatedHistory'])->name('music.top-rated-history');
+    Route::get('musics/most-rated-history/{period}', [RankingController::class, 'getMostRatedHistory'])->name('music.most-rated-history');
 
     Route::get('artist-applications', [ArtistApplicationController::class, 'index'])->name('artist-applications.index');
     Route::post('artist-applications', [ArtistApplicationController::class, 'store'])->name('artist-applications.store');
