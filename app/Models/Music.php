@@ -76,4 +76,14 @@ final class Music extends Model
     {
         return $this->hasOne(MusicRating::class);
     }
+
+    public function topRatedHistory(): HasMany
+    {
+        return $this->hasMany(TopRatedMusic::class);
+    }
+
+    public function mostRatedHistory(): HasMany
+    {
+        return $this->hasMany(MostValoratedMusic::class);
+    }
 }

@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Exception;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 final class PostController
@@ -22,7 +23,7 @@ final class PostController
      */
     public function index(): AnonymousResourceCollection
     {
-        $currentUserId = auth()->id();
+        $currentUserId = Auth::id();
 
         $posts = Post::with(['music', 'user'])
             ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
@@ -51,7 +52,7 @@ final class PostController
                 'rating' => ['nullable', 'numeric', 'min:0', 'max:5'],
             ]);
 
-            $exists = Post::query()->where('user_id', auth()->id())
+            $exists = Post::query()->where('user_id', Auth::id())
                 ->where('music_id', $data['music_id'])
                 ->exists();
             if ($exists) {
@@ -62,7 +63,7 @@ final class PostController
             }
 
             $post = Post::query()->create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'music_id' => $data['music_id'],
                 'text' => $data['text'],
                 'rating' => $data['rating'],
@@ -91,7 +92,7 @@ final class PostController
             /** @var Post $post */
             $post = Post::with(['music', 'user'])
                 ->withExists(['likes as is_liked' => function (Builder $query): void {
-                    $query->where('user_id', auth()->id());
+                    $query->where('user_id', Auth::id());
                 }])
                 ->findOrFail($id);
 
@@ -136,7 +137,7 @@ final class PostController
     {
         $request->validate(['text' => ['nullable', 'string']]);
         $query = $request->input('text');
-        $currentUserId = auth()->id();
+        $currentUserId = Auth::id();
 
         $posts = Post::query()
             ->with(['music.rating', 'user'])
@@ -174,7 +175,7 @@ final class PostController
 
     public function checkPost(Request $request): JsonResponse
     {
-        $exists = Post::query()->where('user_id', auth()->id())
+        $exists = Post::query()->where('user_id', Auth::id())
             ->where('music_id', $request->music_id)
             ->exists();
 
@@ -186,7 +187,7 @@ final class PostController
 
     public function getFollowedPosts(): AnonymousResourceCollection
     {
-        $currentUserId = (string) auth()->id();
+        $currentUserId = (string) Auth::id();
 
         /** @var LengthAwarePaginator $posts */
         $posts = Post::query()

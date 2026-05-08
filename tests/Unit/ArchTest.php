@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\ArtistApplicationController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MusicController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\ArtistApplicationController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\MusicController;
+use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\RankingController;
+use App\Http\Controllers\Api\UserController;
 
 arch()->preset()->php();
 arch()->preset()->strict()->ignoring([
@@ -15,6 +16,7 @@ arch()->preset()->strict()->ignoring([
     PostController::class,
     UserController::class,
     ArtistApplicationController::class,
+    RankingController::class,
 ]);
 arch()->preset()->laravel()->ignoring([
     'App\Providers\Filament',
@@ -23,6 +25,7 @@ arch()->preset()->laravel()->ignoring([
     PostController::class,
     UserController::class,
     ArtistApplicationController::class,
+    RankingController::class,
 ]);
 arch()->preset()->security()->ignoring([
     'assert',
@@ -30,6 +33,7 @@ arch()->preset()->security()->ignoring([
     PostController::class,
     UserController::class,
     ArtistApplicationController::class,
+    RankingController::class,
 ]);
 
 arch('controllers')

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\MusicResource;
 use App\Http\Resources\PostResource;
@@ -11,11 +11,12 @@ use App\Models\Post;
 use App\Models\User;
 use App\Services\SpotifyService;
 use Exception;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 final class MusicController
 {
@@ -103,7 +104,7 @@ final class MusicController
 
     public function getPosts(string $id): AnonymousResourceCollection
     {
-        $currentUserId = auth()->id();
+        $currentUserId = Auth::id();
         Music::query()->findOrFail($id);
 
         $posts = Post::query()->where('music_id', $id)
