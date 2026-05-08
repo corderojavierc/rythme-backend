@@ -8,10 +8,11 @@ use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
 use Exception;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
 
 final class CommentController
 {
@@ -22,7 +23,7 @@ final class CommentController
     {
         $posts = Comment::with(['post', 'user'])
             ->withExists(['likes as is_liked' => function (Builder $query): void {
-                $query->where('user_id', auth()->id());
+                $query->where('user_id', Auth::id());
             }])
             ->latest()
             ->paginate(20);
@@ -42,7 +43,7 @@ final class CommentController
 
         Comment::query()->create([
             'post_id' => $data['post_id'],
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'text' => $data['text'],
             'count_likes' => 0,
         ]);
@@ -61,7 +62,7 @@ final class CommentController
             $comments = $post->comments()
                 ->with(['user'])
                 ->withExists(['likes as is_liked' => function (Builder $query): void {
-                    $query->where('user_id', auth()->id());
+                    $query->where('user_id', Auth::id());
                 }])
                 ->latest()
                 ->paginate(10);
@@ -90,7 +91,7 @@ final class CommentController
         try {
             /** @var Comment $comment */
             $comment = Comment::query()->findOrFail($id);
-            if ($comment->user_id !== auth()->id()) {
+            if ($comment->user_id !== Auth::id()) {
                 return response()->json([
                     'message' => 'You are not authorized to delete this comment',
                 ], 403);

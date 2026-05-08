@@ -9,6 +9,7 @@ use App\Models\ArtistApplication;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 final class ArtistApplicationController
 {
@@ -38,7 +39,7 @@ final class ArtistApplicationController
         ]);
 
         $application = ArtistApplication::query()->create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'status' => ArtistApplicationStatusEnum::SENT,
             ...$data,
         ]);
@@ -55,7 +56,7 @@ final class ArtistApplicationController
 
     private function checkIfUserHasPendingOrAcceptedApplication(): bool
     {
-        return ArtistApplication::query()->where('user_id', auth()->id())
+        return ArtistApplication::query()->where('user_id', Auth::id())
             ->whereIn('status', [
                 ArtistApplicationStatusEnum::SENT,
                 ArtistApplicationStatusEnum::ACCEPTED,

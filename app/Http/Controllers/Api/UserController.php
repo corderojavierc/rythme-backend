@@ -12,19 +12,20 @@ use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\User;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 final class UserController
 {
     public function index(): AnonymousResourceCollection
     {
-        $currentUserId = auth()->id();
+        $currentUserId = Auth::id();
 
         $users = User::query()
             ->where('id', '!=', $currentUserId)
@@ -50,7 +51,7 @@ final class UserController
         $request->validate(['text' => ['required', 'string']]);
 
         $query = $request->text;
-        $currentUserId = auth()->id();
+        $currentUserId = Auth::id();
 
         $users = User::query()
             ->where(function (Builder $q) use ($query): void {
@@ -96,7 +97,7 @@ final class UserController
     {
         $comments = Comment::with(['post', 'user'])
             ->withExists(['likes as is_liked' => function (Builder $query): void {
-                $query->where('user_id', auth()->id());
+                $query->where('user_id', Auth::id());
             }])
             ->where('user_id', $id)
             ->latest()
@@ -107,7 +108,7 @@ final class UserController
 
     public function getLiked(string $id): AnonymousResourceCollection
     {
-        $authUserId = (string) auth()->id();
+        $authUserId = (string) Auth::id();
 
         /** @var LengthAwarePaginator $likes */
         $likes = Like::query()
@@ -149,7 +150,7 @@ final class UserController
 
     public function me(): UserResource
     {
-        $currentUserId = auth()->id();
+        $currentUserId = Auth::id();
 
         $user = User::query()
             ->where('id', $currentUserId)
@@ -163,7 +164,7 @@ final class UserController
 
     public function show(string $username): UserResource
     {
-        $currentUserId = auth()->id();
+        $currentUserId = Auth::id();
 
         $user = User::query()
             ->where('username', $username)
