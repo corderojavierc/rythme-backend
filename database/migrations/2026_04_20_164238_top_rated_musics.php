@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('most_valorated_musics', function (Blueprint $table): void {
+        Schema::create('top_rated_musics', function (Blueprint $table): void {
             $table->date('period');
             $table->unsignedTinyInteger('rank_position');
             $table->uuid('music_id');
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('most_valorated_musics');
+        Schema::dropIfExists('top_rated_musics');
     }
 };
