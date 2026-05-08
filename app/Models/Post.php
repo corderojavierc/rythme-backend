@@ -23,6 +23,8 @@ use Override;
  * @property float $rating
  * @property int $count_likes
  * @property int $count_comments
+ * @property int $count_ratings
+ * @property-read Music $music
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */

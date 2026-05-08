@@ -18,6 +18,7 @@ use Override;
  * @property string $music_id
  * @property float $rating
  * @property int $count_ratings
+ * @property-read Music $music
  * @property CarbonInterface $created_at
  * @property CarbonInterface $updated_at
  */
