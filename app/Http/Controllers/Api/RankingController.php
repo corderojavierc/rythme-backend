@@ -6,9 +6,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\RankingResource;
 use App\Models\MostValoratedMusic;
+use App\Models\MusicRating;
 use App\Models\Post;
 use App\Models\TopRatedMusic;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -16,7 +18,37 @@ final class RankingController
 {
     private const int TOP = 10;
 
-    public function topRated(): JsonResponse
+    public function getGeneralTopRated(): AnonymousResourceCollection
+    {
+        $rankings = MusicRating::query()
+            ->orderByDesc('rating')
+            ->with('music')
+            ->limit(self::TOP)
+            ->get()
+            ->values()
+            ->each(function ($item, $index) {
+                $item->position = $index + 1;
+            });
+
+        return RankingResource::collection($rankings);
+    }
+
+    public function getGeneralMostRated(): AnonymousResourceCollection
+    {
+        $rankings = MusicRating::query()
+            ->orderByDesc('count_ratings')
+            ->with('music')
+            ->limit(self::TOP)
+            ->get()
+            ->values()
+            ->each(function ($item, $index) {
+                $item->position = $index + 1;
+            });
+
+        return RankingResource::collection($rankings);
+    }
+
+    public function getTopRated(): JsonResponse
     {
         $period = now()->format('Y-m');
         $from = now()->startOfMonth()->startOfDay();
@@ -42,7 +74,7 @@ final class RankingController
         ]);
     }
 
-    public function mostRated(): JsonResponse
+    public function getMostRated(): JsonResponse
     {
         $period = now()->format('Y-m');
         $from = now()->startOfMonth()->startOfDay();
@@ -69,7 +101,7 @@ final class RankingController
         ]);
     }
 
-    public function topRatedHistory(string $period): JsonResponse
+    public function getTopRatedHistory(string $period): JsonResponse
     {
         if (! preg_match('/^\d{4}-\d{2}$/', $period)) {
             return response()->json([
@@ -78,7 +110,7 @@ final class RankingController
         }
 
         if ($period === now()->format('Y-m')) {
-            return $this->topRated();
+            return $this->getTopRated();
         }
 
         $date = now()->createFromFormat('Y-m', $period)->startOfMonth();
@@ -98,7 +130,7 @@ final class RankingController
         ]);
     }
 
-    public function mostRatedHistory(string $period): JsonResponse
+    public function getMostRatedHistory(string $period): JsonResponse
     {
         if (! preg_match('/^\d{4}-\d{2}$/', $period)) {
             return response()->json([
@@ -107,7 +139,7 @@ final class RankingController
         }
 
         if ($period === now()->format('Y-m')) {
-            return $this->mostRated();
+            return $this->getMostRated();
         }
 
         $date = now()->createFromFormat('Y-m', $period)->startOfMonth();
