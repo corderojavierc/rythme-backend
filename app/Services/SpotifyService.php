@@ -7,8 +7,9 @@ namespace App\Services;
 use Aerni\Spotify\Facades\Spotify;
 use App\Models\Music;
 use App\Models\User;
-use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 final class SpotifyService
 {
@@ -45,28 +46,40 @@ final class SpotifyService
             }
 
             return $music;
-        } catch (Exception) {
+        } catch (Throwable $throwable) {
+            Log::warning('SpotifyService (searchAndStore) error: '.$throwable->getMessage(), [
+                'query' => $query,
+            ]);
+
             return null;
         }
     }
 
     public static function searchInSpotify(string $query, int $limit = 5): Collection
     {
-        $results = Spotify::searchTracks($query)->limit($limit)->get();
-        $items = $results['tracks']['items'] ?? [];
+        try {
+            $results = Spotify::searchTracks($query)->limit($limit)->get();
+            $items = $results['tracks']['items'] ?? [];
 
-        return collect($items)->map(function (array $track): Music {
-            $artists = collect($track['artists']);
+            return collect($items)->map(function (array $track): Music {
+                $artists = collect($track['artists']);
 
-            return new Music([
-                'id' => $track['id'],
-                'title' => $track['name'],
-                'artist' => $artists->pluck('name')->implode(', '),
-                'spotify_artist_ids' => $artists->pluck('id')->toArray(),
-                'cover_url' => $track['album']['images'][0]['url'] ?? '',
-                'release_date' => $track['album']['release_date'],
+                return new Music([
+                    'id' => $track['id'],
+                    'title' => $track['name'],
+                    'artist' => $artists->pluck('name')->implode(', '),
+                    'spotify_artist_ids' => $artists->pluck('id')->toArray(),
+                    'cover_url' => $track['album']['images'][0]['url'] ?? '',
+                    'release_date' => $track['album']['release_date'],
+                ]);
+            });
+        } catch (Throwable $throwable) {
+            Log::warning('SpotifyService (searchInSpotify) error: '.$throwable->getMessage(), [
+                'query' => $query,
             ]);
-        });
+
+            return collect();
+        }
     }
 
     public static function getArtistName(string $artistId): ?string
@@ -76,7 +89,11 @@ final class SpotifyService
                 $artist = Spotify::artist($artistId)->get();
 
                 return $artist['name'] ?? null;
-            } catch (Exception) {
+            } catch (Throwable $throwable) {
+                Log::warning('SpotifyService (getArtistName) error: '.$throwable->getMessage(), [
+                    'artist_id' => $artistId,
+                ]);
+
                 return null;
             }
         });

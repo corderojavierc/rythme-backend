@@ -12,11 +12,15 @@ use App\Models\User;
 use App\Services\SpotifyService;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 final class MusicController
 {
@@ -25,71 +29,96 @@ final class MusicController
         return response()->json([]);
     }
 
-    public function store(Request $request): MusicResource|JsonResponse
+    public function store(Request $request): MusicResource
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'min:2'],
-        ]);
+        try {
+            $data = $request->validate([
+                'name' => ['required', 'string', 'min:2'],
+            ]);
 
-        $query = $data['name'];
+            $query = $data['name'];
 
-        $music = Music::query()->where('title', 'like', sprintf('%%%s%%', $query))
-            ->orWhere('artist', 'like', sprintf('%%%s%%', $query))
-            ->first();
+            $music = Music::query()
+                ->where('title', 'like', sprintf('%%%s%%', $query))
+                ->orWhere('artist', 'like', sprintf('%%%s%%', $query))
+                ->first();
 
-        if (! $music) {
-            $music = SpotifyService::searchAndStore($query);
+            if (! $music) {
+                $music = SpotifyService::searchAndStore($query);
+            }
+
+            abort_unless($music instanceof Music, 404, 'Error: la canción no ha sido encontrada en ninguna plataforma.');
+
+            return new MusicResource($music);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al buscar o guardar la canción.');
+        } catch (Exception $e) {
+            throw_if($e instanceof HttpException, $e);
+
+            abort(500, 'Error: ha ocurrido un problema al buscar o guardar la canción.');
         }
-
-        if (! $music) {
-            return response()->json(['message' => 'La canción no fue encontrada en ninguna plataforma.'], 404);
-        }
-
-        return new MusicResource($music);
     }
 
     public function search(Request $request): AnonymousResourceCollection
     {
-        $request->validate(['name' => ['required', 'string', 'min:1']]);
+        try {
+            $request->validate(['name' => ['required', 'string', 'min:1']]);
 
-        $query = $request->input('name');
-        $perPage = 10;
-        $page = $request->input('page', 1);
+            $query = $request->input('name');
+            $perPage = 10;
+            $page = $request->input('page', 1);
 
-        $localSongs = Music::query()
-            ->where('title', 'like', sprintf('%%%s%%', $query))
-            ->orWhere('artist', 'like', sprintf('%%%s%%', $query))
-            ->get();
+            $localSongs = Music::query()
+                ->where('title', 'like', sprintf('%%%s%%', $query))
+                ->orWhere('artist', 'like', sprintf('%%%s%%', $query))
+                ->get();
 
-        $combined = $localSongs;
+            $combined = $localSongs;
 
-        if ($localSongs->count() < 20) {
-            try {
-                $spotifySongs = SpotifyService::searchInSpotify($query, 20);
-                $combined = $localSongs->concat($spotifySongs)
-                    ->unique(fn (Music $item): string => mb_strtolower($item->title.'|'.$item->artist));
-            } catch (Exception) {
+            if ($localSongs->count() < 20) {
+                try {
+                    $spotifySongs = SpotifyService::searchInSpotify($query, 20);
+                    $combined = $localSongs->concat($spotifySongs)
+                        ->unique(fn (Music $item): string => mb_strtolower($item->title.'|'.$item->artist));
+                } catch (Exception) {
+                }
             }
+
+            $items = $combined->forPage($page, $perPage)->values();
+
+            $paginatedResults = new LengthAwarePaginator(
+                $items,
+                $combined->count(),
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+
+            return MusicResource::collection($paginatedResults);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al buscar canciones.');
+        } catch (Exception $e) {
+            throw_if($e instanceof HttpException, $e);
+
+            abort(500, 'Error: no se ha podido realizar la búsqueda de canciones.');
         }
-
-        $items = $combined->forPage($page, $perPage)->values();
-
-        $paginatedResults = new LengthAwarePaginator(
-            $items,
-            $combined->count(),
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
-
-        return MusicResource::collection($paginatedResults);
     }
 
     public function show(string $id): MusicResource
     {
-        $music = Music::query()->findOrFail($id);
+        try {
+            $music = Music::query()->findOrFail($id);
 
-        return new MusicResource($music);
+            return new MusicResource($music);
+        } catch (ModelNotFoundException) {
+            abort(404, 'Error: la canción no ha sido encontrada.');
+        } catch (Exception) {
+            abort(500, 'Error al obtener los detalles de la canción.');
+        }
     }
 
     public function update(): JsonResponse
@@ -104,35 +133,53 @@ final class MusicController
 
     public function getPosts(string $id): AnonymousResourceCollection
     {
-        $currentUserId = Auth::id();
-        Music::query()->findOrFail($id);
+        try {
+            $currentUserId = Auth::id();
 
-        $posts = Post::query()->where('music_id', $id)
-            ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
-                $query->where('user_id', $currentUserId);
-            }])
-            ->withExists(['music as is_valorated' => function (Builder $query) use ($currentUserId): void {
-                $query->whereHas('post', function (Builder $pQuery) use ($currentUserId): void {
-                    $pQuery->where('user_id', $currentUserId);
-                });
-            }])
-            ->with(['user', 'music'])
-            ->latest()
-            ->paginate(10);
+            Music::query()->findOrFail($id);
 
-        return PostResource::collection($posts);
+            $posts = Post::query()
+                ->where('music_id', $id)
+                ->withExists(['likes as is_liked' => function (Builder $query) use ($currentUserId): void {
+                    $query->where('user_id', $currentUserId);
+                }])
+                ->withExists(['music as is_valorated' => function (Builder $query) use ($currentUserId): void {
+                    $query->whereHas('post', function (Builder $pQuery) use ($currentUserId): void {
+                        $pQuery->where('user_id', $currentUserId);
+                    });
+                }])
+                ->with(['user', 'music'])
+                ->latest()
+                ->paginate(10);
+
+            return PostResource::collection($posts);
+        } catch (ModelNotFoundException) {
+            abort(404, 'Error: la canción no ha sido encontrada.');
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al cargar las publicaciones de la canción.');
+        } catch (Exception) {
+            abort(500, 'Error al cargar las publicaciones de la canción.');
+        }
     }
 
-    public function getUserMusics(string $id): AnonymousResourceCollection|JsonResponse
+    public function getUserMusics(string $id): AnonymousResourceCollection
     {
-        $user = User::query()->findOrFail($id);
+        try {
+            $user = User::query()->findOrFail($id);
 
-        if (! $user->isArtist()) {
-            return response()->json(['message' => 'Este usuario no es un artista.'], 404);
+            abort_unless($user->isArtist(), 403, 'Error: este usuario no es un artista.');
+
+            $musics = $user->createdMusic()->with('createdBy')->paginate(10);
+
+            return MusicResource::collection($musics);
+        } catch (ModelNotFoundException) {
+            abort(404, 'Error: el artista no ha sido encontrado.');
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al cargar las canciones del artista.');
+        } catch (Exception $e) {
+            throw_if($e instanceof HttpException, $e);
+
+            abort(500, 'Error al cargar las canciones del artista.');
         }
-
-        $musics = $user->createdMusic()->with('createdBy')->paginate(10);
-
-        return MusicResource::collection($musics);
     }
 }

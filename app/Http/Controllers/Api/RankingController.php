@@ -9,10 +9,13 @@ use App\Models\MostValoratedMusic;
 use App\Models\MusicRating;
 use App\Models\Post;
 use App\Models\TopRatedMusic;
+use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\ValidationException;
 
 final class RankingController
 {
@@ -20,142 +23,182 @@ final class RankingController
 
     public function getGeneralTopRated(): AnonymousResourceCollection
     {
-        $rankings = MusicRating::query()
-            ->orderByDesc('rating')
-            ->with('music')
-            ->limit(self::TOP)
-            ->get()
-            ->values()
-            ->each(function ($item, $index) {
-                $item->position = $index + 1;
-            });
+        try {
+            $rankings = MusicRating::query()
+                ->orderByDesc('rating')
+                ->with('music')
+                ->limit(self::TOP)
+                ->get()
+                ->values()
+                ->each(function (MusicRating $item, int $index): void {
+                    $item->setAttribute('position', $index + 1);
+                });
 
-        return RankingResource::collection($rankings);
+            return RankingResource::collection($rankings);
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al cargar el ranking general de mejor valorados.');
+        } catch (Exception) {
+            abort(500, 'Error al cargar el ranking general de mejor valorados.');
+        }
     }
 
     public function getGeneralMostRated(): AnonymousResourceCollection
     {
-        $rankings = MusicRating::query()
-            ->orderByDesc('count_ratings')
-            ->with('music')
-            ->limit(self::TOP)
-            ->get()
-            ->values()
-            ->each(function ($item, $index) {
-                $item->position = $index + 1;
-            });
+        try {
+            $rankings = MusicRating::query()
+                ->orderByDesc('count_ratings')
+                ->with('music')
+                ->limit(self::TOP)
+                ->get()
+                ->values()
+                ->each(function (MusicRating $item, int $index): void {
+                    $item->setAttribute('position', $index + 1);
+                });
 
-        return RankingResource::collection($rankings);
+            return RankingResource::collection($rankings);
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al cargar el ranking general de más valorados.');
+        } catch (Exception) {
+            abort(500, 'Error al cargar el ranking general de más valorados.');
+        }
     }
 
     public function getTopRated(): JsonResponse
     {
-        $period = now()->format('Y-m');
-        $from = now()->startOfMonth()->startOfDay();
-        $to = now()->endOfDay();
+        try {
+            $period = now()->format('Y-m');
+            $from = now()->startOfMonth()->startOfDay();
+            $to = now()->endOfDay();
 
-        $rankings = Cache::remember(
-            key: 'rankings:top-rated:'.$period,
-            ttl: now()->addHours(6),
-            callback: fn (): Collection => Post::query()
-                ->whereBetween('created_at', [$from, $to])
-                ->selectRaw('music_id, AVG(rating) as rating, COUNT(*) as count_ratings')
-                ->groupBy('music_id')
-                ->orderByDesc('rating')
-                ->with('music')
-                ->limit(self::TOP)
-                ->get()
-                ->map(fn (Post $item, int $i): Post => $item->setAttribute('position', $i + 1))
-        );
+            $rankings = Cache::remember(
+                key: 'rankings:top-rated:'.$period,
+                ttl: now()->addHours(6),
+                callback: fn (): Collection => Post::query()
+                    ->whereBetween('created_at', [$from, $to])
+                    ->selectRaw('music_id, AVG(rating) as rating, COUNT(*) as count_ratings')
+                    ->groupBy('music_id')
+                    ->orderByDesc('rating')
+                    ->with('music')
+                    ->limit(self::TOP)
+                    ->get()
+                    ->map(fn (Post $item, int $i): Post => $item->setAttribute('position', $i + 1))
+            );
 
-        return response()->json([
-            'period' => $period,
-            'data' => RankingResource::collection($rankings),
-        ]);
+            return response()->json([
+                'period' => $period,
+                'data' => RankingResource::collection($rankings),
+            ]);
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al cargar el ranking de mejor valorados del mes.');
+        } catch (Exception) {
+            abort(500, 'Error al cargar el ranking de mejor valorados del mes.');
+        }
     }
 
     public function getMostRated(): JsonResponse
     {
-        $period = now()->format('Y-m');
-        $from = now()->startOfMonth()->startOfDay();
-        $to = now()->endOfDay();
+        try {
+            $period = now()->format('Y-m');
+            $from = now()->startOfMonth()->startOfDay();
+            $to = now()->endOfDay();
 
-        $rankings = Cache::remember(
-            key: 'rankings:most-rated:'.$period,
-            ttl: now()->addHours(6),
-            callback: fn (): Collection => Post::query()
-                ->whereBetween('created_at', [$from, $to])
-                ->selectRaw('music_id, COUNT(*) as count_ratings, AVG(rating) as rating')
-                ->groupBy('music_id')
-                ->orderByDesc('count_ratings')
-                ->orderByDesc('rating')
-                ->with('music')
-                ->limit(self::TOP)
-                ->get()
-                ->map(fn (Post $item, int $i): Post => $item->setAttribute('position', $i + 1))
-        );
+            $rankings = Cache::remember(
+                key: 'rankings:most-rated:'.$period,
+                ttl: now()->addHours(6),
+                callback: fn (): Collection => Post::query()
+                    ->whereBetween('created_at', [$from, $to])
+                    ->selectRaw('music_id, COUNT(*) as count_ratings, AVG(rating) as rating')
+                    ->groupBy('music_id')
+                    ->orderByDesc('count_ratings')
+                    ->orderByDesc('rating')
+                    ->with('music')
+                    ->limit(self::TOP)
+                    ->get()
+                    ->map(fn (Post $item, int $i): Post => $item->setAttribute('position', $i + 1))
+            );
 
-        return response()->json([
-            'period' => $period,
-            'data' => RankingResource::collection($rankings),
-        ]);
+            return response()->json([
+                'period' => $period,
+                'data' => RankingResource::collection($rankings),
+            ]);
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al cargar el ranking de más valorados del mes.');
+        } catch (Exception) {
+            abort(500, 'Error al cargar el ranking de más valorados del mes.');
+        }
     }
 
     public function getTopRatedHistory(string $period): JsonResponse
     {
-        if (! preg_match('/^\d{4}-\d{2}$/', $period)) {
+        try {
+            if (! preg_match('/^\d{4}-\d{2}$/', $period)) {
+                throw ValidationException::withMessages([
+                    'period' => 'Error: formato de fecha inválido. Usa YYYY-MM (ej: 2025-04).',
+                ]);
+            }
+
+            if ($period === now()->format('Y-m')) {
+                return $this->getTopRated();
+            }
+
+            $date = now()->createFromFormat('Y-m', $period)->startOfMonth();
+
+            $rankings = Cache::rememberForever(
+                key: 'rankings:top-rated:history:'.$period,
+                callback: fn (): Collection => TopRatedMusic::query()
+                    ->with('music')
+                    ->where('period', $date->toDateString())
+                    ->orderBy('rank_position')
+                    ->get()
+            );
+
             return response()->json([
-                'message' => 'Formato inválido. Usa YYYY-MM, ejemplo: 2025-04',
-            ], 422);
+                'period' => $period,
+                'data' => RankingResource::collection($rankings),
+            ]);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al cargar el historial de mejor valorados.');
+        } catch (Exception) {
+            abort(500, 'Error: no se ha podido cargar el historial de mejores valoraciones.');
         }
-
-        if ($period === now()->format('Y-m')) {
-            return $this->getTopRated();
-        }
-
-        $date = now()->createFromFormat('Y-m', $period)->startOfMonth();
-
-        $rankings = Cache::rememberForever(
-            key: 'rankings:top-rated:history:'.$period,
-            callback: fn (): Collection => TopRatedMusic::query()
-                ->with('music')
-                ->where('period', $date->toDateString())
-                ->orderBy('rank_position')
-                ->get()
-        );
-
-        return response()->json([
-            'period' => $period,
-            'data' => RankingResource::collection($rankings),
-        ]);
     }
 
     public function getMostRatedHistory(string $period): JsonResponse
     {
-        if (! preg_match('/^\d{4}-\d{2}$/', $period)) {
+        try {
+            if (! preg_match('/^\d{4}-\d{2}$/', $period)) {
+                throw ValidationException::withMessages([
+                    'period' => 'Error: formato de fecha inválido. Usa YYYY-MM (ej: 2025-04).',
+                ]);
+            }
+
+            if ($period === now()->format('Y-m')) {
+                return $this->getMostRated();
+            }
+
+            $date = now()->createFromFormat('Y-m', $period)->startOfMonth();
+
+            $rankings = Cache::rememberForever(
+                key: 'rankings:most-rated:history:'.$period,
+                callback: fn (): Collection => MostValoratedMusic::query()
+                    ->with('music')
+                    ->where('period', $date->toDateString())
+                    ->orderBy('rank_position')
+                    ->get()
+            );
+
             return response()->json([
-                'message' => 'Formato inválido. Usa YYYY-MM, ejemplo: 2025-04',
-            ], 422);
+                'period' => $period,
+                'data' => RankingResource::collection($rankings),
+            ]);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al cargar el historial de más valorados.');
+        } catch (Exception) {
+            abort(500, 'Error: no se ha podido cargar el historial de los más valorados.');
         }
-
-        if ($period === now()->format('Y-m')) {
-            return $this->getMostRated();
-        }
-
-        $date = now()->createFromFormat('Y-m', $period)->startOfMonth();
-
-        $rankings = Cache::rememberForever(
-            key: 'rankings:most-rated:history:'.$period,
-            callback: fn (): Collection => MostValoratedMusic::query()
-                ->with('music')
-                ->where('period', $date->toDateString())
-                ->orderBy('rank_position')
-                ->get()
-        );
-
-        return response()->json([
-            'period' => $period,
-            'data' => RankingResource::collection($rankings),
-        ]);
     }
 }
