@@ -96,6 +96,11 @@ final class PostController
                 ->withExists(['likes as is_liked' => function (Builder $query): void {
                     $query->where('user_id', Auth::id());
                 }])
+                ->withExists(['music as is_valorated' => function (Builder $query): void {
+                    $query->whereHas('post', function (Builder $pQuery): void {
+                        $pQuery->where('user_id', Auth::id());
+                    });
+                }])
                 ->findOrFail($id);
 
             return new PostResource($post);
@@ -189,6 +194,7 @@ final class PostController
     public function checkPost(Request $request): JsonResponse
     {
         try {
+            $request->merge(['music_id' => $request->route('music_id')]);
             $request->validate([
                 'music_id' => ['required', 'exists:musics,id'],
             ]);
