@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\UserTypeEnum;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -26,6 +27,7 @@ final class AuthController
 
             $user = User::query()->create([
                 'profile_image' => 'https://api.dicebear.com/9.x/thumbs/svg?seed='.$data['username'],
+                'type' => UserTypeEnum::USER,
                 ...$data,
             ]);
 
