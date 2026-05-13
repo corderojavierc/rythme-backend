@@ -13,6 +13,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 final class SnapshotMonthlyRankingJob implements ShouldBeUnique, ShouldQueue
 {
@@ -33,21 +35,37 @@ final class SnapshotMonthlyRankingJob implements ShouldBeUnique, ShouldQueue
 
     public function handle(): void
     {
-        $month = $this->resolveMonth();
-        $from = $month->copy()->startOfMonth()->startOfDay();
-        $to = $month->copy()->endOfMonth()->endOfDay();
-        $period = $from->toDateString();
+        try {
+            $month = $this->resolveMonth();
+            $from = $month->copy()->startOfMonth()->startOfDay();
+            $to = $month->copy()->endOfMonth()->endOfDay();
+            $period = $from->toDateString();
 
-        DB::transaction(function () use ($from, $to, $period): void {
-            $this->snapshotTopRated($from, $to, $period);
-            $this->snapshotMostRated($from, $to, $period);
-        });
+            DB::transaction(function () use ($from, $to, $period): void {
+                $this->snapshotTopRated($from, $to, $period);
+                $this->snapshotMostRated($from, $to, $period);
+            });
 
-        $cacheKey = $month->format('Y-m');
-        Cache::forget('rankings:top-rated:'.$cacheKey);
-        Cache::forget('rankings:most-rated:'.$cacheKey);
-        Cache::forget('rankings:top-rated:history:'.$cacheKey);
-        Cache::forget('rankings:most-rated:history:'.$cacheKey);
+            $cacheKey = $month->format('Y-m');
+            Cache::forget('rankings:top-rated:'.$cacheKey);
+            Cache::forget('rankings:most-rated:'.$cacheKey);
+            Cache::forget('rankings:top-rated:history:'.$cacheKey);
+            Cache::forget('rankings:most-rated:history:'.$cacheKey);
+        } catch (Throwable $throwable) {
+            Log::error('Error en SnapshotMonthlyRankingJob: '.$throwable->getMessage(), [
+                'month' => $this->resolveMonth()->format('Y-m'),
+                'exception' => $throwable,
+            ]);
+
+            throw $throwable;
+        }
+    }
+
+    public function failed(Throwable $exception): void
+    {
+        Log::critical('SnapshotMonthlyRankingJob falló definitivamente: '.$exception->getMessage(), [
+            'month' => $this->resolveMonth()->format('Y-m'),
+        ]);
     }
 
     private function resolveMonth(): CarbonInterface

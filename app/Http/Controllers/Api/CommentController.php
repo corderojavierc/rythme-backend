@@ -9,52 +9,57 @@ use App\Models\Comment;
 use App\Models\Post;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 final class CommentController
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(): AnonymousResourceCollection
     {
-        $posts = Comment::with(['post', 'user'])
+        $comments = Comment::with(['post', 'user'])
             ->withExists(['likes as is_liked' => function (Builder $query): void {
                 $query->where('user_id', Auth::id());
             }])
             ->latest()
             ->paginate(20);
 
-        return CommentResource::collection($posts);
+        return CommentResource::collection($comments);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request): JsonResponse
     {
-        $data = $request->validate([
-            'post_id' => ['required', 'exists:posts,id'],
-            'text' => ['required', 'string'],
-        ]);
+        try {
+            $data = $request->validate([
+                'post_id' => ['required', 'exists:posts,id'],
+                'text' => ['required', 'string'],
+            ]);
 
-        Comment::query()->create([
-            'post_id' => $data['post_id'],
-            'user_id' => Auth::id(),
-            'text' => $data['text'],
-            'count_likes' => 0,
-        ]);
+            Comment::query()->create([
+                'post_id' => $data['post_id'],
+                'user_id' => Auth::id(),
+                'text' => $data['text'],
+                'count_likes' => 0,
+            ]);
 
-        return response()->json(true, 201);
+            return response()->json([
+                'message' => 'Comentario creado correctamente.',
+            ], 201);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (QueryException) {
+            abort(500, 'Error de base de datos al crear el comentario.');
+        } catch (Exception) {
+            abort(500, 'Error: no se ha podido crear el comentario.');
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id): AnonymousResourceCollection|JsonResponse
+    public function show(string $id): AnonymousResourceCollection
     {
         try {
             $post = Post::query()->findOrFail($id);
@@ -68,40 +73,37 @@ final class CommentController
                 ->paginate(10);
 
             return CommentResource::collection($comments);
+        } catch (ModelNotFoundException) {
+            abort(404, 'Error: la publicación no ha sido encontrada.');
         } catch (Exception) {
-            return response()->json([
-                'message' => 'Post not found',
-            ], 404);
+            abort(500, 'Error al obtener los comentarios.');
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(): JsonResponse
     {
         return response()->json([]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id): JsonResponse
     {
         try {
             /** @var Comment $comment */
             $comment = Comment::query()->findOrFail($id);
-            if ($comment->user_id !== Auth::id()) {
-                return response()->json([
-                    'message' => 'You are not authorized to delete this comment',
-                ], 403);
-            }
+
+            abort_if($comment->user_id !== Auth::id(), 403, 'Error: no tienes permisos para eliminar este comentario.');
 
             $comment->delete();
 
-            return response()->json(true, 200);
-        } catch (Exception) {
-            return response()->json(false, 404);
+            return response()->json([
+                'message' => 'Comentario eliminado correctamente.',
+            ]);
+        } catch (ModelNotFoundException) {
+            abort(404, 'Error: el comentario no ha sido encontrado.');
+        } catch (Exception $e) {
+            throw_if($e instanceof HttpException, $e);
+
+            abort(500, 'Error al eliminar el comentario.');
         }
     }
 }
