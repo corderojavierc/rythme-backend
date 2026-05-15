@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\UserTypeEnum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -24,12 +25,13 @@ final class UserFactory extends Factory
         return [
             'username' => fake()->unique()->userName(),
             'name' => fake()->name(),
-            'second_name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'type' => UserTypeEnum::USER,
             'followers' => 0,
             'following' => 0,
             'posts' => 0,
+            'musics' => 0,
             'password' => self::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'profile_image' => $this->profilePic(),

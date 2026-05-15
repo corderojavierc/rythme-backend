@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ArtistApplicationStatusEnum;
+use App\Enums\UserTypeEnum;
 use Carbon\CarbonInterface;
-use Database\Factories\ArtistApplicationFactory;
-use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,21 +14,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Override;
 
 /**
- * @property-read string $id
- * @property-read string $user_id
- * @property-read bool $artist
- * @property-read int $followers
- * @property-read int | null $listeners
- * @property-read string | null $youtube
- * @property-read string | null $tiktok
- * @property-read string | null $instagram
- * @property-read string | null $spotify
- * @property-read string | null $twitch
- * @property-read string $description
+ * @property string $id
+ * @property string $user_id
+ * @property UserTypeEnum $type
+ * @property ArtistApplicationStatusEnum $status
+ * @property int $followers
+ * @property int|null $listeners
+ * @property string|null $youtube
+ * @property string|null $tiktok
+ * @property string|null $instagram
+ * @property string|null $spotify
+ * @property string|null $twitch
+ * @property string $description
+ * @property string|null $admin_notes
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-#[UseFactory(ArtistApplicationFactory::class)]
 final class ArtistApplication extends Model
 {
     use HasFactory;
@@ -37,23 +38,60 @@ final class ArtistApplication extends Model
     #[Override]
     protected $table = 'artist_applications';
 
-    /**
-     * @return array<string, string>
-     */
+    public function acceptApplication(string $id, string $adminNotes): bool
+    {
+        $application = $this->findOrFail($id);
+
+        $user = User::query()->findOrFail($application->user_id);
+
+        $application->status = ArtistApplicationStatusEnum::ACCEPTED;
+        $application->admin_notes = $adminNotes;
+        $application->save();
+
+        if ($application->type === UserTypeEnum::ARTIST) {
+            $user->type = UserTypeEnum::ARTIST;
+        } elseif ($application->type === UserTypeEnum::CREATOR) {
+            $user->type = UserTypeEnum::CREATOR;
+        }
+
+        $spotifyId = null;
+        if (! empty($application->spotify)) {
+            $spotifyId = $application->spotify;
+
+            if (preg_match('/artist\/([a-zA-Z0-9]+)/', (string) $spotifyId, $matches)) {
+                $spotifyId = $matches[1];
+            }
+
+            $user->spotify_id = $spotifyId;
+        }
+
+        $user->save();
+
+        if ($spotifyId) {
+            $this->linkSpotifyMusicToUser($user, $spotifyId);
+        }
+
+        return true;
+    }
+
+    public function declineApplication(string $id, string $adminNotes): bool
+    {
+        $application = $this->findOrFail($id);
+        $application->status = ArtistApplicationStatusEnum::DECLINED;
+        $application->admin_notes = $adminNotes;
+        $application->save();
+
+        return true;
+    }
+
+    #[Override]
     public function casts(): array
     {
         return [
-            'id' => 'string',
-            'user_id' => 'string',
-            'artist' => 'boolean',
+            'type' => UserTypeEnum::class,
+            'status' => ArtistApplicationStatusEnum::class,
             'followers' => 'integer',
             'listeners' => 'integer',
-            'youtube' => 'string',
-            'tiktok' => 'string',
-            'instagram' => 'string',
-            'spotify' => 'string',
-            'twitch' => 'string',
-            'description' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
@@ -62,5 +100,20 @@ final class ArtistApplication extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    private function linkSpotifyMusicToUser(User $user, string $cleanSpotifyId): void
+    {
+        $musicIds = Music::query()
+            ->whereJsonContains('spotify_artist_ids', $cleanSpotifyId)
+            ->pluck('id');
+
+        if ($musicIds->isNotEmpty()) {
+            $sync = $user->createdMusic()->syncWithoutDetaching($musicIds);
+
+            if (! empty($sync['attached'])) {
+                $user->increment('musics', count($sync['attached']));
+            }
+        }
     }
 }

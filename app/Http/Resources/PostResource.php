@@ -24,12 +24,13 @@ final class PostResource extends JsonResource
             'id' => $post->id,
             'profile_image' => $post->user?->profile_image,
             'name' => $post->user?->name,
-            'second_name' => $post->user?->second_name,
             'user_name' => $post->user?->username,
             'followers' => $post->user?->followers,
             'following' => $post->user?->following,
             'posts' => $post->user?->posts,
             'user_id' => $post->user?->id,
+            'musics' => $post->user?->musics,
+            'user_type' => $post->user?->type,
             'music_id' => $post->music?->id,
             'cover_url' => $post->music?->cover_url,
             'music' => $post->music?->title,
@@ -42,8 +43,6 @@ final class PostResource extends JsonResource
             'global_rating' => $rating->rating ?? '',
             'count_ratings' => $rating->count_ratings ?? 0,
             'is_valorated' => (bool) $post->is_valorated,
-            'created_at' => $post->created_at,
-            'updated_at' => $post->updated_at,
         ];
     }
 }

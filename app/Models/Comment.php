@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Database\Factories\CommentFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -13,6 +14,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Override;
 
+/**
+ * @property-read string $id
+ * @property-read string $post_id
+ * @property-read string $user_id
+ * @property-read string $text
+ * @property-read int $count_likes
+ * @property-read CarbonInterface $created_at
+ * @property-read CarbonInterface $updated_at
+ */
 #[UseFactory(CommentFactory::class)]
 final class Comment extends Model
 {

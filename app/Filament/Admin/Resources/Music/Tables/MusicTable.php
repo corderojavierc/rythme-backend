@@ -6,7 +6,7 @@ namespace App\Filament\Admin\Resources\Music\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -17,25 +17,36 @@ final class MusicTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('ID')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('title')
-                    ->searchable(),
-                TextColumn::make('artist')
-                    ->searchable(),
                 ImageColumn::make('cover_url')
                     ->label('Cover')
-                    ->searchable(),
+                    ->square(),
+
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('title')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('artist')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('release_date')
-                    ->searchable(),
+                    ->label('Released')
+                    ->date('d/m/Y')
+                    ->sortable(),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -43,12 +54,14 @@ final class MusicTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('release_date', 'desc')
+            ->striped();
     }
 }

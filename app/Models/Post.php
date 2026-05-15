@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -14,6 +15,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Override;
 
+/**
+ * @property string $id
+ * @property string $user_id
+ * @property string $music_id
+ * @property string $text
+ * @property float $rating
+ * @property int $count_likes
+ * @property int $count_comments
+ * @property int $count_ratings
+ * @property-read Music $music
+ * @property-read CarbonInterface $created_at
+ * @property-read CarbonInterface $updated_at
+ */
 #[UseFactory(PostFactory::class)]
 final class Post extends Model
 {
@@ -85,13 +99,13 @@ final class Post extends Model
     {
         $stats = self::query()
             ->where('music_id', $this->music_id)
-            ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as total')
+            ->selectRaw('AVG(rating) as rating, COUNT(*) as total')
             ->first();
 
         MusicRating::query()->updateOrCreate(
             ['music_id' => $this->music_id],
             [
-                'rating' => $stats->avg_rating ?? 0,
+                'rating' => $stats->rating ?? 0,
                 'count_ratings' => $stats->total ?? 0,
             ]
         );

@@ -86,6 +86,12 @@ return [
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
+    'username' => env('APP_DEFAULT_USERNAME', 'admin'),
+    'userfirstname' => env('APP_DEFAULT_NAME', 'admin'),
+    'email' => env('APP_DEFAULT_EMAIL', 'admin@admin.com'),
+    'password' => env('APP_DEFAULT_PASSWORD', 'admin'),
+    'image' => env('APP_DEFAULT_IMAGE', 'https://api.dicebear.com/9.x/thumbs/svg?seed=admin'),
+
     /*
     |--------------------------------------------------------------------------
     | Encryption Key

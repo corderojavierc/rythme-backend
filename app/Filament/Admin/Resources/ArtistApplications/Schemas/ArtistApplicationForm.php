@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\ArtistApplications\Schemas;
 
-use App\Models\User;
+use App\Enums\ArtistApplicationStatusEnum;
+use App\Enums\UserTypeEnum;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Collection;
+use Filament\Support\Icons\Heroicon;
 
 final class ArtistApplicationForm
 {
@@ -17,43 +20,83 @@ final class ArtistApplicationForm
     {
         return $schema
             ->components([
-                Select::make('user_id')
-                    ->relationship('user', 'username')
-                    ->searchable()
-                    ->getSearchResultsUsing(fn (string $search): Collection => User::query()->where('name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('second_name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('username', 'like', sprintf('%%%s%%', $search))
-                        ->limit(50)
-                        ->get()
-                        ->mapWithKeys(fn (User $user): array => [
-                            $user->id => sprintf('%s %s (@%s)', $user->name, $user->second_name, $user->username),
-                        ])
-                    )
-                    ->getOptionLabelFromRecordUsing(fn (User $record): string => sprintf('%s %s (@%s)', $record->name, $record->second_name, $record->username))
-                    ->preload()
-                    ->required(),
-                Toggle::make('artist')
-                    ->required(),
-                TextInput::make('followers')
-                    ->required()
-                    ->numeric()
-                    ->minValue(0)
-                    ->default(0)
-                    ->step(1)
-                    ->disabledOn('edit'),
-                TextInput::make('listeners')
-                    ->numeric()
-                    ->minValue(0)
-                    ->default(0)
-                    ->step(1)
-                    ->disabledOn('edit'),
-                TextInput::make('youtube'),
-                TextInput::make('tiktok'),
-                TextInput::make('instagram'),
-                TextInput::make('spotify'),
-                TextInput::make('twitch'),
-                TextInput::make('description')
-                    ->required(),
-            ]);
+                Group::make()
+                    ->schema([
+                        Section::make('Application Content')
+                            ->icon(Heroicon::DocumentText)
+                            ->schema([
+                                Textarea::make('description')
+                                    ->label('Artist Bio / Motivation')
+                                    ->required()
+                                    ->rows(6)
+                                    ->columnSpanFull(),
+
+                                Textarea::make('admin_notes')
+                                    ->label('Internal Admin Notes')
+                                    ->rows(4)
+                                    ->columnSpanFull(),
+                            ]),
+
+                        Section::make('Social Presence')
+                            ->icon(Heroicon::GlobeAlt)
+                            ->schema([
+                                TextInput::make('spotify')
+                                    ->prefixIcon(Heroicon::Link)
+                                    ->url(),
+                                TextInput::make('youtube')
+                                    ->prefixIcon(Heroicon::Link)
+                                    ->url(),
+                                TextInput::make('instagram')
+                                    ->prefixIcon(Heroicon::Camera)
+                                    ->url(),
+                                TextInput::make('tiktok')
+                                    ->prefixIcon(Heroicon::VideoCamera)
+                                    ->url(),
+                                TextInput::make('twitch')
+                                    ->prefixIcon(Heroicon::ComputerDesktop)
+                                    ->url(),
+                            ])
+                            ->columns(2),
+                    ])
+                    ->columnSpan(['lg' => 2]),
+
+                Group::make()
+                    ->schema([
+                        Section::make('Status & Type')
+                            ->schema([
+                                Select::make('status')
+                                    ->options(ArtistApplicationStatusEnum::class)
+                                    ->default('sent')
+                                    ->native(false)
+                                    ->required(),
+
+                                Select::make('type')
+                                    ->options(UserTypeEnum::class)
+                                    ->native(false)
+                                    ->required(),
+
+                                Select::make('user_id')
+                                    ->relationship('user', 'username')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                            ]),
+
+                        Section::make('Metrics')
+                            ->schema([
+                                TextInput::make('followers')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->prefixIcon(Heroicon::Users)
+                                    ->required(),
+
+                                TextInput::make('listeners')
+                                    ->numeric()
+                                    ->prefixIcon(Heroicon::MusicalNote),
+                            ]),
+                    ])
+                    ->columnSpan(['lg' => 1]),
+            ])
+            ->columns(3);
     }
 }

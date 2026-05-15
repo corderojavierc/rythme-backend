@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Comments\Schemas;
 
-use App\Models\User;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Collection;
+use Filament\Support\Icons\Heroicon;
 
 final class CommentForm
 {
@@ -16,33 +18,51 @@ final class CommentForm
     {
         return $schema
             ->components([
-                Select::make('user_id')
-                    ->relationship('user', 'username')
-                    ->searchable()
-                    ->getSearchResultsUsing(fn (string $search): Collection => User::query()->where('name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('second_name', 'like', sprintf('%%%s%%', $search))
-                        ->orWhere('username', 'like', sprintf('%%%s%%', $search))
-                        ->limit(50)
-                        ->get()
-                        ->mapWithKeys(fn (User $user): array => [
-                            $user->id => sprintf('%s %s (@%s)', $user->name, $user->second_name, $user->username),
-                        ])
-                    )
-                    ->getOptionLabelFromRecordUsing(fn (User $record): string => sprintf('%s %s (@%s)', $record->name, $record->second_name, $record->username))
-                    ->preload()
-                    ->required(),
-                Select::make('post_id')
-                    ->relationship('post', 'text')
-                    ->required(),
-                TextInput::make('text')
-                    ->required(),
-                TextInput::make('count_likes')
-                    ->required()
-                    ->numeric()
-                    ->minValue(0)
-                    ->default(0)
-                    ->step(1)
-                    ->disabledOn('edit'),
-            ]);
+
+                Group::make()
+                    ->schema([
+                        Section::make('Comment Content')
+                            ->icon(Heroicon::ChatBubbleBottomCenter)
+                            ->schema([
+                                Textarea::make('text')
+                                    ->label('Content')
+                                    ->rows(5)
+                                    ->maxLength(65535)
+                                    ->required()
+                                    ->columnSpanFull(),
+                            ]),
+                        Section::make('Metrics')
+                            ->schema([
+                                TextInput::make('count_likes')
+                                    ->label('Likes')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->prefixIcon(Heroicon::Heart)
+                                    ->required(),
+                            ]),
+                    ])
+                    ->columnSpan(['lg' => 2]),
+                Group::make()
+                    ->schema([
+                        Section::make('Associations')
+                            ->schema([
+                                Select::make('user_id')
+                                    ->relationship('user', 'username')
+                                    ->searchable()
+                                    ->preload()
+                                    ->native(false)
+                                    ->required(),
+
+                                Select::make('post_id')
+                                    ->relationship('post', 'id')
+                                    ->searchable()
+                                    ->preload()
+                                    ->native(false)
+                                    ->required(),
+                            ]),
+                    ])
+                    ->columnSpan(['lg' => 1]),
+            ])
+            ->columns(3);
     }
 }

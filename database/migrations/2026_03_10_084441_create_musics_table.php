@@ -8,15 +8,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('musics', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->string('title');
             $table->string('artist');
+            $table->json('spotify_artist_ids')->nullable();
             $table->string('cover_url');
             $table->string('release_date');
             $table->unique(['title', 'artist']);
@@ -24,9 +22,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('musics');

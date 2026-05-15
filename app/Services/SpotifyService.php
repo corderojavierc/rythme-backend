@@ -6,8 +6,10 @@ namespace App\Services;
 
 use Aerni\Spotify\Facades\Spotify;
 use App\Models\Music;
-use Exception;
+use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 final class SpotifyService
 {
@@ -15,43 +17,85 @@ final class SpotifyService
     {
         try {
             $results = Spotify::searchTracks($query)->limit(1)->get();
-            /** @var array<string, mixed>|null $track */
             $track = $results['tracks']['items'][0] ?? null;
 
             if (! $track) {
                 return null;
             }
 
-            /** @var Music $music */
+            $artists = collect($track['artists']);
+            $artistNames = $artists->pluck('name')->implode(', ');
+            $artistIds = $artists->pluck('id')->toArray();
+
             $music = Music::query()->firstOrCreate([
                 'title' => $track['name'],
-                'artist' => $track['artists'][0]['name'],
+                'artist' => $artistNames,
             ], [
+                'spotify_artist_ids' => $artistIds,
                 'cover_url' => $track['album']['images'][0]['url'] ?? '',
                 'release_date' => $track['album']['release_date'],
             ]);
 
+            if ($music->wasRecentlyCreated) {
+                $users = User::query()->whereIn('spotify_id', $artistIds)->get();
+
+                foreach ($users as $user) {
+                    $user->createdMusic()->syncWithoutDetaching([$music->id]);
+                    $user->increment('musics');
+                }
+            }
+
             return $music;
-        } catch (Exception) {
+        } catch (Throwable $throwable) {
+            Log::warning('SpotifyService (searchAndStore) error: '.$throwable->getMessage(), [
+                'query' => $query,
+            ]);
+
             return null;
         }
     }
 
-    /**
-     * @return Collection<int, Music>
-     */
     public static function searchInSpotify(string $query, int $limit = 5): Collection
     {
-        $results = Spotify::searchTracks($query)->limit($limit)->get();
-        /** @var array<int, array<string, mixed>> $items */
-        $items = $results['tracks']['items'] ?? [];
+        try {
+            $results = Spotify::searchTracks($query)->limit($limit)->get();
+            $items = $results['tracks']['items'] ?? [];
 
-        return collect($items)->map(fn (array $track): Music => new Music([
-            'id' => $track['id'],
-            'title' => $track['name'],
-            'artist' => $track['artists'][0]['name'],
-            'cover_url' => $track['album']['images'][0]['url'] ?? '',
-            'release_date' => $track['album']['release_date'],
-        ]));
+            return collect($items)->map(function (array $track): Music {
+                $artists = collect($track['artists']);
+
+                return new Music([
+                    'id' => $track['id'],
+                    'title' => $track['name'],
+                    'artist' => $artists->pluck('name')->implode(', '),
+                    'spotify_artist_ids' => $artists->pluck('id')->toArray(),
+                    'cover_url' => $track['album']['images'][0]['url'] ?? '',
+                    'release_date' => $track['album']['release_date'],
+                ]);
+            });
+        } catch (Throwable $throwable) {
+            Log::warning('SpotifyService (searchInSpotify) error: '.$throwable->getMessage(), [
+                'query' => $query,
+            ]);
+
+            return collect();
+        }
+    }
+
+    public static function getArtistName(string $artistId): ?string
+    {
+        return cache()->remember('spotify_artist_name_'.$artistId, now()->addMonth(), function () use ($artistId) {
+            try {
+                $artist = Spotify::artist($artistId)->get();
+
+                return $artist['name'] ?? null;
+            } catch (Throwable $throwable) {
+                Log::warning('SpotifyService (getArtistName) error: '.$throwable->getMessage(), [
+                    'artist_id' => $artistId,
+                ]);
+
+                return null;
+            }
+        });
     }
 }

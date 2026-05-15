@@ -6,7 +6,6 @@ namespace App\Filament\Admin\Resources\MusicRatings\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -18,19 +17,33 @@ final class MusicRatingsTable
         return $table
             ->columns([
                 TextColumn::make('music.title')
-                    ->searchable(),
+                    ->label('Song')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('rating')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (mixed $state): string => match (true) {
+                        $state >= 4 => 'success',
+                        $state >= 2 => 'warning',
+                        default => 'danger',
+                    }),
+
                 TextColumn::make('count_ratings')
+                    ->label('Total Ratings')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-star'),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -39,12 +52,13 @@ final class MusicRatingsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('rating', 'desc')
+            ->striped();
     }
 }

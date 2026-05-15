@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\ArtistApplications\Pages;
 
 use App\Filament\Admin\Resources\ArtistApplications\ArtistApplicationResource;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Override;
 
@@ -17,6 +18,7 @@ final class EditArtistApplication extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            ViewAction::make(),
             DeleteAction::make(),
         ];
     }

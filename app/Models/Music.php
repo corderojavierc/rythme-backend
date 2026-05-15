@@ -34,15 +34,22 @@ final class Music extends Model
     #[Override]
     protected $table = 'musics';
 
-    /**
-     * @return array<string, string>
-     */
+    public static function booted(): void
+    {
+        self::deleting(function (Music $music): void {
+            foreach ($music->createdBy as $user) {
+                $user->decrement('musics');
+            }
+        });
+    }
+
     public function casts(): array
     {
         return [
             'id' => 'string',
             'title' => 'string',
             'artist' => 'string',
+            'spotify_artist_ids' => 'array',
             'cover_url' => 'string',
             'release_date' => 'datetime',
             'created_at' => 'datetime',
@@ -68,5 +75,15 @@ final class Music extends Model
     public function rating(): HasOne
     {
         return $this->hasOne(MusicRating::class);
+    }
+
+    public function topRatedHistory(): HasMany
+    {
+        return $this->hasMany(TopRatedMusic::class);
+    }
+
+    public function mostRatedHistory(): HasMany
+    {
+        return $this->hasMany(MostValoratedMusic::class);
     }
 }

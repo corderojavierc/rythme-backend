@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\UserTypeEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,13 +15,14 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('username')->unique();
             $table->string('name');
-            $table->string('second_name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->integer('is_verified_as')->default(0);
+            $table->string('type')->default(UserTypeEnum::USER->value);
+            $table->string('spotify_id')->nullable()->unique();
             $table->integer('followers')->default(0);
             $table->integer('following')->default(0);
             $table->integer('posts')->default(0);
+            $table->integer('musics')->default(0);
             $table->string('password');
             $table->rememberToken();
             $table->string('profile_image')->default('https://api.dicebear.com/9.x/thumbs/svg?seed=username');

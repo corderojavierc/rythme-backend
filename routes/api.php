@@ -2,13 +2,15 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\FollowController;
-use App\Http\Controllers\LikeController;
-use App\Http\Controllers\MusicController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\ArtistApplicationController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\FollowController;
+use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\MusicController;
+use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\RankingController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('register', [AuthController::class, 'register'])->name('register');
@@ -24,8 +26,12 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::delete('posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
     Route::get('/posts/check/{music_id}', [PostController::class, 'checkPost']);
     Route::get('posts/{id}', [PostController::class, 'show'])->name('posts.show');
+    Route::post('posts/search', [PostController::class, 'search'])->name('posts.search');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::get('users/search', [UserController::class, 'search'])->name('users.search');
+    Route::get('users/me', [UserController::class, 'me'])->name('users.me');
+    Route::get('users/{username}', [UserController::class, 'show'])->name('users.show');
     Route::get('{id}/posts', [UserController::class, 'getPosts'])->name('users.posts');
     Route::get('{id}/comments', [UserController::class, 'getComments'])->name('users.comments');
     Route::get('{id}/likes', [UserController::class, 'getLiked'])->name('users.likes');
@@ -49,4 +55,15 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('music/{id}', [MusicController::class, 'show'])->name('music.show');
     Route::post('/music/search', [MusicController::class, 'search'])->name('api.music.search');
     Route::get('music/{id}/posts', [MusicController::class, 'getPosts'])->name('music.posts');
+    Route::get('music/{id}/musics', [MusicController::class, 'getUserMusics'])->name('music.musics');
+    Route::get('musics/top-rated', [RankingController::class, 'getGeneralTopRated'])->name('music.top-rated');
+    Route::get('musics/most-rated', [RankingController::class, 'getGeneralMostRated'])->name('music.most-rated');
+    Route::get('musics/top-rated/actual', [RankingController::class, 'getTopRated'])->name('music.top-rated');
+    Route::get('musics/most-rated/actual', [RankingController::class, 'getMostRated'])->name('music.most-rated');
+    Route::get('musics/top-rated-history/{period}', [RankingController::class, 'getTopRatedHistory'])->name('music.top-rated-history');
+    Route::get('musics/most-rated-history/{period}', [RankingController::class, 'getMostRatedHistory'])->name('music.most-rated-history');
+
+    Route::get('artist-applications', [ArtistApplicationController::class, 'index'])->name('artist-applications.index');
+    Route::post('artist-applications', [ArtistApplicationController::class, 'store'])->name('artist-applications.store');
+    Route::get('artist-applications/has', [ArtistApplicationController::class, 'hasApplication'])->name('artist-applications.has');
 });
