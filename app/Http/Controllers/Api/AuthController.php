@@ -13,8 +13,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+// Gestiona el registro, login y logout de usuarios vía API
 final class AuthController
 {
+    // Crea un nuevo usuario y devuelve su token de autenticación
     public function register(Request $request): JsonResponse
     {
         try {
@@ -46,6 +48,7 @@ final class AuthController
         }
     }
 
+    // Verifica credenciales y devuelve token si son correctas
     public function login(Request $request): JsonResponse
     {
         try {
@@ -77,6 +80,7 @@ final class AuthController
         }
     }
 
+    // Invalida el token actual del usuario
     public function logout(Request $request): JsonResponse
     {
         try {

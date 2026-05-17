@@ -18,8 +18,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
+// Gestiona los comentarios en posts
 final class CommentController
 {
+    // Lista todos los comentarios paginados
     public function index(): AnonymousResourceCollection
     {
         $comments = Comment::with(['post', 'user'])
@@ -32,6 +34,7 @@ final class CommentController
         return CommentResource::collection($comments);
     }
 
+    // Crea un comentario en un post
     public function store(Request $request): JsonResponse
     {
         try {
@@ -59,6 +62,7 @@ final class CommentController
         }
     }
 
+    // Devuelve todos los comentarios de un post concreto (el ID es el del post)
     public function show(string $id): AnonymousResourceCollection
     {
         try {
@@ -85,6 +89,7 @@ final class CommentController
         return response()->json([]);
     }
 
+    // Elimina un comentario; solo lo puede hacer su autor
     public function destroy(string $id): JsonResponse
     {
         try {

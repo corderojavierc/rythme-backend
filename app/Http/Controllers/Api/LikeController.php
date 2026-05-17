@@ -15,8 +15,10 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
+// Gestiona los likes en posts y comentarios (usa morfismo para ambos tipos)
 final class LikeController
 {
+    // Lista los likes de un usuario
     public function index(string $id): AnonymousResourceCollection
     {
         $likes = Like::query()
@@ -27,6 +29,7 @@ final class LikeController
         return LikeResource::collection($likes);
     }
 
+    // Añade un like; evita duplicados con un 409 si ya existe
     public function store(Request $request): JsonResponse
     {
         try {
@@ -54,6 +57,7 @@ final class LikeController
         }
     }
 
+    // Elimina un like existente
     public function destroy(Request $request): JsonResponse
     {
         try {

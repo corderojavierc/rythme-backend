@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
+// Job que se ejecuta una vez al mes para guardar permanentemente el ranking del mes que acaba de terminar
 final class SnapshotMonthlyRankingJob implements ShouldBeUnique, ShouldQueue
 {
     use Queueable;
@@ -33,6 +34,7 @@ final class SnapshotMonthlyRankingJob implements ShouldBeUnique, ShouldQueue
         return $this->resolveMonth()->format('Y-m');
     }
 
+    // Calcula el top 10 del mes y lo guarda en las tablas de historial; limpia la caché al terminar
     public function handle(): void
     {
         try {
@@ -41,11 +43,15 @@ final class SnapshotMonthlyRankingJob implements ShouldBeUnique, ShouldQueue
             $to = $month->copy()->endOfMonth()->endOfDay();
             $period = $from->toDateString();
 
+            // DB::transaction garantiza que los dos snapshots (topRated y mostRated)
+            // se guardan juntos o ninguno. Si uno falla, el otro se deshace (rollback).
             DB::transaction(function () use ($from, $to, $period): void {
                 $this->snapshotTopRated($from, $to, $period);
                 $this->snapshotMostRated($from, $to, $period);
             });
 
+            // Limpia la caché del mes procesado para que las siguientes peticiones
+            // lean ya los datos históricos recién guardados en lugar del ranking en vivo.
             $cacheKey = $month->format('Y-m');
             Cache::forget('rankings:top-rated:'.$cacheKey);
             Cache::forget('rankings:most-rated:'.$cacheKey);
@@ -73,6 +79,7 @@ final class SnapshotMonthlyRankingJob implements ShouldBeUnique, ShouldQueue
         return $this->snapshotMonth ?? now()->subMonth();
     }
 
+    // Guarda el top 10 por nota media del período dado
     private function snapshotTopRated(CarbonInterface $from, CarbonInterface $to, string $period): void
     {
         $rows = Post::query()
@@ -82,9 +89,10 @@ final class SnapshotMonthlyRankingJob implements ShouldBeUnique, ShouldQueue
             ->orderByDesc('rating')
             ->limit(10)
             ->get()
+            // Convertimos cada resultado en un array plano listo para insertar en la BD
             ->map(fn (Post $item, int $i): array => [
                 'period' => $period,
-                'rank_position' => $i + 1,
+                'rank_position' => $i + 1,       // posición 1 a 10
                 'music_id' => $item->music_id,
                 'rating' => round((float) $item->rating, 2),
                 'count_ratings' => (int) $item->count_ratings,
@@ -92,6 +100,9 @@ final class SnapshotMonthlyRankingJob implements ShouldBeUnique, ShouldQueue
             ->all();
 
         if (! empty($rows)) {
+            // upsert inserta las filas y, si ya existe una con la misma combinación de
+            // period + rank_position, actualiza los demás campos en lugar de fallar.
+            // Útil si el job se ejecuta dos veces por error: no duplica datos.
             TopRatedMusic::query()->upsert(
                 $rows,
                 uniqueBy: ['period', 'rank_position'],
@@ -100,6 +111,7 @@ final class SnapshotMonthlyRankingJob implements ShouldBeUnique, ShouldQueue
         }
     }
 
+    // Guarda el top 10 por número de reseñas del período dado
     private function snapshotMostRated(CarbonInterface $from, CarbonInterface $to, string $period): void
     {
         $rows = Post::query()

@@ -11,11 +11,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
+// Integración con la API de Spotify para buscar y guardar canciones
 final class SpotifyService
 {
+    // Busca una canción en Spotify, la guarda en la BD y la vincula al artista si está registrado
     public static function searchAndStore(string $query): ?Music
     {
         try {
+            // limit(1) porque solo queremos el resultado más relevante
             $results = Spotify::searchTracks($query)->limit(1)->get();
             $track = $results['tracks']['items'][0] ?? null;
 
@@ -23,10 +26,14 @@ final class SpotifyService
                 return null;
             }
 
+            // Una canción puede tener varios artistas (colaboraciones).
+            // pluck('name') extrae solo los nombres, implode los une con coma.
             $artists = collect($track['artists']);
             $artistNames = $artists->pluck('name')->implode(', ');
             $artistIds = $artists->pluck('id')->toArray();
 
+            // firstOrCreate: busca por título+artista y solo crea si no existe.
+            // Así no duplicamos canciones si ya estaban en la BD.
             $music = Music::query()->firstOrCreate([
                 'title' => $track['name'],
                 'artist' => $artistNames,
@@ -36,10 +43,13 @@ final class SpotifyService
                 'release_date' => $track['album']['release_date'],
             ]);
 
+            // Solo si la canción es nueva, intentamos vincularla a artistas registrados en la app.
+            // Un artista de Spotify puede tener su cuenta en RythMe con el mismo spotify_id.
             if ($music->wasRecentlyCreated) {
                 $users = User::query()->whereIn('spotify_id', $artistIds)->get();
 
                 foreach ($users as $user) {
+                    // syncWithoutDetaching añade la relación en la tabla pivote sin borrar las existentes
                     $user->createdMusic()->syncWithoutDetaching([$music->id]);
                     $user->increment('musics');
                 }
@@ -55,6 +65,7 @@ final class SpotifyService
         }
     }
 
+    // Busca canciones en Spotify y las devuelve como objetos Music sin guardarlos en la BD
     public static function searchInSpotify(string $query, int $limit = 5): Collection
     {
         try {
@@ -82,6 +93,7 @@ final class SpotifyService
         }
     }
 
+    // Obtiene el nombre de un artista de Spotify por su ID; cacheado un mes para no hacer peticiones repetidas
     public static function getArtistName(string $artistId): ?string
     {
         return cache()->remember('spotify_artist_name_'.$artistId, now()->addMonth(), function () use ($artistId) {

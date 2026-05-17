@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
+// Gestiona las canciones: búsqueda local y en Spotify, y posts asociados
 final class MusicController
 {
     public function index(): JsonResponse
@@ -29,6 +30,7 @@ final class MusicController
         return response()->json([]);
     }
 
+    // Busca una canción en la BD local; si no existe, la busca y guarda desde Spotify
     public function store(Request $request): MusicResource
     {
         try {
@@ -61,6 +63,7 @@ final class MusicController
         }
     }
 
+    // Busca canciones por nombre: combina resultados locales con Spotify si hay pocos resultados
     public function search(Request $request): AnonymousResourceCollection
     {
         try {
@@ -70,6 +73,7 @@ final class MusicController
             $perPage = 10;
             $page = $request->input('page', 1);
 
+            // Primero busca en la BD propia (más rápido, sin petición externa)
             $localSongs = Music::query()
                 ->where('title', 'like', sprintf('%%%s%%', $query))
                 ->orWhere('artist', 'like', sprintf('%%%s%%', $query))
@@ -77,17 +81,25 @@ final class MusicController
 
             $combined = $localSongs;
 
+            // Si hay pocas canciones locales, complementa con Spotify para dar más resultados.
+            // Si Spotify falla (sin conexión, límite de API...) simplemente seguimos con los locales.
             if ($localSongs->count() < 20) {
                 try {
                     $spotifySongs = SpotifyService::searchInSpotify($query, 20);
+                    // unique() evita que aparezca la misma canción dos veces (local + Spotify).
+                    // Usa "título|artista" en minúsculas como clave de unicidad.
                     $combined = $localSongs->concat($spotifySongs)
                         ->unique(fn (Music $item): string => mb_strtolower($item->title.'|'.$item->artist));
                 } catch (Exception) {
                 }
             }
 
+            // La combinación local+Spotify no es paginable directamente porque no viene de Eloquent.
+            // forPage() hace el "slice" manual de la colección según la página pedida.
             $items = $combined->forPage($page, $perPage)->values();
 
+            // Construimos manualmente el objeto paginador que espera Laravel/el frontend.
+            // Necesita: los items de esta página, el total, el tamaño de página, la página actual y la URL base.
             $paginatedResults = new LengthAwarePaginator(
                 $items,
                 $combined->count(),
@@ -131,6 +143,7 @@ final class MusicController
         return response()->json([]);
     }
 
+    // Devuelve todos los posts que reseñan una canción concreta
     public function getPosts(string $id): AnonymousResourceCollection
     {
         try {
@@ -162,6 +175,7 @@ final class MusicController
         }
     }
 
+    // Devuelve las canciones creadas por un artista verificado
     public function getUserMusics(string $id): AnonymousResourceCollection
     {
         try {

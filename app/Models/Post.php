@@ -28,6 +28,7 @@ use Override;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
+// Una reseña de canción hecha por un usuario. Al crearse/borrarse actualiza la nota media de la canción y el contador de posts del usuario
 #[UseFactory(PostFactory::class)]
 final class Post extends Model
 {
@@ -47,16 +48,19 @@ final class Post extends Model
         'count_comments',
     ];
 
+    // booted() es el hook de ciclo de vida del modelo en Laravel.
+    // Aquí registramos callbacks que se ejecutan automáticamente al crear o borrar un post,
+    // sin tener que acordarnos de llamarlos manualmente desde el controller.
     public static function booted(): void
     {
         self::created(function (Post $post): void {
-            $post->updateMusicRatings();
-            $post->user()->increment('posts');
+            $post->updateMusicRatings();          // recalcula la nota media de la canción
+            $post->user()->increment('posts');    // +1 al contador de posts del usuario
         });
 
         self::deleted(function (Post $post): void {
-            $post->updateMusicRatings();
-            $post->user()->decrement('posts');
+            $post->updateMusicRatings();          // recalcula la nota media sin este post
+            $post->user()->decrement('posts');    // -1 al contador de posts del usuario
         });
     }
 
@@ -90,22 +94,29 @@ final class Post extends Model
         return $this->hasMany(Comment::class);
     }
 
+    // morphMany: relación polimórfica. Un Like puede pertenecer a un Post o a un Comment.
+    // 'likeable' es el nombre del morph: en la tabla likes hay columnas likeable_type y likeable_id.
     public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'likeable');
     }
 
+    // Recalcula y guarda la nota media y el total de reseñas de la canción asociada
     private function updateMusicRatings(): void
     {
+        // Una sola query SQL calcula el promedio y el conteo de todos los posts de esta canción
         $stats = self::query()
             ->where('music_id', $this->music_id)
             ->selectRaw('AVG(rating) as rating, COUNT(*) as total')
             ->first();
 
+        // updateOrCreate: si ya existe el MusicRating para esta canción lo actualiza,
+        // si no existe lo crea. El primer array es la condición de búsqueda,
+        // el segundo son los valores a guardar/actualizar.
         MusicRating::query()->updateOrCreate(
             ['music_id' => $this->music_id],
             [
-                'rating' => $stats->rating ?? 0,
+                'rating' => $stats->rating ?? 0,       // si no hay posts, la media es 0
                 'count_ratings' => $stats->total ?? 0,
             ]
         );

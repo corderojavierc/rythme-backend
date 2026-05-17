@@ -17,10 +17,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
+// Calcula y devuelve los rankings de canciones. Usa caché para no recalcular en cada petición
 final class RankingController
 {
     private const int TOP = 10;
 
+    // Top 10 canciones mejor valoradas de todos los tiempos (por nota media)
     public function getGeneralTopRated(): AnonymousResourceCollection
     {
         try {
@@ -42,6 +44,7 @@ final class RankingController
         }
     }
 
+    // Top 10 canciones con más valoraciones de todos los tiempos (por cantidad)
     public function getGeneralMostRated(): AnonymousResourceCollection
     {
         try {
@@ -63,6 +66,7 @@ final class RankingController
         }
     }
 
+    // Top 10 del mes actual por nota media; resultado cacheado 6 horas
     public function getTopRated(): JsonResponse
     {
         try {
@@ -70,17 +74,23 @@ final class RankingController
             $from = now()->startOfMonth()->startOfDay();
             $to = now()->endOfDay();
 
+            // Cache::remember ejecuta el callback solo si la clave no existe en caché.
+            // Si ya existe, devuelve directamente el valor guardado sin tocar la BD.
+            // TTL de 6 horas: el ranking se recalcula máximo 4 veces al día.
             $rankings = Cache::remember(
                 key: 'rankings:top-rated:'.$period,
                 ttl: now()->addHours(6),
                 callback: fn (): Collection => Post::query()
                     ->whereBetween('created_at', [$from, $to])
+                    // selectRaw agrupa todos los posts de cada canción en una sola fila,
+                    // calculando la media de rating y cuántas reseñas tiene.
                     ->selectRaw('music_id, AVG(rating) as rating, COUNT(*) as count_ratings')
                     ->groupBy('music_id')
                     ->orderByDesc('rating')
                     ->with('music')
                     ->limit(self::TOP)
                     ->get()
+                    // map recorre la colección y añade el número de posición (1, 2, 3...) a cada item
                     ->map(fn (Post $item, int $i): Post => $item->setAttribute('position', $i + 1))
             );
 
@@ -95,6 +105,7 @@ final class RankingController
         }
     }
 
+    // Top 10 del mes actual por número de reseñas; resultado cacheado 6 horas
     public function getMostRated(): JsonResponse
     {
         try {
@@ -128,21 +139,26 @@ final class RankingController
         }
     }
 
+    // Ranking histórico por nota media de un mes pasado (formato YYYY-MM); cacheado para siempre porque ya no cambia
     public function getTopRatedHistory(string $period): JsonResponse
     {
         try {
+            // Valida que el formato sea exactamente YYYY-MM (ej: 2025-04)
             if (! preg_match('/^\d{4}-\d{2}$/', $period)) {
                 throw ValidationException::withMessages([
                     'period' => 'Error: formato de fecha inválido. Usa YYYY-MM (ej: 2025-04).',
                 ]);
             }
 
+            // Si piden el mes actual, redirigimos al método en vivo (que usa datos en tiempo real)
             if ($period === now()->format('Y-m')) {
                 return $this->getTopRated();
             }
 
             $date = now()->createFromFormat('Y-m', $period)->startOfMonth();
 
+            // rememberForever: los meses pasados nunca cambian, así que no hace falta expirar la caché.
+            // Los datos vienen de la tabla top_rated_musics, llenada por SnapshotMonthlyRankingJob.
             $rankings = Cache::rememberForever(
                 key: 'rankings:top-rated:history:'.$period,
                 callback: fn (): Collection => TopRatedMusic::query()
@@ -165,6 +181,7 @@ final class RankingController
         }
     }
 
+    // Ranking histórico por cantidad de reseñas de un mes pasado; cacheado para siempre porque ya no cambia
     public function getMostRatedHistory(string $period): JsonResponse
     {
         try {

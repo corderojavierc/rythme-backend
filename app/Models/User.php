@@ -38,6 +38,7 @@ use Override;
  * @property-read CarbonInterface $updated_at
  * @property bool|null $is_following_auth
  */
+// Modelo principal de usuario. Soporta roles (user, artist, creator, admin) y acceso al panel Filament
 #[UseFactory(UserFactory::class)]
 final class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
@@ -98,6 +99,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         return $this->type === UserTypeEnum::USER;
     }
 
+    // Solo los admins pueden entrar al panel de Filament
     public function canAccessPanel(Panel $panel): bool
     {
         if ($this->type !== UserTypeEnum::ADMIN) {
@@ -108,11 +110,15 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         return true;
     }
 
+    // Usuarios que siguen a este usuario.
+    // La tabla pivote 'follows' tiene: follower_id (quien sigue) y followed_id (quien es seguido).
+    // BelongsToMany con self::class indica que la relación es User → User (la misma tabla).
     public function followers(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'follows', 'followed_id', 'follower_id');
     }
 
+    // Usuarios a los que este usuario sigue (lo contrario de followers, misma tabla pivote)
     public function following(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'follows', 'follower_id', 'followed_id');

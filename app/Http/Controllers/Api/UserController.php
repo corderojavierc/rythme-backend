@@ -25,8 +25,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
+// Gestiona perfiles de usuario y su contenido (posts, comentarios, likes)
 final class UserController
 {
+    // Lista todos los usuarios excepto el autenticado, priorizando artistas y creadores
     public function index(): AnonymousResourceCollection
     {
         try {
@@ -34,6 +36,8 @@ final class UserController
 
             $users = User::query()
                 ->where('id', '!=', $currentUserId)
+                // CASE en SQL para ordenar por rol: artistas primero, luego creadores, luego admins, luego usuarios.
+                // Dentro de cada grupo, ordena alfabéticamente por username.
                 ->orderByRaw("
                     CASE type
                         WHEN 'artist' THEN 1
@@ -43,6 +47,8 @@ final class UserController
                     END
                 ")
                 ->orderBy('username', 'asc')
+                // Añade el campo is_following_auth: true si el usuario autenticado ya sigue a este usuario.
+                // Se hace en la misma query SQL para evitar N consultas extra (una por usuario).
                 ->withExists(['followers as is_following_auth' => function (Builder $query) use ($currentUserId): void {
                     $query->where('follower_id', $currentUserId);
                 }])
@@ -56,6 +62,7 @@ final class UserController
         }
     }
 
+    // Busca usuarios por username o nombre
     public function search(Request $request): AnonymousResourceCollection
     {
         try {
@@ -93,6 +100,7 @@ final class UserController
         }
     }
 
+    // Devuelve los posts de un usuario concreto
     public function getPosts(string $id): AnonymousResourceCollection
     {
         try {
@@ -121,6 +129,7 @@ final class UserController
         }
     }
 
+    // Devuelve los comentarios hechos por un usuario concreto
     public function getComments(string $id): AnonymousResourceCollection
     {
         try {
@@ -144,6 +153,7 @@ final class UserController
         }
     }
 
+    // Devuelve todos los posts y comentarios que ha likeado un usuario
     public function getLiked(string $id): AnonymousResourceCollection
     {
         try {
@@ -154,6 +164,9 @@ final class UserController
             /** @var LengthAwarePaginator $likes */
             $likes = Like::query()
                 ->where('user_id', $id)
+                // 'likeable' es una relación polimórfica: un Like puede apuntar a un Post o a un Comment.
+                // morphWith carga las relaciones adicionales según el tipo real del modelo.
+                // Si es Post → carga music y user. Si es Comment → carga post y user.
                 ->with(['likeable' => function (Relation $query): void {
                     if ($query instanceof MorphTo) {
                         $query->morphWith([
@@ -165,16 +178,21 @@ final class UserController
                 ->latest()
                 ->paginate(15);
 
+            // Aquí procesamos manualmente cada like para añadir campos extra que el frontend necesita.
+            // No se puede hacer con withExists porque el modelo puede ser Post o Comment (polimórfico).
             $items = $likes->getCollection()->map(function (Like $like) use ($authUserId): ?Model {
                 /** @var Post|Comment|null $model */
                 $model = $like->likeable;
 
+                // Si el post o comentario fue borrado, likeable puede ser null. Lo saltamos.
                 if ($model === null) {
                     return null;
                 }
 
+                // Añadimos is_liked: si el usuario AUTENTICADO (no el del perfil) ha dado like a este item.
                 $model->setAttribute('is_liked', $model->likes()->where('user_id', $authUserId)->exists());
 
+                // is_valorated solo tiene sentido para Posts (saber si el autenticado ya reseñó esa canción).
                 if ($model instanceof Post) {
                     $model->setAttribute('is_valorated', $model->music()->whereHas('post', function (Builder $q) use ($authUserId): void {
                         $q->where('user_id', $authUserId);
@@ -182,8 +200,9 @@ final class UserController
                 }
 
                 return $model;
-            })->filter();
+            })->filter(); // filter() elimina los null que dejamos pasar arriba
 
+            // Reemplazamos la colección interna del paginador con los datos procesados
             $likes->setCollection($items);
 
             return ItemsLikedResource::collection($likes);
@@ -196,6 +215,7 @@ final class UserController
         }
     }
 
+    // Devuelve el perfil del usuario autenticado
     public function me(): UserResource
     {
         try {
@@ -218,6 +238,7 @@ final class UserController
         }
     }
 
+    // Devuelve el perfil de un usuario por su username
     public function show(string $username): UserResource
     {
         try {

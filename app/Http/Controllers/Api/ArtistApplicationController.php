@@ -14,13 +14,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
+// Gestiona las solicitudes para convertirse en artista verificado
 final class ArtistApplicationController
 {
+    // Lista todas las solicitudes (para el admin)
     public function index(): JsonResponse
     {
         return response()->json(ArtistApplication::all());
     }
 
+    // Envía una nueva solicitud de artista; bloquea si ya tiene una pendiente o aceptada
     public function store(Request $request): JsonResponse
     {
         try {
@@ -56,6 +59,7 @@ final class ArtistApplicationController
         }
     }
 
+    // Comprueba si el usuario ya tiene una solicitud activa
     public function hasApplication(): JsonResponse
     {
         return response()->json([
@@ -63,6 +67,7 @@ final class ArtistApplicationController
         ]);
     }
 
+    // Retorna true si el usuario ya tiene una solicitud enviada o aceptada
     private function checkIfUserHasPendingOrAcceptedApplication(): bool
     {
         return ArtistApplication::query()->where('user_id', Auth::id())

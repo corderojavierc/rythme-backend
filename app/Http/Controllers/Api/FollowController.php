@@ -14,8 +14,10 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
+// Gestiona el sistema de seguimiento entre usuarios
 final class FollowController
 {
+    // Lista a quién sigue un usuario
     public function index(string $id): AnonymousResourceCollection
     {
         $follows = Follow::query()
@@ -26,6 +28,7 @@ final class FollowController
         return FollowResource::collection($follows);
     }
 
+    // Sigue a un usuario; impide seguirse a uno mismo o seguir dos veces al mismo
     public function store(Request $request): JsonResponse
     {
         try {
@@ -59,6 +62,7 @@ final class FollowController
         }
     }
 
+    // Deja de seguir a un usuario
     public function destroy(Request $request): JsonResponse
     {
         try {

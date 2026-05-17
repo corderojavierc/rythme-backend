@@ -13,13 +13,18 @@ use App\Http\Controllers\Api\RankingController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
+// Rutas públicas: no requieren token de autenticación
 Route::post('register', [AuthController::class, 'register'])->name('register');
 Route::post('login', [AuthController::class, 'login'])->name('login');
 
+// Todas las rutas dentro de este grupo requieren un token Sanctum válido en la cabecera
+// Authorization: Bearer <token>. Si no se envía, Laravel devuelve 401 automáticamente.
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('clear', [AuthController::class, 'clear'])->name('clear');
 
+    // Posts (reseñas de canciones): las rutas estáticas (followed, check, search) van ANTES
+    // que la ruta con parámetro {id}, porque si no Laravel interpretaría "followed" como un ID.
     Route::get('posts', [PostController::class, 'index'])->name('posts.index');
     Route::get('posts/followed', [PostController::class, 'getFollowedPosts'])->name('posts.followed');
     Route::post('posts', [PostController::class, 'store'])->name('posts.store');
@@ -40,6 +45,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('follows', [FollowController::class, 'store'])->name('follows.store');
     Route::delete('follows', [FollowController::class, 'destroy'])->name('follows.destroy');
 
+    // Los likes usan DELETE con body JSON (no con {id} en la URL) porque necesitan
+    // pasar likeable_type y likeable_id para identificar el elemento a deslikear.
     Route::get('likes/{id}', [LikeController::class, 'index'])->name('likes.index');
     Route::post('likes', [LikeController::class, 'store'])->name('likes.store');
     Route::delete('likes', [LikeController::class, 'destroy'])->name('likes.destroy');
@@ -56,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/music/search', [MusicController::class, 'search'])->name('api.music.search');
     Route::get('music/{id}/posts', [MusicController::class, 'getPosts'])->name('music.posts');
     Route::get('music/{id}/musics', [MusicController::class, 'getUserMusics'])->name('music.musics');
+    // Rankings: "general" = todos los tiempos, "actual" = mes en curso, "history/{period}" = mes pasado
     Route::get('musics/top-rated', [RankingController::class, 'getGeneralTopRated'])->name('music.top-rated');
     Route::get('musics/most-rated', [RankingController::class, 'getGeneralMostRated'])->name('music.most-rated');
     Route::get('musics/top-rated/actual', [RankingController::class, 'getTopRated'])->name('music.top-rated');

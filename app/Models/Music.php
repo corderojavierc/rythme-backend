@@ -25,6 +25,7 @@ use Override;
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
+// Canción guardada en la BD (puede venir de Spotify o ser creada por un artista)
 #[UseFactory(MusicFactory::class)]
 final class Music extends Model
 {
@@ -34,6 +35,7 @@ final class Music extends Model
     #[Override]
     protected $table = 'musics';
 
+    // Al borrar una canción, descuenta el contador de canciones de cada artista que la creó
     public static function booted(): void
     {
         self::deleting(function (Music $music): void {
